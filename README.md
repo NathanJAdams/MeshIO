@@ -19,6 +19,6 @@ Writing an object is just as easy. Make sure your class implements I\{Format\}Sa
     boolean success = {Format}Writer.write(savable, outputStream);
 
 <h3>Future updates</h3>
- - Responsibility for saving data moved from ISavable to ISaver interfaces.
+ - Responsibility for saving data moved from I{Format}Savable to I{Format}Saver interfaces.
  - A single Reader class and a single Writer class, with a format parameter passed in to the read() and write() methods.
  - I{Format}Builder and I{Format}Saver to be changed to IBuilder and ISaver respectively, all formats will be able to be built/saved using a single interface.
