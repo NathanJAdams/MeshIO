@@ -2,6 +2,10 @@
 <h3>License</h3>
 MIT License
 
+<h3>Formats supported</h3>
+Currently the only supported format is PLY, support for further formats will follow.
+
+
 <h3>Read</h3>
 To read an object you need a builder class that implements IPlyBuilder\<YourClass\> and an input stream for the PLY data. Then simply call
 
