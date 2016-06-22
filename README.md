@@ -7,7 +7,7 @@ Currently the only supported format is PLY, support for further formats will fol
 
 
 <h3>Read</h3>
-To read an object you need a builder class that implements I\{Format\}Builder\<YourClass\> and an input stream for the data. Then simply call
+To read an object you need a builder class that implements I\{Format\}Builder\<YourClass\> which has an empty constructor, and an input stream for the data. Then simply call
 
     YourClass newObject = {Format}Reader.read(builderClass, inputStream);
 
