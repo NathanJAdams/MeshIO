@@ -23,5 +23,5 @@ Writing an object is just as easy. Make sure your class implements I\{Format\}Sa
  - A single Reader class and a single Writer class, with a format parameter passed in to the read() and write() methods.
  - I{Format}Builder and I{Format}Saver to be changed to IBuilder and ISaver respectively, all formats will be able to be built/saved using a single interface.
 
-<h4>NB.</h4>
+<h5>NB.</h5>
 Ideally the data format would be automatically detected, however some formats don't have a "magic number" specifying which format it is. This is why the data format is required to be injected.
