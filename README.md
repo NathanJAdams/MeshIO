@@ -1,6 +1,6 @@
 # MeshIO
-<h3>License</h3>
-MIT License
+<h3>Licence</h3>
+MIT Licence
 
 <h3>Formats supported</h3>
 Currently the only supported format is PLY, support for further formats will follow.
