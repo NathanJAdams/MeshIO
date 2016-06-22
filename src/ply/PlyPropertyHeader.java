@@ -15,7 +15,7 @@ public class PlyPropertyHeader implements IPlyPropertyHeader {
    }
 
    @Override
-   public void write(PrimitiveOutputStream pos, IPlySavable savable) throws IOException {
+   public void write(PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
       pos.writeLine(PlyKeywords.PROPERTY + type.getKeyword() + ' ' + name);
    }
 
@@ -39,12 +39,12 @@ public class PlyPropertyHeader implements IPlyPropertyHeader {
    }
 
    @Override
-   public void appendAscii(IPlySavable savable, String elementName, int elementIndex, StringBuilder sb) {
+   public void appendAscii(IPlySaver savable, String elementName, int elementIndex, StringBuilder sb) {
       type.writeAscii(savable, elementName, elementIndex, name, sb);
    }
 
    @Override
-   public void saveBinary(IPlySavable savable, String elementName, int elementIndex, PrimitiveOutputStream pos, boolean isBigEndian) throws IOException {
+   public void saveBinary(IPlySaver savable, String elementName, int elementIndex, PrimitiveOutputStream pos, boolean isBigEndian) throws IOException {
       type.writeBinary(savable, elementName, elementIndex, name, pos, isBigEndian);
    }
 }

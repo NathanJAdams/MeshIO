@@ -7,7 +7,7 @@ import java.util.List;
 import util.PrimitiveOutputStream;
 
 public class PlyWriter {
-   public static boolean write(IPlySavable savable, OutputStream os) {
+   public static boolean write(IPlySaver savable, OutputStream os) {
       PlyFormat format = savable.getFormat();
       if (format == null)
          return fail(savable, PlyError.ERROR_FORMAT_NOT_FOUND);
@@ -32,7 +32,7 @@ public class PlyWriter {
       pos.writeLine(PlyKeywords.PLY);
    }
 
-   private static void writeFormat(PrimitiveOutputStream pos, IPlySavable savable, PlyFormat format) throws IOException {
+   private static void writeFormat(PrimitiveOutputStream pos, IPlySaver savable, PlyFormat format) throws IOException {
       format.write(pos, savable);
    }
 
@@ -40,7 +40,7 @@ public class PlyWriter {
       pos.writeLine(PlyKeywords.END);
    }
 
-   private static boolean writeElementHeaders(PrimitiveOutputStream pos, IPlySavable savable, List<PlyElementHeader> elementHeaders)
+   private static boolean writeElementHeaders(PrimitiveOutputStream pos, IPlySaver savable, List<PlyElementHeader> elementHeaders)
          throws IOException {
       for (PlyElementHeader elementHeader : elementHeaders) {
          if (elementHeader == null)
@@ -51,12 +51,12 @@ public class PlyWriter {
       return true;
    }
 
-   private static void writeData(PrimitiveOutputStream pos, IPlySavable savable, PlyFormat format, List<PlyElementHeader> elementHeaders)
+   private static void writeData(PrimitiveOutputStream pos, IPlySaver savable, PlyFormat format, List<PlyElementHeader> elementHeaders)
          throws IOException {
       format.save(elementHeaders, pos, savable);
    }
 
-   private static boolean fail(IPlySavable savable, int errorCode) {
+   private static boolean fail(IPlySaver savable, int errorCode) {
       savable.onFailure(errorCode);
       return false;
    }

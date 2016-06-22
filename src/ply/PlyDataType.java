@@ -94,18 +94,18 @@ public abstract class PlyDataType {
       }
 
       @Override
-      public void writeAscii(IPlySavable savable, String elementName, int elementIndex, String propertyName, StringBuilder sb) {
+      public void writeAscii(IPlySaver savable, String elementName, int elementIndex, String propertyName, StringBuilder sb) {
          sb.append(savable.getInt(elementName, elementIndex, propertyName) & bitMask);
       }
 
       @Override
-      public void writeBinary(IPlySavable savable, String elementName, int elementIndex, String propertyName, PrimitiveOutputStream pos,
+      public void writeBinary(IPlySaver savable, String elementName, int elementIndex, String propertyName, PrimitiveOutputStream pos,
             boolean isBigEndian) throws IOException {
          pos.writeInt(savable.getInt(elementName, elementIndex, propertyName) & bitMask, isBigEndian, byteCount);
       }
 
       @Override
-      public void writeAsciiList(IPlySavable savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
+      public void writeAsciiList(IPlySaver savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
             StringBuilder sb) {
          int[] array = savable.getIntArray(elementName, elementIndex, propertyListName);
          countType.writeCount(sb, array.length);
@@ -118,7 +118,7 @@ public abstract class PlyDataType {
       }
 
       @Override
-      public void writeBinaryList(IPlySavable savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
+      public void writeBinaryList(IPlySaver savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
             PrimitiveOutputStream pos, boolean isBigEndian) throws IOException {
          int[] array = savable.getIntArray(elementName, elementIndex, propertyListName);
          countType.writeCount(pos, array.length, isBigEndian);
@@ -156,7 +156,7 @@ public abstract class PlyDataType {
 
       public abstract float readFloat(PrimitiveInputStream pis, boolean isBigEndian) throws IOException;
 
-      public abstract void writeFloat(IPlySavable savable, String elementName, int elementIndex, String propertyName, float f, PrimitiveOutputStream pos,
+      public abstract void writeFloat(IPlySaver savable, String elementName, int elementIndex, String propertyName, float f, PrimitiveOutputStream pos,
             boolean isBigEndian) throws IOException;
 
       @Override
@@ -217,19 +217,19 @@ public abstract class PlyDataType {
       }
 
       @Override
-      public void writeAscii(IPlySavable savable, String elementName, int elementIndex, String propertyName, StringBuilder sb) {
+      public void writeAscii(IPlySaver savable, String elementName, int elementIndex, String propertyName, StringBuilder sb) {
          sb.append(savable.getFloat(elementName, elementIndex, propertyName));
       }
 
       @Override
-      public void writeBinary(IPlySavable savable, String elementName, int elementIndex, String propertyName, PrimitiveOutputStream pos,
+      public void writeBinary(IPlySaver savable, String elementName, int elementIndex, String propertyName, PrimitiveOutputStream pos,
             boolean isBigEndian) throws IOException {
          float f = savable.getFloat(elementName, elementIndex, propertyName);
          writeFloat(savable, elementName, elementIndex, propertyName, f, pos, isBigEndian);
       }
 
       @Override
-      public void writeAsciiList(IPlySavable savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
+      public void writeAsciiList(IPlySaver savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
             StringBuilder sb) {
          float[] array = savable.getFloatArray(elementName, elementIndex, propertyListName);
          countType.writeCount(sb, array.length);
@@ -242,7 +242,7 @@ public abstract class PlyDataType {
       }
 
       @Override
-      public void writeBinaryList(IPlySavable savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
+      public void writeBinaryList(IPlySaver savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
             PrimitiveOutputStream pos, boolean isBigEndian) throws IOException {
          float[] array = savable.getFloatArray(elementName, elementIndex, propertyListName);
          countType.writeCount(pos, array.length, isBigEndian);
@@ -269,7 +269,7 @@ public abstract class PlyDataType {
                                                }
 
                                                @Override
-                                               public void writeFloat(IPlySavable savable, String elementName, int elementIndex, String propertyName,
+                                               public void writeFloat(IPlySaver savable, String elementName, int elementIndex, String propertyName,
                                                      float f, PrimitiveOutputStream pos, boolean isBigEndian) throws IOException {
                                                   pos.writeFloat(f, isBigEndian);
                                                }
@@ -286,7 +286,7 @@ public abstract class PlyDataType {
                                                }
 
                                                @Override
-                                               public void writeFloat(IPlySavable savable, String elementName, int elementIndex, String propertyName,
+                                               public void writeFloat(IPlySaver savable, String elementName, int elementIndex, String propertyName,
                                                      float f, PrimitiveOutputStream pos, boolean isBigEndian) throws IOException {
                                                   pos.writeDouble(f, isBigEndian);
                                                }
@@ -352,14 +352,14 @@ public abstract class PlyDataType {
    public abstract boolean readDatumList(IPlyBuilder<?> loader, String elementName, int elementIndex, String propertyName, int count,
          PrimitiveInputStream pis, boolean isBigEndian);
 
-   public abstract void writeAscii(IPlySavable savable, String elementName, int elementIndex, String propertyName, StringBuilder sb);
+   public abstract void writeAscii(IPlySaver savable, String elementName, int elementIndex, String propertyName, StringBuilder sb);
 
-   public abstract void writeBinary(IPlySavable savable, String elementName, int elementIndex, String propertyName, PrimitiveOutputStream pos,
+   public abstract void writeBinary(IPlySaver savable, String elementName, int elementIndex, String propertyName, PrimitiveOutputStream pos,
          boolean isBigEndian) throws IOException;
 
-   public abstract void writeAsciiList(IPlySavable savable, String elementName, int elementIndex, String propertyName, PlyDataType countType,
+   public abstract void writeAsciiList(IPlySaver savable, String elementName, int elementIndex, String propertyName, PlyDataType countType,
          StringBuilder sb);
 
-   public abstract void writeBinaryList(IPlySavable savable, String elementName, int elementIndex, String propertyName, PlyDataType countType,
+   public abstract void writeBinaryList(IPlySaver savable, String elementName, int elementIndex, String propertyName, PlyDataType countType,
          PrimitiveOutputStream pos, boolean isBigEndian) throws IOException;
 }

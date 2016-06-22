@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import ply.IPlyBuilder;
-import ply.IPlySavable;
+import ply.IPlySaver;
 import ply.PlyReader;
 import ply.PlyWriter;
 
@@ -16,11 +16,11 @@ public enum MeshFormat {
       }
 
       @Override
-      public boolean write(IPlySavable savable, OutputStream os) {
+      public boolean write(IPlySaver savable, OutputStream os) {
          return PlyWriter.write(savable, os);
       }
    };
    public abstract <T> T read(Class<IPlyBuilder<T>> builderClass, InputStream is);
 
-   public abstract boolean write(IPlySavable savable, OutputStream os);
+   public abstract boolean write(IPlySaver savable, OutputStream os);
 }

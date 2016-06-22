@@ -21,7 +21,7 @@ public enum PlyFormat {
       }
 
       @Override
-      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySavable savable) throws IOException {
+      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
          elementHeader.saveAscii(pos, savable);
       }
    },
@@ -37,7 +37,7 @@ public enum PlyFormat {
       }
 
       @Override
-      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySavable savable) throws IOException {
+      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
          elementHeader.saveBinary(pos, savable, true);
       }
    },
@@ -53,7 +53,7 @@ public enum PlyFormat {
       }
 
       @Override
-      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySavable savable) throws IOException {
+      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
          elementHeader.saveBinary(pos, savable, false);
       }
    };
@@ -82,7 +82,7 @@ public enum PlyFormat {
 
    protected abstract boolean isValidVersion(String version);
 
-   public void write(PrimitiveOutputStream pos, IPlySavable savable) throws IOException {
+   public void write(PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
       pos.writeLine(PlyKeywords.FORMAT + keyword + ' ' + PlyKeywords.FORMAT_VERSION_1_0);
    }
 
@@ -95,10 +95,10 @@ public enum PlyFormat {
 
    protected abstract boolean load(PlyElementHeader elementHeader, PrimitiveInputStream pis, IPlyBuilder<?> loader);
 
-   public void save(List<PlyElementHeader> elementHeaders, PrimitiveOutputStream pos, IPlySavable savable) throws IOException {
+   public void save(List<PlyElementHeader> elementHeaders, PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
       for (PlyElementHeader elementHeader : elementHeaders)
          save(elementHeader, pos, savable);
    }
 
-   protected abstract void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySavable savable) throws IOException;
+   protected abstract void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySaver savable) throws IOException;
 }

@@ -17,7 +17,7 @@ public class PlyElementHeader {
       this.propertyHeaders = propertyHeaders;
    }
 
-   public boolean write(PrimitiveOutputStream pos, IPlySavable savable) throws IOException {
+   public boolean write(PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
       if (propertyHeaders == null || propertyHeaders.isEmpty()) {
          savable.onFailure(PlyError.ERROR_HEADER_NOT_FOUND);
          return false;
@@ -77,7 +77,7 @@ public class PlyElementHeader {
       return true;
    }
 
-   public void saveAscii(PrimitiveOutputStream pos, IPlySavable savable) throws IOException {
+   public void saveAscii(PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
       for (int i = 0; i < count; i++) {
          StringBuilder sb = new StringBuilder();
          for (IPlyPropertyHeader propertyHeader : propertyHeaders) {
@@ -89,7 +89,7 @@ public class PlyElementHeader {
       }
    }
 
-   public void saveBinary(PrimitiveOutputStream pos, IPlySavable savable, boolean isBigEndian) throws IOException {
+   public void saveBinary(PrimitiveOutputStream pos, IPlySaver savable, boolean isBigEndian) throws IOException {
       for (int i = 0; i < count; i++)
          for (IPlyPropertyHeader propertyHeader : propertyHeaders)
             propertyHeader.saveBinary(savable, name, i, pos, isBigEndian);

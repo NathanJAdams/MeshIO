@@ -2,7 +2,7 @@ package ply;
 
 import java.util.List;
 
-public interface IPlySavable {
+public interface IPlySaver {
    public static final int ERROR_FORMAT_NOT_FOUND                = 100;
    public static final int ERROR_HEADER_NOT_FOUND                = 200;
    public static final int ERROR_HEADER_NOT_RECOGNISED           = 201;
