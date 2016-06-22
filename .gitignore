@@ -7,7 +7,6 @@
 
 # Package Files #
 *.jardesc
-*.jar
 *.war
 *.ear
 
