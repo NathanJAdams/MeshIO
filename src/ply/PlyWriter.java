@@ -28,6 +28,7 @@ public class PlyWriter {
       }
    }
 
+   //
    private static void writeMagic(PrimitiveOutputStream pos) throws IOException {
       pos.writeLine(PlyKeywords.PLY);
    }
