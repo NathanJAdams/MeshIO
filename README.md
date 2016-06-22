@@ -19,4 +19,4 @@ Writing an object is just as easy. Make sure you have an object which knows abou
     boolean success = MeshIO.write(meshSaver, outputStream, MeshFormat.{Format});
 
 <h5>NB.</h5>
-Ideally the data format would be automatically detected, however some formats don't have a "magic number" specifying which format it is. This is why the data format is required to be specified manually.
+Ideally this library would automatically detect the mesh format when reading, however some formats don't have a "magic number" specifying which format it is. This is why the data format is required to be specified manually.
