@@ -14,7 +14,7 @@ To read an object you need a builder class that implements IMeshBuilder\<YourCla
 A new builder will be created which will read data from the input stream. Success or failure will be reported to this builder. If successful, the builder will build the object which is returned to the caller. If unsuccessful, null will be returned.
 
 <h3>Write</h3>
-Writing an object is just as easy. Make sure you have an object which knows about the data to be saved and which implements ISaver, then simply call
+Writing an object is just as easy. Make sure you have an object which knows about the data to be saved and which implements IMeshSaver, then simply call
 
     boolean success = MeshIO.write(saver, outputStream, MeshFormat.{Format});
 
