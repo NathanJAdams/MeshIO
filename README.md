@@ -14,9 +14,9 @@ To read an object you need a builder class that implements IMeshBuilder\<YourCla
 A new builder will be created which will read data from the input stream. Success or failure will be reported to this builder. If successful, the builder will build the object which is returned to the caller. If unsuccessful, null will be returned.
 
 <h3>Write</h3>
-Writing an object is just as easy. Make sure your class implements I\{Format\}Savable and that you have an output stream to save the data to. Then simply call
+Writing an object is just as easy. Make sure your class implements ISaver and that you have an output stream to save the data to. Then simply call
 
-    boolean success = MeshIO.write(savable, outputStream, MeshFormat.{Format});
+    boolean success = MeshIO.write(saver, outputStream, MeshFormat.{Format});
 
 <h5>NB.</h5>
 Ideally the data format would be automatically detected, however some formats don't have a "magic number" specifying which format it is. This is why the data format is required to be specified manually.
