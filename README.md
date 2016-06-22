@@ -16,6 +16,6 @@ A new builder will be created which will read data from the input stream. Succes
 <h3>Write</h3>
 Writing an object is just as easy. Make sure your class implements I\{Format\}Savable and that you have an output stream to save the data to. Then simply call
 
-    boolean success = \{Format\}Writer.write(savable, outputStream);
+    boolean success = {Format}Writer.write(savable, outputStream);
 
 Future updates will remove the responsibility of saving data from the object and add it to I\{Format\}Saver\<T\> interfaces instead.
