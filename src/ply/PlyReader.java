@@ -5,13 +5,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import meshio.IPlyBuilder;
+import meshio.IMeshBuilder;
 import meshio.MeshIOErrorCodes;
 import util.PrimitiveInputStream;
 
 public class PlyReader {
-   public static <T> T read(Class<IPlyBuilder<T>> builderClass, InputStream is) {
-      IPlyBuilder<T> builder = null;
+   public static <T> T read(Class<IMeshBuilder<T>> builderClass, InputStream is) {
+      IMeshBuilder<T> builder = null;
       try {
          builder = builderClass.newInstance();
       } catch (InstantiationException | IllegalAccessException e) {
@@ -36,14 +36,14 @@ public class PlyReader {
       return builder.build();
    }
 
-   private static boolean isPly(PrimitiveInputStream pis, IPlyBuilder<?> builder) {
+   private static boolean isPly(PrimitiveInputStream pis, IMeshBuilder<?> builder) {
       boolean isValid = PlyKeywords.PLY.equals(readLine(pis, builder));
       if (!isValid)
          fail(builder, MeshIOErrorCodes.NOT_PLY, pis);
       return isValid;
    }
 
-   private static PlyFormat readFormat(PrimitiveInputStream pis, IPlyBuilder<?> builder) {
+   private static PlyFormat readFormat(PrimitiveInputStream pis, IMeshBuilder<?> builder) {
       String formatLine = readNonCommentLine(pis, builder);
       if (formatLine == null)
          return fail(builder, MeshIOErrorCodes.FORMAT_NOT_FOUND, pis);
@@ -58,7 +58,7 @@ public class PlyReader {
       return format;
    }
 
-   private static List<PlyElementHeader> readElementHeaders(PrimitiveInputStream pis, IPlyBuilder<?> builder) {
+   private static List<PlyElementHeader> readElementHeaders(PrimitiveInputStream pis, IMeshBuilder<?> builder) {
       List<PlyElementHeader> elementHeaders = new ArrayList<>();
       String elementHeaderName = null;
       int elementHeaderCount = 0;
@@ -99,13 +99,13 @@ public class PlyReader {
       return elementHeaders;
    }
 
-   private static IPlyPropertyHeader readPropertyHeader(String elementName, PrimitiveInputStream pis, IPlyBuilder<?> builder, String line) {
+   private static IPlyPropertyHeader readPropertyHeader(String elementName, PrimitiveInputStream pis, IMeshBuilder<?> builder, String line) {
       return (line.startsWith(PlyKeywords.LIST))
             ? createListProperty(elementName, pis, builder, line.substring(PlyKeywords.LIST.length()))
             : createProperty(elementName, pis, builder, line);
    }
 
-   private static IPlyPropertyHeader createListProperty(String elementName, PrimitiveInputStream pis, IPlyBuilder<?> builder, String line) {
+   private static IPlyPropertyHeader createListProperty(String elementName, PrimitiveInputStream pis, IMeshBuilder<?> builder, String line) {
       String[] parts = line.split(" ");
       PlyDataType countType = PlyDataType.getDataType(parts[0]);
       PlyDataType type = PlyDataType.getDataType(parts[1]);
@@ -116,7 +116,7 @@ public class PlyReader {
       return new PlyListPropertyHeader(countType, type, parts[2]);
    }
 
-   private static IPlyPropertyHeader createProperty(String elementName, PrimitiveInputStream pis, IPlyBuilder<?> builder, String line) {
+   private static IPlyPropertyHeader createProperty(String elementName, PrimitiveInputStream pis, IMeshBuilder<?> builder, String line) {
       String[] parts = line.split(" ");
       PlyDataType type = PlyDataType.getDataType(parts[0]);
       if (type == null)
@@ -126,7 +126,7 @@ public class PlyReader {
       return new PlyPropertyHeader(type, parts[1]);
    }
 
-   private static String readNonCommentLine(PrimitiveInputStream pis, IPlyBuilder<?> builder) {
+   private static String readNonCommentLine(PrimitiveInputStream pis, IMeshBuilder<?> builder) {
       String line;
       do {
          line = readLine(pis, builder);
@@ -136,7 +136,7 @@ public class PlyReader {
       return line;
    }
 
-   private static String readLine(PrimitiveInputStream pis, IPlyBuilder<?> builder) {
+   private static String readLine(PrimitiveInputStream pis, IMeshBuilder<?> builder) {
       try {
          return pis.readLine();
       } catch (IOException e) {
@@ -144,11 +144,11 @@ public class PlyReader {
       return null;
    }
 
-   private static <T> T fail(IPlyBuilder<?> builder, int errorCode, PrimitiveInputStream pis) {
+   private static <T> T fail(IMeshBuilder<?> builder, int errorCode, PrimitiveInputStream pis) {
       return fail(builder, errorCode, pis.getLineNumber());
    }
 
-   private static <T> T fail(IPlyBuilder<?> builder, int errorCode, int lineNumber) {
+   private static <T> T fail(IMeshBuilder<?> builder, int errorCode, int lineNumber) {
       builder.onFailure(errorCode, lineNumber);
       return null;
    }

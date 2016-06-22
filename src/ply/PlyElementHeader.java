@@ -3,8 +3,8 @@ package ply;
 import java.io.IOException;
 import java.util.List;
 
-import meshio.IPlyBuilder;
-import meshio.IPlySaver;
+import meshio.IMeshBuilder;
+import meshio.IMeshSaver;
 import meshio.MeshIOErrorCodes;
 import util.PrimitiveInputStream;
 import util.PrimitiveOutputStream;
@@ -20,7 +20,7 @@ public class PlyElementHeader {
       this.propertyHeaders = propertyHeaders;
    }
 
-   public boolean write(PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
+   public boolean write(PrimitiveOutputStream pos, IMeshSaver savable) throws IOException {
       if (propertyHeaders == null || propertyHeaders.isEmpty()) {
          savable.onFailure(MeshIOErrorCodes.HEADER_NOT_FOUND);
          return false;
@@ -36,7 +36,7 @@ public class PlyElementHeader {
       return true;
    }
 
-   public boolean loadAscii(PrimitiveInputStream pis, IPlyBuilder<?> loader) {
+   public boolean loadAscii(PrimitiveInputStream pis, IMeshBuilder<?> loader) {
       for (int i = 0; i < count; i++) {
          String element = null;
          try {
@@ -72,7 +72,7 @@ public class PlyElementHeader {
       return true;
    }
 
-   public boolean loadBinary(PrimitiveInputStream pis, IPlyBuilder<?> loader, boolean isBigEndian) {
+   public boolean loadBinary(PrimitiveInputStream pis, IMeshBuilder<?> loader, boolean isBigEndian) {
       for (int i = 0; i < count; i++)
          for (IPlyPropertyHeader propertyHeader : propertyHeaders)
             if (!propertyHeader.loadBinary(loader, name, i, pis, isBigEndian))
@@ -80,7 +80,7 @@ public class PlyElementHeader {
       return true;
    }
 
-   public void saveAscii(PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
+   public void saveAscii(PrimitiveOutputStream pos, IMeshSaver savable) throws IOException {
       for (int i = 0; i < count; i++) {
          StringBuilder sb = new StringBuilder();
          for (IPlyPropertyHeader propertyHeader : propertyHeaders) {
@@ -92,7 +92,7 @@ public class PlyElementHeader {
       }
    }
 
-   public void saveBinary(PrimitiveOutputStream pos, IPlySaver savable, boolean isBigEndian) throws IOException {
+   public void saveBinary(PrimitiveOutputStream pos, IMeshSaver savable, boolean isBigEndian) throws IOException {
       for (int i = 0; i < count; i++)
          for (IPlyPropertyHeader propertyHeader : propertyHeaders)
             propertyHeader.saveBinary(savable, name, i, pos, isBigEndian);

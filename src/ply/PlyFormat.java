@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import meshio.IPlyBuilder;
-import meshio.IPlySaver;
+import meshio.IMeshBuilder;
+import meshio.IMeshSaver;
 import util.PrimitiveInputStream;
 import util.PrimitiveOutputStream;
 
@@ -18,12 +18,12 @@ public enum PlyFormat {
       }
 
       @Override
-      protected boolean load(PlyElementHeader elementHeader, PrimitiveInputStream pis, IPlyBuilder<?> loader) {
+      protected boolean load(PlyElementHeader elementHeader, PrimitiveInputStream pis, IMeshBuilder<?> loader) {
          return elementHeader.loadAscii(pis, loader);
       }
 
       @Override
-      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
+      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IMeshSaver savable) throws IOException {
          elementHeader.saveAscii(pos, savable);
       }
    },
@@ -34,12 +34,12 @@ public enum PlyFormat {
       }
 
       @Override
-      protected boolean load(PlyElementHeader elementHeader, PrimitiveInputStream pis, IPlyBuilder<?> loader) {
+      protected boolean load(PlyElementHeader elementHeader, PrimitiveInputStream pis, IMeshBuilder<?> loader) {
          return elementHeader.loadBinary(pis, loader, true);
       }
 
       @Override
-      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
+      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IMeshSaver savable) throws IOException {
          elementHeader.saveBinary(pos, savable, true);
       }
    },
@@ -50,12 +50,12 @@ public enum PlyFormat {
       }
 
       @Override
-      protected boolean load(PlyElementHeader elementHeader, PrimitiveInputStream pis, IPlyBuilder<?> loader) {
+      protected boolean load(PlyElementHeader elementHeader, PrimitiveInputStream pis, IMeshBuilder<?> loader) {
          return elementHeader.loadBinary(pis, loader, false);
       }
 
       @Override
-      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
+      protected void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IMeshSaver savable) throws IOException {
          elementHeader.saveBinary(pos, savable, false);
       }
    };
@@ -84,23 +84,23 @@ public enum PlyFormat {
 
    protected abstract boolean isValidVersion(String version);
 
-   public void write(PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
+   public void write(PrimitiveOutputStream pos, IMeshSaver savable) throws IOException {
       pos.writeLine(PlyKeywords.FORMAT + keyword + ' ' + PlyKeywords.FORMAT_VERSION_1_0);
    }
 
-   public boolean load(List<PlyElementHeader> elementHeaders, PrimitiveInputStream pis, IPlyBuilder<?> loader) {
+   public boolean load(List<PlyElementHeader> elementHeaders, PrimitiveInputStream pis, IMeshBuilder<?> loader) {
       for (PlyElementHeader elementHeader : elementHeaders)
          if (!load(elementHeader, pis, loader))
             return false;
       return true;
    }
 
-   protected abstract boolean load(PlyElementHeader elementHeader, PrimitiveInputStream pis, IPlyBuilder<?> loader);
+   protected abstract boolean load(PlyElementHeader elementHeader, PrimitiveInputStream pis, IMeshBuilder<?> loader);
 
-   public void save(List<PlyElementHeader> elementHeaders, PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
+   public void save(List<PlyElementHeader> elementHeaders, PrimitiveOutputStream pos, IMeshSaver savable) throws IOException {
       for (PlyElementHeader elementHeader : elementHeaders)
          save(elementHeader, pos, savable);
    }
 
-   protected abstract void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IPlySaver savable) throws IOException;
+   protected abstract void save(PlyElementHeader elementHeader, PrimitiveOutputStream pos, IMeshSaver savable) throws IOException;
 }

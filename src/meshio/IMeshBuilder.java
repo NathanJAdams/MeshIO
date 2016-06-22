@@ -2,7 +2,7 @@ package meshio;
 
 import ply.PlyDataType;
 
-public interface IPlyBuilder<T> {
+public interface IMeshBuilder<T> {
    T build();
 
    void onSuccess();

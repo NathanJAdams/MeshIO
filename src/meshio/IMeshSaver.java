@@ -3,14 +3,11 @@ package meshio;
 import java.util.List;
 
 import ply.PlyElementHeader;
-import ply.PlyFormat;
 
-public interface IPlySaver {
+public interface IMeshSaver {
    void onSuccess();
 
    void onFailure(int errorCode);
-
-   PlyFormat getFormat();
 
    List<PlyElementHeader> getElementHeaders();
 
