@@ -3,8 +3,6 @@ package meshio;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import ply.IPlyBuilder;
-import ply.IPlySaver;
 import ply.PlyReader;
 import ply.PlyWriter;
 

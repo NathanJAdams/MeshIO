@@ -1,4 +1,6 @@
-package ply;
+package meshio;
+
+import ply.PlyDataType;
 
 public interface IPlyBuilder<T> {
    T build();

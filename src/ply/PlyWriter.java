@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import meshio.IPlySaver;
 import meshio.MeshIOErrorCodes;
 import util.PrimitiveOutputStream;
 

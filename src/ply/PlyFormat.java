@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import meshio.IPlyBuilder;
+import meshio.IPlySaver;
 import util.PrimitiveInputStream;
 import util.PrimitiveOutputStream;
 

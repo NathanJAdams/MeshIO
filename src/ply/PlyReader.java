@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import meshio.IPlyBuilder;
 import meshio.MeshIOErrorCodes;
 import util.PrimitiveInputStream;
 

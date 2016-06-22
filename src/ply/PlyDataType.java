@@ -2,6 +2,8 @@ package ply;
 
 import java.io.IOException;
 
+import meshio.IPlyBuilder;
+import meshio.IPlySaver;
 import util.PrimitiveInputStream;
 import util.PrimitiveOutputStream;
 
