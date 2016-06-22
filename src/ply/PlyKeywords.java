@@ -1,6 +1,6 @@
 package ply;
 
-public class PlyKeywords {
+class PlyKeywords {
    public static final String PLY                = "ply";
    public static final String FORMAT             = "format ";
    public static final String FORMAT_VERSION_1_0 = "1.0";

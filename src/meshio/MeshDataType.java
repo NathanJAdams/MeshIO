@@ -1,14 +1,12 @@
-package ply;
+package meshio;
 
 import java.io.IOException;
 
-import meshio.IMeshBuilder;
-import meshio.IMeshSaver;
 import util.PrimitiveInputStream;
 import util.PrimitiveOutputStream;
 
-public abstract class PlyDataType {
-   private static class Int extends PlyDataType {
+public abstract class MeshDataType {
+   private static class Int extends MeshDataType {
       private final int byteCount;
       private final int bitMask;
 
@@ -107,7 +105,7 @@ public abstract class PlyDataType {
       }
 
       @Override
-      public void writeAsciiList(IMeshSaver savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
+      public void writeAsciiList(IMeshSaver savable, String elementName, int elementIndex, String propertyListName, MeshDataType countType,
             StringBuilder sb) {
          int[] array = savable.getIntArray(elementName, elementIndex, propertyListName);
          countType.writeCount(sb, array.length);
@@ -120,7 +118,7 @@ public abstract class PlyDataType {
       }
 
       @Override
-      public void writeBinaryList(IMeshSaver savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
+      public void writeBinaryList(IMeshSaver savable, String elementName, int elementIndex, String propertyListName, MeshDataType countType,
             PrimitiveOutputStream pos, boolean isBigEndian) throws IOException {
          int[] array = savable.getIntArray(elementName, elementIndex, propertyListName);
          countType.writeCount(pos, array.length, isBigEndian);
@@ -129,7 +127,7 @@ public abstract class PlyDataType {
       }
    }
 
-   private static abstract class Flt extends PlyDataType {
+   private static abstract class Flt extends MeshDataType {
       private Flt(String keyword) {
          super(keyword);
       }
@@ -231,7 +229,7 @@ public abstract class PlyDataType {
       }
 
       @Override
-      public void writeAsciiList(IMeshSaver savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
+      public void writeAsciiList(IMeshSaver savable, String elementName, int elementIndex, String propertyListName, MeshDataType countType,
             StringBuilder sb) {
          float[] array = savable.getFloatArray(elementName, elementIndex, propertyListName);
          countType.writeCount(sb, array.length);
@@ -244,7 +242,7 @@ public abstract class PlyDataType {
       }
 
       @Override
-      public void writeBinaryList(IMeshSaver savable, String elementName, int elementIndex, String propertyListName, PlyDataType countType,
+      public void writeBinaryList(IMeshSaver savable, String elementName, int elementIndex, String propertyListName, MeshDataType countType,
             PrimitiveOutputStream pos, boolean isBigEndian) throws IOException {
          float[] array = savable.getFloatArray(elementName, elementIndex, propertyListName);
          countType.writeCount(pos, array.length, isBigEndian);
@@ -253,13 +251,13 @@ public abstract class PlyDataType {
       }
    }
 
-   public static PlyDataType         Char   = new Int("char", 1, Byte.MAX_VALUE);
-   public static PlyDataType         Uchar  = new Int("uchar", 1, 0xFF);
-   public static PlyDataType         Short  = new Int("short", 2, java.lang.Short.MAX_VALUE);
-   public static PlyDataType         Ushort = new Int("ushort", 2, 0xFFFF);
-   public static PlyDataType         Int    = new Int("int", 4, Integer.MAX_VALUE);
-   public static PlyDataType         Uint   = new Int("uint", 4, 0xFFFFFFFF);
-   public static PlyDataType         Float  = new Flt("float") {
+   public static MeshDataType         Char   = new Int("char", 1, Byte.MAX_VALUE);
+   public static MeshDataType         Uchar  = new Int("uchar", 1, 0xFF);
+   public static MeshDataType         Short  = new Int("short", 2, java.lang.Short.MAX_VALUE);
+   public static MeshDataType         Ushort = new Int("ushort", 2, 0xFFFF);
+   public static MeshDataType         Int    = new Int("int", 4, Integer.MAX_VALUE);
+   public static MeshDataType         Uint   = new Int("uint", 4, 0xFFFFFFFF);
+   public static MeshDataType         Float  = new Flt("float") {
                                                @Override
                                                public float readFloat(String countDatum) throws NumberFormatException {
                                                   return java.lang.Float.parseFloat(countDatum);
@@ -276,7 +274,7 @@ public abstract class PlyDataType {
                                                   pos.writeFloat(f, isBigEndian);
                                                }
                                             };
-   public static PlyDataType         Double = new Flt("double") {
+   public static MeshDataType         Double = new Flt("double") {
                                                @Override
                                                public float readFloat(String countDatum) throws NumberFormatException {
                                                   return (float) java.lang.Double.parseDouble(countDatum);
@@ -293,14 +291,14 @@ public abstract class PlyDataType {
                                                   pos.writeDouble(f, isBigEndian);
                                                }
                                             };
-   public static final PlyDataType[] VALUES = new PlyDataType[] { Char, Uchar, Short, Ushort, Int, Uint, Float, Double };
+   public static final MeshDataType[] VALUES = new MeshDataType[] { Char, Uchar, Short, Ushort, Int, Uint, Float, Double };
    private final String              keyword;
 
-   private PlyDataType(String keyword) {
+   private MeshDataType(String keyword) {
       this.keyword = keyword;
    }
 
-   public static PlyDataType getDataType(String name) {
+   public static MeshDataType getDataType(String name) {
       switch (name) {
       case "char":
       case "int8":
@@ -359,9 +357,9 @@ public abstract class PlyDataType {
    public abstract void writeBinary(IMeshSaver savable, String elementName, int elementIndex, String propertyName, PrimitiveOutputStream pos,
          boolean isBigEndian) throws IOException;
 
-   public abstract void writeAsciiList(IMeshSaver savable, String elementName, int elementIndex, String propertyName, PlyDataType countType,
+   public abstract void writeAsciiList(IMeshSaver savable, String elementName, int elementIndex, String propertyName, MeshDataType countType,
          StringBuilder sb);
 
-   public abstract void writeBinaryList(IMeshSaver savable, String elementName, int elementIndex, String propertyName, PlyDataType countType,
+   public abstract void writeBinaryList(IMeshSaver savable, String elementName, int elementIndex, String propertyName, MeshDataType countType,
          PrimitiveOutputStream pos, boolean isBigEndian) throws IOException;
 }

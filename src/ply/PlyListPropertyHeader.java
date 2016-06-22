@@ -4,18 +4,19 @@ import java.io.IOException;
 
 import meshio.IMeshBuilder;
 import meshio.IMeshSaver;
+import meshio.MeshDataType;
 import meshio.MeshIOErrorCodes;
 import util.PrimitiveInputStream;
 import util.PrimitiveOutputStream;
 
 public class PlyListPropertyHeader implements IPlyPropertyHeader {
-   private final PlyDataType countType;
-   private final PlyDataType type;
-   private final String      name;
+   private final MeshDataType countType;
+   private final MeshDataType type;
+   private final String       name;
 
-   public PlyListPropertyHeader(PlyDataType countPlyDataType, PlyDataType PlyDataType, String name) {
-      this.countType = countPlyDataType;
-      this.type = PlyDataType;
+   public PlyListPropertyHeader(MeshDataType countMeshDataType, MeshDataType meshDataType, String name) {
+      this.countType = countMeshDataType;
+      this.type = meshDataType;
       this.name = name;
    }
 
@@ -75,7 +76,8 @@ public class PlyListPropertyHeader implements IPlyPropertyHeader {
    }
 
    @Override
-   public void saveBinary(IMeshSaver savable, String elementName, int elementIndex, PrimitiveOutputStream pos, boolean isBigEndian) throws IOException {
+   public void saveBinary(IMeshSaver savable, String elementName, int elementIndex, PrimitiveOutputStream pos, boolean isBigEndian)
+         throws IOException {
       type.writeBinaryList(savable, elementName, elementIndex, name, countType, pos, isBigEndian);
    }
 }

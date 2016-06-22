@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import meshio.IMeshBuilder;
+import meshio.MeshDataType;
 import meshio.MeshIOErrorCodes;
 import util.PrimitiveInputStream;
 
@@ -107,8 +108,8 @@ public class PlyReader {
 
    private static IPlyPropertyHeader createListProperty(String elementName, PrimitiveInputStream pis, IMeshBuilder<?> builder, String line) {
       String[] parts = line.split(" ");
-      PlyDataType countType = PlyDataType.getDataType(parts[0]);
-      PlyDataType type = PlyDataType.getDataType(parts[1]);
+      MeshDataType countType = MeshDataType.getDataType(parts[0]);
+      MeshDataType type = MeshDataType.getDataType(parts[1]);
       if (countType == null || type == null)
          return fail(builder, MeshIOErrorCodes.HEADER_NOT_RECOGNISED, pis);
       String name = parts[2];
@@ -118,7 +119,7 @@ public class PlyReader {
 
    private static IPlyPropertyHeader createProperty(String elementName, PrimitiveInputStream pis, IMeshBuilder<?> builder, String line) {
       String[] parts = line.split(" ");
-      PlyDataType type = PlyDataType.getDataType(parts[0]);
+      MeshDataType type = MeshDataType.getDataType(parts[0]);
       if (type == null)
          return fail(builder, MeshIOErrorCodes.HEADER_NOT_RECOGNISED, pis);
       String name = parts[1];

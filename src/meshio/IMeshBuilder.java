@@ -1,7 +1,5 @@
 package meshio;
 
-import ply.PlyDataType;
-
 public interface IMeshBuilder<T> {
    T build();
 
@@ -9,9 +7,9 @@ public interface IMeshBuilder<T> {
 
    void declareElementCount(String elementName, int count);
 
-   void declarePropertyType(String elementName, String propertyName, PlyDataType type);
+   void declarePropertyType(String elementName, String propertyName, MeshDataType type);
 
-   void declarePropertyListType(String elementName, String propertyListName, PlyDataType type);
+   void declarePropertyListType(String elementName, String propertyListName, MeshDataType type);
 
    void addInt(String elementName, int elementIndex, String propertyName, int i);
 

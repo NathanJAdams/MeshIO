@@ -4,11 +4,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class MeshIO {
-   public static <T> T read(Class<IMeshBuilder<T>> builderClass, InputStream inputStream, MeshFormat meshFormat) {
-      return meshFormat.read(builderClass, inputStream);
+   public static <T> T read(Class<IMeshBuilder<T>> meshBuilderClass, InputStream inputStream, MeshFormat meshFormat) {
+      return meshFormat.read(meshBuilderClass, inputStream);
    }
 
-   public static boolean write(IMeshSaver savable, OutputStream os, MeshFormat meshFormat) {
-      return meshFormat.write(savable, os);
+   public static boolean write(IMeshSaver meshSaver, OutputStream os, MeshFormat meshFormat) {
+      return meshFormat.write(meshSaver, os);
    }
 }
