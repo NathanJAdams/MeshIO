@@ -19,5 +19,5 @@ Writing an object is just as easy. Make sure your class implements I\{Format\}Sa
     boolean success = {Format}Writer.write(savable, outputStream);
 
 <h3>Future updates</h3>
- - Responsibility for saving data moved from ISavable to ISaver\<T\> interfaces.
+ - Responsibility for saving data moved from ISavable to ISaver interfaces.
  - A single Reader class and a single Writer class, with a format parameter passed in to the read() and write() methods.
