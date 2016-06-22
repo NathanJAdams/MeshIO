@@ -5,8 +5,6 @@ import ply.PlyDataType;
 public interface IMeshBuilder<T> {
    T build();
 
-   void onSuccess();
-
    void onFailure(int errorCode, int lineNumber);
 
    void declareElementCount(String elementName, int count);

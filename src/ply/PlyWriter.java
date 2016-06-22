@@ -22,7 +22,6 @@ public class PlyWriter {
             return false;
          writeEnd(pos);
          writeData(pos, savable, plyFormat, elementHeaders);
-         savable.onSuccess();
          return true;
       } catch (IOException e) {
          return fail(savable, MeshIOErrorCodes.DATA_NOT_WRITTEN);

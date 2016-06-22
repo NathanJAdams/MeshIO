@@ -5,8 +5,6 @@ import java.util.List;
 import ply.PlyElementHeader;
 
 public interface IMeshSaver {
-   void onSuccess();
-
    void onFailure(int errorCode);
 
    List<PlyElementHeader> getElementHeaders();

@@ -18,18 +18,18 @@ public class PlyReader {
          return null;
       }
       if (is == null)
-         return fail(builder, MeshIOErrorCodes.NOT_FOUND, -1);
+         return fail(builder, MeshIOErrorCodes.INPUT_NOT_GIVEN, -1);
       try (PrimitiveInputStream pis = new PrimitiveInputStream(is)) {
          if (!isPly(pis, builder))
-            return fail(builder, MeshIOErrorCodes.NOT_PLY, pis);
+            return fail(builder, MeshIOErrorCodes.FORMAT_UNEXPECTED, pis);
          PlyFormat format = readFormat(pis, builder);
          if (format == null)
             return fail(builder, MeshIOErrorCodes.FORMAT_NOT_FOUND, pis);
          List<PlyElementHeader> elementHeaders = readElementHeaders(pis, builder);
          if (elementHeaders == null)
             return fail(builder, MeshIOErrorCodes.HEADER_NOT_FOUND, pis);
-         if (format.load(elementHeaders, pis, builder))
-            builder.onSuccess();
+         if (!format.load(elementHeaders, pis, builder))
+            return fail(builder, MeshIOErrorCodes.LOAD_FAILED, pis);
       } catch (IOException e) {
          e.printStackTrace();
       }
@@ -39,7 +39,7 @@ public class PlyReader {
    private static boolean isPly(PrimitiveInputStream pis, IMeshBuilder<?> builder) {
       boolean isValid = PlyKeywords.PLY.equals(readLine(pis, builder));
       if (!isValid)
-         fail(builder, MeshIOErrorCodes.NOT_PLY, pis);
+         fail(builder, MeshIOErrorCodes.FORMAT_UNEXPECTED, pis);
       return isValid;
    }
 
