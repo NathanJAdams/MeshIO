@@ -3,6 +3,7 @@ package ply;
 import java.io.IOException;
 import java.util.List;
 
+import meshio.MeshIOErrorCodes;
 import util.PrimitiveInputStream;
 import util.PrimitiveOutputStream;
 
@@ -19,13 +20,13 @@ public class PlyElementHeader {
 
    public boolean write(PrimitiveOutputStream pos, IPlySaver savable) throws IOException {
       if (propertyHeaders == null || propertyHeaders.isEmpty()) {
-         savable.onFailure(PlyError.ERROR_HEADER_NOT_FOUND);
+         savable.onFailure(MeshIOErrorCodes.HEADER_NOT_FOUND);
          return false;
       }
       pos.writeLine(PlyKeywords.ELEMENT + name + ' ' + count);
       for (IPlyPropertyHeader propertyHeader : propertyHeaders) {
          if (propertyHeader == null) {
-            savable.onFailure(PlyError.ERROR_HEADER_NOT_FOUND);
+            savable.onFailure(MeshIOErrorCodes.HEADER_NOT_FOUND);
             return false;
          }
          propertyHeader.write(pos, savable);
@@ -39,26 +40,26 @@ public class PlyElementHeader {
          try {
             element = pis.readLine();
          } catch (IOException e) {
-            loader.onFailure(PlyError.ERROR_DATA_NOT_FOUND, pis.getLineNumber());
+            loader.onFailure(MeshIOErrorCodes.DATA_NOT_FOUND, pis.getLineNumber());
             return false;
          }
          if (element == null) {
-            loader.onFailure(PlyError.ERROR_DATA_NOT_FOUND, pis.getLineNumber() - 1);
+            loader.onFailure(MeshIOErrorCodes.DATA_NOT_FOUND, pis.getLineNumber() - 1);
             return false;
          }
          String[] parts = element.split(" ");
          if (parts == null) {
-            loader.onFailure(PlyError.ERROR_DATA_NOT_FOUND, pis.getLineNumber() - 1);
+            loader.onFailure(MeshIOErrorCodes.DATA_NOT_FOUND, pis.getLineNumber() - 1);
             return false;
          }
          if (parts.length == 0) {
-            loader.onFailure(PlyError.ERROR_DATA_INSUFFICIENT, pis.getLineNumber() - 1);
+            loader.onFailure(MeshIOErrorCodes.DATA_INSUFFICIENT, pis.getLineNumber() - 1);
             return false;
          }
          for (int partIndex = 0, propertyIndex = 0; propertyIndex < propertyHeaders.size(); propertyIndex++) {
             IPlyPropertyHeader propertyHeader = propertyHeaders.get(propertyIndex);
             if (partIndex >= parts.length) {
-               loader.onFailure(PlyError.ERROR_DATA_INSUFFICIENT, pis.getLineNumber());
+               loader.onFailure(MeshIOErrorCodes.DATA_INSUFFICIENT, pis.getLineNumber());
                return false;
             }
             partIndex = propertyHeader.loadAsciiGetNextDatumIndex(loader, name, i, pis, parts, partIndex);

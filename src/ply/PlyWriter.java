@@ -4,16 +4,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import meshio.MeshIOErrorCodes;
 import util.PrimitiveOutputStream;
 
 public class PlyWriter {
    public static boolean write(IPlySaver savable, OutputStream os) {
       PlyFormat format = savable.getFormat();
       if (format == null)
-         return fail(savable, PlyError.ERROR_FORMAT_NOT_FOUND);
+         return fail(savable, MeshIOErrorCodes.FORMAT_NOT_FOUND);
       List<PlyElementHeader> elementHeaders = savable.getElementHeaders();
       if (elementHeaders == null || elementHeaders.isEmpty())
-         return fail(savable, PlyError.ERROR_HEADER_ELEMENTS_MISSING);
+         return fail(savable, MeshIOErrorCodes.HEADER_ELEMENTS_MISSING);
       try (PrimitiveOutputStream pos = new PrimitiveOutputStream(os)) {
          writeMagic(pos);
          writeFormat(pos, savable, format);
@@ -24,7 +25,7 @@ public class PlyWriter {
          savable.onSuccess();
          return true;
       } catch (IOException e) {
-         return fail(savable, PlyError.ERROR_DATA_NOT_WRITTEN);
+         return fail(savable, MeshIOErrorCodes.DATA_NOT_WRITTEN);
       }
    }
 
@@ -44,7 +45,7 @@ public class PlyWriter {
          throws IOException {
       for (PlyElementHeader elementHeader : elementHeaders) {
          if (elementHeader == null)
-            return fail(savable, PlyError.ERROR_HEADER_ELEMENTS_MISSING);
+            return fail(savable, MeshIOErrorCodes.HEADER_ELEMENTS_MISSING);
          if (!elementHeader.write(pos, savable))
             return false;
       }

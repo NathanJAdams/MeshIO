@@ -2,6 +2,7 @@ package ply;
 
 import java.io.IOException;
 
+import meshio.MeshIOErrorCodes;
 import util.PrimitiveInputStream;
 import util.PrimitiveOutputStream;
 
@@ -24,7 +25,7 @@ public class PlyPropertyHeader implements IPlyPropertyHeader {
          int partIndex) {
       String datum = parts[partIndex];
       if (!type.readDatum(loader, elementName, elementIndex, name, datum)) {
-         loader.onFailure(PlyError.ERROR_DATA_NOT_READ, pis.getLineNumber() - 1);
+         loader.onFailure(MeshIOErrorCodes.DATA_NOT_READ, pis.getLineNumber() - 1);
          return -1;
       }
       return partIndex + 1;
@@ -34,7 +35,7 @@ public class PlyPropertyHeader implements IPlyPropertyHeader {
    public boolean loadBinary(IPlyBuilder<?> loader, String elementName, int elementIndex, PrimitiveInputStream pis, boolean isBigEndian) {
       boolean success = type.readDatum(loader, elementName, elementIndex, name, pis, isBigEndian);
       if (!success)
-         loader.onFailure(PlyError.ERROR_DATA_INSUFFICIENT, pis.getLineNumber());
+         loader.onFailure(MeshIOErrorCodes.DATA_INSUFFICIENT, pis.getLineNumber());
       return success;
    }
 

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import meshio.MeshIOErrorCodes;
 import util.PrimitiveInputStream;
 
 public class PlyReader {
@@ -16,16 +17,16 @@ public class PlyReader {
          return null;
       }
       if (is == null)
-         return fail(builder, PlyError.ERROR_NOT_FOUND, -1);
+         return fail(builder, MeshIOErrorCodes.NOT_FOUND, -1);
       try (PrimitiveInputStream pis = new PrimitiveInputStream(is)) {
          if (!isPly(pis, builder))
-            return fail(builder, PlyError.ERROR_NOT_PLY, pis);
+            return fail(builder, MeshIOErrorCodes.NOT_PLY, pis);
          PlyFormat format = readFormat(pis, builder);
          if (format == null)
-            return fail(builder, PlyError.ERROR_FORMAT_NOT_FOUND, pis);
+            return fail(builder, MeshIOErrorCodes.FORMAT_NOT_FOUND, pis);
          List<PlyElementHeader> elementHeaders = readElementHeaders(pis, builder);
          if (elementHeaders == null)
-            return fail(builder, PlyError.ERROR_HEADER_NOT_FOUND, pis);
+            return fail(builder, MeshIOErrorCodes.HEADER_NOT_FOUND, pis);
          if (format.load(elementHeaders, pis, builder))
             builder.onSuccess();
       } catch (IOException e) {
@@ -37,22 +38,22 @@ public class PlyReader {
    private static boolean isPly(PrimitiveInputStream pis, IPlyBuilder<?> builder) {
       boolean isValid = PlyKeywords.PLY.equals(readLine(pis, builder));
       if (!isValid)
-         fail(builder, PlyError.ERROR_NOT_PLY, pis);
+         fail(builder, MeshIOErrorCodes.NOT_PLY, pis);
       return isValid;
    }
 
    private static PlyFormat readFormat(PrimitiveInputStream pis, IPlyBuilder<?> builder) {
       String formatLine = readNonCommentLine(pis, builder);
       if (formatLine == null)
-         return fail(builder, PlyError.ERROR_FORMAT_NOT_FOUND, pis);
+         return fail(builder, MeshIOErrorCodes.FORMAT_NOT_FOUND, pis);
       if (!formatLine.startsWith(PlyKeywords.FORMAT))
-         return fail(builder, PlyError.ERROR_FORMAT_NOT_FOUND, pis);
+         return fail(builder, MeshIOErrorCodes.FORMAT_NOT_FOUND, pis);
       String[] formatAndVersion = formatLine.substring(PlyKeywords.FORMAT.length()).split(" ");
       if (formatAndVersion.length != 2)
-         return fail(builder, PlyError.ERROR_FORMAT_NOT_RECOGNISED, pis);
+         return fail(builder, MeshIOErrorCodes.FORMAT_NOT_RECOGNISED, pis);
       PlyFormat format = PlyFormat.getFormat(formatAndVersion[0], formatAndVersion[1]);
       if (format == null)
-         return fail(builder, PlyError.ERROR_FORMAT_NOT_RECOGNISED, pis);
+         return fail(builder, MeshIOErrorCodes.FORMAT_NOT_RECOGNISED, pis);
       return format;
    }
 
@@ -70,7 +71,7 @@ public class PlyReader {
             if (PlyKeywords.END.equals(line))
                break;
             else
-               return fail(builder, PlyError.ERROR_HEADER_NOT_FOUND, pis);
+               return fail(builder, MeshIOErrorCodes.HEADER_NOT_FOUND, pis);
          }
          if (isElement) {
             if (properties != null)
@@ -80,16 +81,16 @@ public class PlyReader {
             try {
                elementHeaderCount = Integer.parseInt(elementNameAndCount[1]);
             } catch (NumberFormatException e) {
-               return fail(builder, PlyError.ERROR_HEADER_ELEMENT_COUNT_NOT_READ, pis);
+               return fail(builder, MeshIOErrorCodes.HEADER_ELEMENT_COUNT_NOT_READ, pis);
             }
             properties = new ArrayList<>();
             builder.declareElementCount(elementHeaderName, elementHeaderCount);
          } else if (isProperty) {
             if (properties == null)
-               return fail(builder, PlyError.ERROR_HEADER_UNEXPECTED, pis);
+               return fail(builder, MeshIOErrorCodes.HEADER_UNEXPECTED, pis);
             properties.add(readPropertyHeader(elementHeaderName, pis, builder, line.substring(PlyKeywords.PROPERTY.length())));
          } else {
-            return fail(builder, PlyError.ERROR_HEADER_NOT_RECOGNISED, pis);
+            return fail(builder, MeshIOErrorCodes.HEADER_NOT_RECOGNISED, pis);
          }
       }
       if (properties != null)
@@ -108,7 +109,7 @@ public class PlyReader {
       PlyDataType countType = PlyDataType.getDataType(parts[0]);
       PlyDataType type = PlyDataType.getDataType(parts[1]);
       if (countType == null || type == null)
-         return fail(builder, PlyError.ERROR_HEADER_NOT_RECOGNISED, pis);
+         return fail(builder, MeshIOErrorCodes.HEADER_NOT_RECOGNISED, pis);
       String name = parts[2];
       builder.declarePropertyListType(elementName, name, type);
       return new PlyListPropertyHeader(countType, type, parts[2]);
@@ -118,7 +119,7 @@ public class PlyReader {
       String[] parts = line.split(" ");
       PlyDataType type = PlyDataType.getDataType(parts[0]);
       if (type == null)
-         return fail(builder, PlyError.ERROR_HEADER_NOT_RECOGNISED, pis);
+         return fail(builder, MeshIOErrorCodes.HEADER_NOT_RECOGNISED, pis);
       String name = parts[1];
       builder.declarePropertyType(elementName, name, type);
       return new PlyPropertyHeader(type, parts[1]);
@@ -129,7 +130,7 @@ public class PlyReader {
       do {
          line = readLine(pis, builder);
          if (line == null)
-            return fail(builder, PlyError.ERROR_HEADER_NOT_FOUND, pis);
+            return fail(builder, MeshIOErrorCodes.HEADER_NOT_FOUND, pis);
       } while (line.startsWith(PlyKeywords.COMMENT));
       return line;
    }

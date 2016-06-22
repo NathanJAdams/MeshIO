@@ -2,6 +2,7 @@ package ply;
 
 import java.io.IOException;
 
+import meshio.MeshIOErrorCodes;
 import util.PrimitiveInputStream;
 import util.PrimitiveOutputStream;
 
@@ -29,19 +30,19 @@ public class PlyListPropertyHeader implements IPlyPropertyHeader {
       try {
          count = countType.readCount(countDatum);
       } catch (NumberFormatException e) {
-         loader.onFailure(PlyError.ERROR_DATA_NOT_READ, pis.getLineNumber() - 1);
+         loader.onFailure(MeshIOErrorCodes.DATA_NOT_READ, pis.getLineNumber() - 1);
          return -1;
       }
       if (count <= 0) {
-         loader.onFailure(PlyError.ERROR_DATA_NOT_READ, pis.getLineNumber() - 1);
+         loader.onFailure(MeshIOErrorCodes.DATA_NOT_READ, pis.getLineNumber() - 1);
          return -1;
       }
       if (partIndex + count > parts.length) {
-         loader.onFailure(PlyError.ERROR_DATA_INSUFFICIENT, pis.getLineNumber() - 1);
+         loader.onFailure(MeshIOErrorCodes.DATA_INSUFFICIENT, pis.getLineNumber() - 1);
          return -1;
       }
       if (!type.readDatumList(loader, elementName, elementIndex, name, count, parts, partIndex)) {
-         loader.onFailure(PlyError.ERROR_DATA_NOT_READ, pis.getLineNumber() - 1);
+         loader.onFailure(MeshIOErrorCodes.DATA_NOT_READ, pis.getLineNumber() - 1);
          return -1;
       }
       return partIndex + count;
@@ -53,16 +54,16 @@ public class PlyListPropertyHeader implements IPlyPropertyHeader {
       try {
          count = countType.readCount(pis, isBigEndian);
       } catch (IOException e) {
-         loader.onFailure(PlyError.ERROR_DATA_NOT_READ, pis.getLineNumber());
+         loader.onFailure(MeshIOErrorCodes.DATA_NOT_READ, pis.getLineNumber());
          return false;
       }
       if (count <= 0) {
-         loader.onFailure(PlyError.ERROR_DATA_NOT_READ, pis.getLineNumber());
+         loader.onFailure(MeshIOErrorCodes.DATA_NOT_READ, pis.getLineNumber());
          return false;
       }
       boolean success = type.readDatumList(loader, elementName, elementIndex, name, count, pis, isBigEndian);
       if (!success)
-         loader.onFailure(PlyError.ERROR_DATA_INSUFFICIENT, pis.getLineNumber());
+         loader.onFailure(MeshIOErrorCodes.DATA_INSUFFICIENT, pis.getLineNumber());
       return success;
    }
 
