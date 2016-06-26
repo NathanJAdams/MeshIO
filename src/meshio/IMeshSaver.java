@@ -1,19 +1,13 @@
 package meshio;
 
-import java.util.List;
-
-import ply.PlyElementHeader;
-
 public interface IMeshSaver {
-   void onFailure(int errorCode);
+   MeshVertexType[] getVertexFormat();
 
-   List<PlyElementHeader> getElementHeaders();
+   int getVertexCount();
 
-   int getInt(String elementName, int elementIndex, String propertyName);
+   int getFaceCount();
 
-   float getFloat(String elementName, int elementIndex, String propertyName);
+   void fillVertexData(int vertexIndex, float[] vertexData);
 
-   int[] getIntArray(String elementName, int elementIndex, String propertyName);
-
-   float[] getFloatArray(String elementName, int elementIndex, String propertyName);
+   void fillFaceIndices(int faceIndex, int[] faceIndices);
 }
