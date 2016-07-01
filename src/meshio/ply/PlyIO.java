@@ -62,11 +62,13 @@ public class PlyIO {
    }
 
    public static <T> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
-      try (PrimitiveInputStream pis = new PrimitiveInputStream(is)) {
+      PrimitiveInputStream pis = null;
+      try {
+         pis = new PrimitiveInputStream(is);
          String line;
          line = readNonCommentLine(pis);
          if (!PLY.equals(line))
-            throw new MeshIOException("Unrecognised magic number: " + line);
+            throw new MeshIOException("Unrecognised magic: " + line + ". \"ply\" expected");
          line = readNonCommentLine(pis);
          String[] formatParts = line.split(" ");
          if (formatParts.length != 3 || !FORMAT.equals(formatParts[0]))
@@ -136,6 +138,13 @@ public class PlyIO {
          return builder.build();
       } catch (IOException e) {
          throw new MeshIOException("Exception when reading from stream", e);
+      } finally {
+         if (pis != null)
+            try {
+               pis.close();
+            } catch (IOException e) {
+               e.printStackTrace();
+            }
       }
    }
 
@@ -171,7 +180,9 @@ public class PlyIO {
          throw new MeshIOException("A mesh saver is required", new NullPointerException());
       if (os == null)
          throw new MeshIOException("An output stream is required", new NullPointerException());
-      try (PrimitiveOutputStream pos = new PrimitiveOutputStream(os)) {
+      PrimitiveOutputStream pos = null;
+      try {
+         pos = new PrimitiveOutputStream(os);
          pos.writeLine(PLY);
          pos.writeLine(FORMAT + ' ' + plyFormat.getEncoding() + ' ' + plyFormat.getVersion());
          pos.writeLine("element vertex " + saver.getVertexCount());
@@ -196,6 +207,13 @@ public class PlyIO {
          }
       } catch (IOException ioe) {
          throw new MeshIOException("Exception when writing to stream", ioe);
+      } finally {
+         if (pos != null)
+            try {
+               pos.close();
+            } catch (IOException e) {
+               e.printStackTrace();
+            }
       }
    }
 
