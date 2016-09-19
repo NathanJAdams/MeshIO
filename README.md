@@ -7,15 +7,24 @@ Currently the only supported format is PLY, support for further formats will fol
 
 
 <h3>Read</h3>
-To read an object you need a builder object that implements IMeshBuilder\<YourMeshClass\>, and an input stream for the data. Then simply call the MeshIO.read() method passing in the appropriate MeshFormat.
+To read an object you need a builder object that implements IMeshBuilder\<YourMeshClass\>, and an input stream for the data. Then simply call the MeshIO.{MeshFormat}.read() method.
 
-    YourMeshClass newMeshObject = MeshIO.read(meshBuilder, inputStream, MeshFormat.{Format});
+    try {
+        YourMeshClass newMeshObject = MeshIO.{MeshFormat}.read(meshBuilder, inputStream);
+    } catch (MeshIOException e) {
+        e.printStackTrace();
+    }
 
-Data will be read from the input stream and sent to the builder, once all the data has been sent, the builder's build() method will be called with the result returned to the caller. If unsuccessful, null will be returned.
-
-Ideally the format would be automatically detected, however some formats don't have a "magic number" specifying itself which is why it has to be specified manually. For ease of use, the MeshIO.fromExtension() method is provided which returns a default MeshFormat depending on a given file extension - although null may be returned if a format cannot be found.
+Data will be read from the input stream and sent to the builder, once all the data has been sent, the builder's build() method will be called with the result returned to the caller. If unsuccessful, a MeshIOException is thrown.
 
 <h3>Write</h3>
-Writing an object is just as easy. Make sure you have an object which knows about the mesh to be saved and which implements IMeshSaver, then simply call the MeshIO.write() method passing in an output stream and the desired MeshFormat.
+Writing an object is just as easy. Make sure you have an object which knows about the mesh to be saved and which implements IMeshSaver, then simply call the MeshIO.{MeshFormat}.write() method passing in an output stream. If unsuccessful, a MeshIOException is thrown.
 
-    boolean success = MeshIO.write(meshSaver, outputStream, MeshFormat.{Format});
+    try {
+        MeshIO.{MeshFormat}.write(meshSaver, outputStream);
+    } catch (MeshIOException e) {
+        e.printStackTrace();
+    }
+
+<h3>File extensions</h3>
+For ease of use, the MeshIO.getFormatFromFileExtension() method is provided which returns a MeshFormat depending on a given file extension - although null may be returned if a format cannot be found. The extension a format uses can be retrieved using it's getFileExtension() method.
