@@ -15,12 +15,12 @@ To read an object you need a builder object that implements IMeshBuilder\<YourMe
         e.printStackTrace();
     }
 
-Data will be read from the input stream and sent to the builder, once all the data has been sent, the builder's build() method will be called with the result returned to the caller. If unsuccessful, null will be returned.
+Data will be read from the input stream and sent to the builder, once all the data has been sent, the builder's build() method will be called with the result returned to the caller. If unsuccessful, a MeshIOException is thrown.
 
-Ideally the format would be automatically detected, however some formats don't have a "magic number" specifying itself which is why it has to be specified manually. For ease of use, the MeshIO.fromExtension() method is provided which returns a default MeshFormat depending on a given file extension - although null may be returned if a format cannot be found.
+For ease of use, the MeshIO.fromExtension() method is provided which returns a default MeshFormat depending on a given file extension - although null may be returned if a format cannot be found.
 
 <h3>Write</h3>
-Writing an object is just as easy. Make sure you have an object which knows about the mesh to be saved and which implements IMeshSaver, then simply call the MeshIO.{MeshFormat}.write() method passing in an output stream.
+Writing an object is just as easy. Make sure you have an object which knows about the mesh to be saved and which implements IMeshSaver, then simply call the MeshIO.{MeshFormat}.write() method passing in an output stream. If unsuccessful, a MeshIOException is thrown.
 
     try {
         MeshIO.{MeshFormat}.write(meshSaver, outputStream);
