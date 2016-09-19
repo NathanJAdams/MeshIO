@@ -23,7 +23,7 @@ Ideally the format would be automatically detected, however some formats don't h
 Writing an object is just as easy. Make sure you have an object which knows about the mesh to be saved and which implements IMeshSaver, then simply call the MeshIO.{MeshFormat}.write() method passing in an output stream.
 
     try {
-        boolean success = MeshIO.{MeshFormat}.write(meshSaver, outputStream);
+        MeshIO.{MeshFormat}.write(meshSaver, outputStream);
     } catch (MeshIOException e) {
         e.printStackTrace();
     }
