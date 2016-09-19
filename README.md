@@ -26,5 +26,5 @@ Writing an object is just as easy. Make sure you have an object which knows abou
         e.printStackTrace();
     }
 
-<h3>Extensions</h3>
-For ease of use, the MeshIO.fromExtension() method is provided which returns a MeshFormat depending on a given file extension - although null may be returned if a format cannot be found. The extension a format uses can be retrieved using it's getExtension() method.
+<h3>File extensions</h3>
+For ease of use, the MeshIO.fromFileExtension() method is provided which returns a MeshFormat depending on a given file extension - although null may be returned if a format cannot be found. The extension a format uses can be retrieved using it's getFileExtension() method.
