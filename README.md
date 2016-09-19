@@ -9,7 +9,11 @@ Currently the only supported format is PLY, support for further formats will fol
 <h3>Read</h3>
 To read an object you need a builder object that implements IMeshBuilder\<YourMeshClass\>, and an input stream for the data. Then simply call the MeshIO.{MeshFormat}.read() method.
 
-    YourMeshClass newMeshObject = MeshIO.{MeshFormat}.read(meshBuilder, inputStream);
+    try {
+        YourMeshClass newMeshObject = MeshIO.{MeshFormat}.read(meshBuilder, inputStream);
+    } catch (MeshIOException e) {
+        e.printStackTrace();
+    }
 
 Data will be read from the input stream and sent to the builder, once all the data has been sent, the builder's build() method will be called with the result returned to the caller. If unsuccessful, null will be returned.
 
@@ -18,4 +22,8 @@ Ideally the format would be automatically detected, however some formats don't h
 <h3>Write</h3>
 Writing an object is just as easy. Make sure you have an object which knows about the mesh to be saved and which implements IMeshSaver, then simply call the MeshIO.{MeshFormat}.write() method passing in an output stream.
 
-    boolean success = MeshIO.{MeshFormat}.write(meshSaver, outputStream);
+    try {
+        boolean success = MeshIO.{MeshFormat}.write(meshSaver, outputStream);
+    } catch (MeshIOException e) {
+        e.printStackTrace();
+    }
