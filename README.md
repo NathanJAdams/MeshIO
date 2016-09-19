@@ -27,4 +27,4 @@ Writing an object is just as easy. Make sure you have an object which knows abou
     }
 
 <h3>File extensions</h3>
-For ease of use, the MeshIO.fromFileExtension() method is provided which returns a MeshFormat depending on a given file extension - although null may be returned if a format cannot be found. The extension a format uses can be retrieved using it's getFileExtension() method.
+For ease of use, the MeshIO.getFormatFromFileExtension() method is provided which returns a MeshFormat depending on a given file extension - although null may be returned if a format cannot be found. The extension a format uses can be retrieved using it's getFileExtension() method.
