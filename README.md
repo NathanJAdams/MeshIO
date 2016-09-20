@@ -15,7 +15,7 @@ To read an object you need a builder object that implements IMeshBuilder\<YourMe
         e.printStackTrace();
     }
 
-Data will be read from the input stream and sent to the builder, once all the data has been sent, the builder's build() method will be called with the result returned to the caller. If unsuccessful, a MeshIOException is thrown.
+Data will be read from the input stream and sent to the builder, once all the data has been sent, the builder's build() method will be called with the result returned to the caller. If unsuccessful, a MeshIOException is thrown. It is recommended that a new builder and input stream are created for each new mesh object built, as the state of the builder and input stream cannot be guaranteed, especially if an exception is thrown.
 
 <h3>Write</h3>
 Writing an object is just as easy. Make sure you have an object which knows about the mesh to be saved and which implements IMeshSaver, then simply call the MeshIO.{MeshFormat}.write() method passing in an output stream. If unsuccessful, a MeshIOException is thrown.
