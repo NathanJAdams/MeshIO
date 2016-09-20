@@ -33,7 +33,8 @@ public class MbwfIO {
          BitSet metadata = readMetaData(pis);
          int numVertices = pis.readInt(true, 4);
          int numFaces = pis.readInt(true, 4);
-         // TODO
+         readVertices(builder, pis, metadata, numVertices);
+         readFaces(builder, pis, metadata, numFaces);
          return builder.build();
       } catch (IOException ioe) {
          throw new MeshIOException("Exception when reading from stream", ioe);
@@ -76,6 +77,16 @@ public class MbwfIO {
          }
       }
       return bits;
+   }
+
+   private static void readVertices(IMeshBuilder<?> builder, PrimitiveInputStream pis, BitSet metadata, int numVertices)
+         throws IOException, MeshIOException {
+      // TODO
+   }
+
+   private static void readFaces(IMeshBuilder<?> builder, PrimitiveInputStream pis, BitSet metadata, int numFaces)
+         throws IOException, MeshIOException {
+      // TODO
    }
 
    public static void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
