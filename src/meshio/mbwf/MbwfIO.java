@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,25 +15,25 @@ import meshio.util.PrimitiveInputStream;
 import meshio.util.PrimitiveOutputStream;
 
 public class MbwfIO {
-   private static final byte[] MAGIC                 = { 'M', 'B', 'W', 'F' };
-   private static final int    USE_Z_INDEX           = 0;
-   private static final int    USE_NORMALS_INDEX     = 1;
-   private static final int    USE_TEX_COORDS_INDEX  = 2;
-   private static final int    USE_COLORS_INDEX      = 3;
-   private static final int    USE_COLOR_ALPHA_INDEX = 4;
-   private static final int    BITS_PER_BYTE         = 8;
-   private static final int    META_DATA_BYTES       = 2;
+   private static final byte[] MAGIC                = { 'M', 'B', 'W', 'F' };
+   private static final int    USE_Z_MASK           = 1 << 15;
+   private static final int    USE_NORMALS_MASK     = 1 << 14;
+   private static final int    USE_TEX_COORDS_MASK  = 1 << 13;
+   private static final int    USE_COLORS_MASK      = 1 << 12;
+   private static final int    USE_COLOR_ALPHA_MASK = 1 << 11;
 
    public static <T> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
       PrimitiveInputStream pis = null;
       try {
          pis = new PrimitiveInputStream(is);
          readMagic(pis);
-         BitSet metadata = readMetaData(pis);
-         int numVertices = pis.readInt(true, 4);
-         int numFaces = pis.readInt(true, 4);
-         readVertices(builder, pis, metadata, numVertices);
-         readFaces(builder, pis, metadata, numFaces);
+         int metadata = pis.readInt(true, 2);
+         int vertexCount = pis.readInt(true, 4);
+         builder.setVertexCount(vertexCount);
+         int faceCount = pis.readInt(true, 4);
+         builder.setFaceCount(faceCount);
+         readVertices(builder, pis, metadata, vertexCount);
+         readFaces(builder, pis, metadata, faceCount);
          return builder.build();
       } catch (IOException ioe) {
          throw new MeshIOException("Exception when reading from stream", ioe);
@@ -64,29 +63,54 @@ public class MbwfIO {
       }
    }
 
-   private static BitSet readMetaData(PrimitiveInputStream pis) throws IOException, MeshIOException {
-      byte[] metaData = new byte[2];
-      pis.read(metaData);
-      BitSet bits = new BitSet();
-      for (int byteIndex = 0; byteIndex < metaData.length; byteIndex++) {
-         byte b = metaData[byteIndex];
-         for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
-            byte mask = (byte) (1 << bitIndex);
-            if (1 == (b & mask))
-               bits.set(8 * byteIndex + bitIndex);
+   private static void readVertices(IMeshBuilder<?> builder, PrimitiveInputStream pis, int metadata, int vertexCount)
+         throws IOException, MeshIOException {
+      boolean isPositionZ = (metadata & USE_Z_MASK) != 0;
+      boolean isNormals = (metadata & USE_NORMALS_MASK) != 0;
+      boolean isTexCoords = (metadata & USE_TEX_COORDS_MASK) != 0;
+      boolean isColors = (metadata & USE_COLORS_MASK) != 0;
+      boolean isColorAlpha = (metadata & USE_COLOR_ALPHA_MASK) != 0;
+      for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
+         builder.setVertexDatum(vertexIndex, MeshVertexType.Position_X, decodeShort((pis.readInt(true, 2))));
+         builder.setVertexDatum(vertexIndex, MeshVertexType.Position_Y, decodeShort((pis.readInt(true, 2))));
+         if (isPositionZ)
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Position_Z, decodeShort((pis.readInt(true, 2))));
+         if (isNormals) {
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Normal_X, decodeShort((pis.readInt(true, 2))));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Normal_Y, decodeShort((pis.readInt(true, 2))));
+            if (isPositionZ)
+               builder.setVertexDatum(vertexIndex, MeshVertexType.Normal_Z, decodeShort((pis.readInt(true, 2))));
+         }
+         if (isTexCoords) {
+            builder.setVertexDatum(vertexIndex, MeshVertexType.TextureCoordinate_U, decodeByte((pis.readInt(true, 1))));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.TextureCoordinate_V, decodeByte((pis.readInt(true, 1))));
+         }
+         if (isColors) {
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Color_R, decodeByte((pis.readInt(true, 1))));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Color_G, decodeByte((pis.readInt(true, 1))));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Color_B, decodeByte((pis.readInt(true, 1))));
+            if (isColorAlpha)
+               builder.setVertexDatum(vertexIndex, MeshVertexType.Color_A, decodeByte((pis.readInt(true, 1))));
          }
       }
-      return bits;
    }
 
-   private static void readVertices(IMeshBuilder<?> builder, PrimitiveInputStream pis, BitSet metadata, int numVertices)
-         throws IOException, MeshIOException {
-      // TODO
-   }
-
-   private static void readFaces(IMeshBuilder<?> builder, PrimitiveInputStream pis, BitSet metadata, int numFaces)
-         throws IOException, MeshIOException {
-      // TODO
+   private static void readFaces(IMeshBuilder<?> builder, PrimitiveInputStream pis, int metadata, int faceCount) throws IOException, MeshIOException {
+      int numBytes;
+      if (faceCount <= 256)
+         numBytes = 1;
+      else if (faceCount <= 256 * 256)
+         numBytes = 2;
+      else if (faceCount <= 256 * 256 * 256)
+         numBytes = 3;
+      else
+         numBytes = 4;
+      int[] faceIndices = new int[3];
+      for (int faceIndex = 0; faceIndex < faceCount; faceIndex++) {
+         for (int vertexIndex = 0; vertexIndex < faceIndices.length; vertexIndex++)
+            faceIndices[vertexIndex] = pis.readInt(true, numBytes);
+         builder.setFaceIndices(faceIndex, faceIndices);
+      }
    }
 
    public static void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
@@ -97,10 +121,7 @@ public class MbwfIO {
       PrimitiveOutputStream pos = null;
       try {
          pos = new PrimitiveOutputStream(os);
-         pos.write(MAGIC);
-         pos.write(createMetaData(saver).toByteArray());
-         pos.writeInt(saver.getVertexCount(), true, 4);
-         pos.writeInt(saver.getFaceCount(), true, 4);
+         writeHeader(saver, pos);
          writeVertices(saver, pos);
          writeFaces(saver, pos);
       } catch (IOException ioe) {
@@ -115,22 +136,25 @@ public class MbwfIO {
       }
    }
 
-   private static BitSet createMetaData(IMeshSaver saver) {
-      BitSet metaData = new BitSet(META_DATA_BYTES * BITS_PER_BYTE);
+   private static void writeHeader(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException {
+      pos.write(MAGIC);
       Set<MeshVertexType> usedTypes = new HashSet<>(Arrays.asList(saver.getVertexFormat()));
+      int metaData = 0;
       if (usedTypes.contains(MeshVertexType.Position_Z))
-         metaData.set(USE_Z_INDEX);
+         metaData |= USE_Z_MASK;
       if (usedTypes.contains(MeshVertexType.Normal_X) || usedTypes.contains(MeshVertexType.Normal_Y) || usedTypes.contains(MeshVertexType.Normal_Z))
-         metaData.set(USE_NORMALS_INDEX);
+         metaData |= USE_NORMALS_MASK;
       if (usedTypes.contains(MeshVertexType.TextureCoordinate_U) || usedTypes.contains(MeshVertexType.TextureCoordinate_V))
-         metaData.set(USE_TEX_COORDS_INDEX);
+         metaData |= USE_TEX_COORDS_MASK;
       if (usedTypes.contains(MeshVertexType.Color_R) || usedTypes.contains(MeshVertexType.Color_G) || usedTypes.contains(MeshVertexType.Color_B))
-         metaData.set(USE_COLORS_INDEX);
+         metaData |= USE_COLORS_MASK;
       if (usedTypes.contains(MeshVertexType.Color_A)) {
-         metaData.set(USE_COLORS_INDEX);
-         metaData.set(USE_COLOR_ALPHA_INDEX);
+         metaData |= USE_COLORS_MASK;
+         metaData |= USE_COLOR_ALPHA_MASK;
       }
-      return metaData;
+      pos.writeInt(metaData, true, 2);
+      pos.writeInt(saver.getVertexCount(), true, 4);
+      pos.writeInt(saver.getFaceCount(), true, 4);
    }
 
    private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException, MeshIOException {
@@ -151,7 +175,7 @@ public class MbwfIO {
             case Normal_X:
             case Normal_Y:
             case Normal_Z:
-               intValue = (int) (value * Short.MAX_VALUE);
+               intValue = encodeAsShort(value);
                numBytes = 2;
                break;
             case Color_R:
@@ -160,7 +184,7 @@ public class MbwfIO {
             case Color_A:
             case TextureCoordinate_U:
             case TextureCoordinate_V:
-               intValue = (int) (value * Byte.MAX_VALUE);
+               intValue = encodeAsByte(value);
                numBytes = 1;
                break;
             default:
@@ -188,5 +212,21 @@ public class MbwfIO {
          for (int vertexIndex = 0; vertexIndex < faceIndices.length; vertexIndex++)
             pos.writeInt(faceIndices[vertexIndex], true, numBytes);
       }
+   }
+
+   private static int encodeAsByte(float decoded) {
+      return (int) (decoded * Byte.MAX_VALUE);
+   }
+
+   private static int encodeAsShort(float decoded) {
+      return (int) (decoded * Short.MAX_VALUE);
+   }
+
+   private static float decodeByte(int encoded) {
+      return (float) ((double) encoded / Byte.MAX_VALUE);
+   }
+
+   private static float decodeShort(int encoded) {
+      return (float) ((double) encoded / Short.MAX_VALUE);
    }
 }
