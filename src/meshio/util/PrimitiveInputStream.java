@@ -24,11 +24,27 @@ public class PrimitiveInputStream extends FilterInputStream {
       return Double.longBitsToDouble(readLong(isBigEndian, 8));
    }
 
-   public int readInt(boolean isBigEndian, int numBytes) throws IOException {
-      return (int) readLong(isBigEndian, numBytes);
+   public byte readByte() throws IOException {
+      return (byte) read();
+   }
+
+   public short readShort(boolean isBigEndian) throws IOException {
+      return (short) readLong(isBigEndian, 2);
+   }
+
+   public int readInt(boolean isBigEndian) throws IOException {
+      return (int) readLong(isBigEndian, 4);
+   }
+
+   public long readLong(boolean isBigEndian) throws IOException {
+      return readLong(isBigEndian, 8);
    }
 
    public long readLong(boolean isBigEndian, int numBytes) throws IOException {
+      if (numBytes <= 0)
+         throw new IllegalArgumentException("Cannot read a non positive {" + numBytes + "} number of bytes");
+      else if (numBytes > 8)
+         throw new IllegalArgumentException("Cannot read {" + numBytes + "} bytes, maximum is 8");
       int[] bytes = read(numBytes);
       long total = 0;
       if (isBigEndian)

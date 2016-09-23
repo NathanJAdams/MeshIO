@@ -15,22 +15,23 @@ import meshio.util.PrimitiveInputStream;
 import meshio.util.PrimitiveOutputStream;
 
 public class MbwfIO {
-   private static final byte[] MAGIC                = { 'M', 'B', 'W', 'F' };
-   private static final int    USE_Z_MASK           = 1 << 15;
-   private static final int    USE_NORMALS_MASK     = 1 << 14;
-   private static final int    USE_TEX_COORDS_MASK  = 1 << 13;
-   private static final int    USE_COLORS_MASK      = 1 << 12;
-   private static final int    USE_COLOR_ALPHA_MASK = 1 << 11;
+   private static final boolean IS_BIG_ENDIAN        = true;
+   private static final byte[]  MAGIC                = { 'M', 'B', 'W', 'F' };
+   private static final int     USE_Z_MASK           = 1 << 15;
+   private static final int     USE_NORMALS_MASK     = 1 << 14;
+   private static final int     USE_TEX_COORDS_MASK  = 1 << 13;
+   private static final int     USE_COLORS_MASK      = 1 << 12;
+   private static final int     USE_COLOR_ALPHA_MASK = 1 << 11;
 
    public static <T> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
       PrimitiveInputStream pis = null;
       try {
          pis = new PrimitiveInputStream(is);
          readMagic(pis);
-         int metadata = pis.readInt(true, 2);
-         int vertexCount = pis.readInt(true, 4);
+         short metadata = pis.readShort(IS_BIG_ENDIAN);
+         int vertexCount = pis.readInt(IS_BIG_ENDIAN);
          builder.setVertexCount(vertexCount);
-         int faceCount = pis.readInt(true, 4);
+         int faceCount = pis.readInt(IS_BIG_ENDIAN);
          builder.setFaceCount(faceCount);
          readVertices(builder, pis, metadata, vertexCount);
          readFaces(builder, pis, metadata, faceCount);
@@ -71,26 +72,26 @@ public class MbwfIO {
       boolean isColors = (metadata & USE_COLORS_MASK) != 0;
       boolean isColorAlpha = (metadata & USE_COLOR_ALPHA_MASK) != 0;
       for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
-         builder.setVertexDatum(vertexIndex, MeshVertexType.Position_X, decodeShort((pis.readInt(true, 2))));
-         builder.setVertexDatum(vertexIndex, MeshVertexType.Position_Y, decodeShort((pis.readInt(true, 2))));
+         builder.setVertexDatum(vertexIndex, MeshVertexType.Position_X, decodeShort(pis.readShort(IS_BIG_ENDIAN), true));
+         builder.setVertexDatum(vertexIndex, MeshVertexType.Position_Y, decodeShort(pis.readShort(IS_BIG_ENDIAN), true));
          if (isPositionZ)
-            builder.setVertexDatum(vertexIndex, MeshVertexType.Position_Z, decodeShort((pis.readInt(true, 2))));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Position_Z, decodeShort(pis.readShort(IS_BIG_ENDIAN), true));
          if (isNormals) {
-            builder.setVertexDatum(vertexIndex, MeshVertexType.Normal_X, decodeShort((pis.readInt(true, 2))));
-            builder.setVertexDatum(vertexIndex, MeshVertexType.Normal_Y, decodeShort((pis.readInt(true, 2))));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Normal_X, decodeShort(pis.readShort(IS_BIG_ENDIAN), true));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Normal_Y, decodeShort(pis.readShort(IS_BIG_ENDIAN), true));
             if (isPositionZ)
-               builder.setVertexDatum(vertexIndex, MeshVertexType.Normal_Z, decodeShort((pis.readInt(true, 2))));
+               builder.setVertexDatum(vertexIndex, MeshVertexType.Normal_Z, decodeShort(pis.readShort(IS_BIG_ENDIAN), true));
          }
          if (isTexCoords) {
-            builder.setVertexDatum(vertexIndex, MeshVertexType.TextureCoordinate_U, decodeByte((pis.readInt(true, 1))));
-            builder.setVertexDatum(vertexIndex, MeshVertexType.TextureCoordinate_V, decodeByte((pis.readInt(true, 1))));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.TextureCoordinate_U, decodeByte(pis.readByte(), false));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.TextureCoordinate_V, decodeByte(pis.readByte(), false));
          }
          if (isColors) {
-            builder.setVertexDatum(vertexIndex, MeshVertexType.Color_R, decodeByte((pis.readInt(true, 1))));
-            builder.setVertexDatum(vertexIndex, MeshVertexType.Color_G, decodeByte((pis.readInt(true, 1))));
-            builder.setVertexDatum(vertexIndex, MeshVertexType.Color_B, decodeByte((pis.readInt(true, 1))));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Color_R, decodeByte(pis.readByte(), false));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Color_G, decodeByte(pis.readByte(), false));
+            builder.setVertexDatum(vertexIndex, MeshVertexType.Color_B, decodeByte(pis.readByte(), false));
             if (isColorAlpha)
-               builder.setVertexDatum(vertexIndex, MeshVertexType.Color_A, decodeByte((pis.readInt(true, 1))));
+               builder.setVertexDatum(vertexIndex, MeshVertexType.Color_A, decodeByte(pis.readByte(), false));
          }
       }
    }
@@ -108,7 +109,7 @@ public class MbwfIO {
       int[] faceIndices = new int[3];
       for (int faceIndex = 0; faceIndex < faceCount; faceIndex++) {
          for (int vertexIndex = 0; vertexIndex < faceIndices.length; vertexIndex++)
-            faceIndices[vertexIndex] = pis.readInt(true, numBytes);
+            faceIndices[vertexIndex] = (int) pis.readLong(IS_BIG_ENDIAN, numBytes);
          builder.setFaceIndices(faceIndex, faceIndices);
       }
    }
@@ -139,7 +140,7 @@ public class MbwfIO {
    private static void writeHeader(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException {
       pos.write(MAGIC);
       Set<MeshVertexType> usedTypes = new HashSet<>(Arrays.asList(saver.getVertexFormat()));
-      int metaData = 0;
+      short metaData = 0;
       if (usedTypes.contains(MeshVertexType.Position_Z))
          metaData |= USE_Z_MASK;
       if (usedTypes.contains(MeshVertexType.Normal_X) || usedTypes.contains(MeshVertexType.Normal_Y) || usedTypes.contains(MeshVertexType.Normal_Z))
@@ -152,9 +153,9 @@ public class MbwfIO {
          metaData |= USE_COLORS_MASK;
          metaData |= USE_COLOR_ALPHA_MASK;
       }
-      pos.writeInt(metaData, true, 2);
-      pos.writeInt(saver.getVertexCount(), true, 4);
-      pos.writeInt(saver.getFaceCount(), true, 4);
+      pos.writeShort(metaData, IS_BIG_ENDIAN);
+      pos.writeInt(saver.getVertexCount(), IS_BIG_ENDIAN);
+      pos.writeInt(saver.getFaceCount(), IS_BIG_ENDIAN);
    }
 
    private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException, MeshIOException {
@@ -166,8 +167,6 @@ public class MbwfIO {
          for (int vertexTypeIndex = 0; vertexTypeIndex < format.length; vertexTypeIndex++) {
             MeshVertexType vertexType = format[vertexTypeIndex];
             float value = vertexData[vertexTypeIndex];
-            int intValue;
-            int numBytes;
             switch (vertexType) {
             case Position_X:
             case Position_Y:
@@ -175,8 +174,7 @@ public class MbwfIO {
             case Normal_X:
             case Normal_Y:
             case Normal_Z:
-               intValue = encodeAsShort(value);
-               numBytes = 2;
+               pos.writeShort(encodeAsShort(value, true), IS_BIG_ENDIAN);
                break;
             case Color_R:
             case Color_G:
@@ -184,13 +182,11 @@ public class MbwfIO {
             case Color_A:
             case TextureCoordinate_U:
             case TextureCoordinate_V:
-               intValue = encodeAsByte(value);
-               numBytes = 1;
+               pos.writeByte(encodeAsByte(value, false));
                break;
             default:
                throw new MeshIOException("Unknown vertex type: " + vertexType.name());
             }
-            pos.writeInt(intValue, true, numBytes);
          }
       }
    }
@@ -210,23 +206,31 @@ public class MbwfIO {
       for (int faceIndex = 0; faceIndex < faceCount; faceIndex++) {
          saver.fillFaceIndices(faceIndex, faceIndices);
          for (int vertexIndex = 0; vertexIndex < faceIndices.length; vertexIndex++)
-            pos.writeInt(faceIndices[vertexIndex], true, numBytes);
+            pos.writeLong(faceIndices[vertexIndex], IS_BIG_ENDIAN, numBytes);
       }
    }
 
-   private static int encodeAsByte(float decoded) {
-      return (int) (decoded * Byte.MAX_VALUE);
+   public static byte encodeAsByte(float decoded, boolean areNegativesUsed) {
+      return areNegativesUsed
+            ? (byte) (decoded * Byte.MAX_VALUE)
+            : (byte) ((int) (decoded * 0xFE) - Byte.MAX_VALUE);
    }
 
-   private static int encodeAsShort(float decoded) {
-      return (int) (decoded * Short.MAX_VALUE);
+   public static short encodeAsShort(float decoded, boolean areNegativesUsed) {
+      return areNegativesUsed
+            ? (short) (decoded * Short.MAX_VALUE)
+            : (short) ((int) (decoded * 0xFFFE) - Short.MAX_VALUE);
    }
 
-   private static float decodeByte(int encoded) {
-      return (float) ((double) encoded / Byte.MAX_VALUE);
+   public static float decodeByte(byte encoded, boolean areNegativesUsed) {
+      return areNegativesUsed
+            ? (float) ((double) encoded / Byte.MAX_VALUE)
+            : (float) ((double) (encoded + Byte.MAX_VALUE) / 0xFE);
    }
 
-   private static float decodeShort(int encoded) {
-      return (float) ((double) encoded / Short.MAX_VALUE);
+   public static float decodeShort(short encoded, boolean areNegativesUsed) {
+      return areNegativesUsed
+            ? (float) ((double) encoded / Short.MAX_VALUE)
+            : (float) ((double) (encoded + Short.MAX_VALUE) / 0xFFFE);
    }
 }

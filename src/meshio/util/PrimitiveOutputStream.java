@@ -20,11 +20,27 @@ public class PrimitiveOutputStream extends FilterOutputStream {
       writeLong(l, isBigEndian, 8);
    }
 
-   public void writeInt(int i, boolean isBigEndian, int numBytes) throws IOException {
-      writeLong(i, isBigEndian, numBytes);
+   public void writeByte(byte b) throws IOException {
+      writeLong(b, true, 1);
+   }
+
+   public void writeShort(short s, boolean isBigEndian) throws IOException {
+      writeLong(s, isBigEndian, 2);
+   }
+
+   public void writeInt(int i, boolean isBigEndian) throws IOException {
+      writeLong(i, isBigEndian, 4);
+   }
+
+   public void writeLong(long l, boolean isBigEndian) throws IOException {
+      writeLong(l, isBigEndian, 8);
    }
 
    public void writeLong(long l, boolean isBigEndian, int numBytes) throws IOException {
+      if (numBytes <= 0)
+         throw new IllegalArgumentException("Cannot write a non positive {" + numBytes + "} number of bytes");
+      else if (numBytes > 8)
+         throw new IllegalArgumentException("Cannot write {" + numBytes + "} bytes, maximum is 8");
       byte[] bytes = new byte[numBytes];
       if (isBigEndian)
          for (int i = 0; i < numBytes; i++)
