@@ -17,6 +17,7 @@ import meshio.util.PrimitiveOutputStream;
 public class MbwfIO {
    private static final boolean IS_BIG_ENDIAN        = true;
    private static final byte[]  MAGIC                = { 'M', 'B', 'W', 'F' };
+   private static final short   MAX_VERSION          = 1;
    private static final int     USE_Z_MASK           = 1 << 15;
    private static final int     USE_NORMALS_MASK     = 1 << 14;
    private static final int     USE_TEX_COORDS_MASK  = 1 << 13;
@@ -28,14 +29,13 @@ public class MbwfIO {
       try {
          pis = new PrimitiveInputStream(is);
          readMagic(pis);
-         short metadata = pis.readShort(IS_BIG_ENDIAN);
-         int vertexCount = pis.readInt(IS_BIG_ENDIAN);
-         builder.setVertexCount(vertexCount);
-         int faceCount = pis.readInt(IS_BIG_ENDIAN);
-         builder.setFaceCount(faceCount);
-         readVertices(builder, pis, metadata, vertexCount);
-         readFaces(builder, pis, metadata, faceCount);
-         return builder.build();
+         short version = pis.readShort(IS_BIG_ENDIAN);
+         switch (version) {
+         case 1:
+            return readVersion1(builder, pis);
+         default:
+            throw new MeshIOException("Unknown version: " + version);
+         }
       } catch (IOException ioe) {
          throw new MeshIOException("Exception when reading from stream", ioe);
       } finally {
@@ -46,6 +46,17 @@ public class MbwfIO {
                e.printStackTrace();
             }
       }
+   }
+
+   private static <T> T readVersion1(IMeshBuilder<T> builder, PrimitiveInputStream pis) throws IOException, MeshIOException {
+      short metadata = pis.readShort(IS_BIG_ENDIAN);
+      int vertexCount = pis.readInt(IS_BIG_ENDIAN);
+      builder.setVertexCount(vertexCount);
+      int faceCount = pis.readInt(IS_BIG_ENDIAN);
+      builder.setFaceCount(faceCount);
+      readVertices(builder, pis, metadata, vertexCount);
+      readFaces(builder, pis, metadata, faceCount);
+      return builder.build();
    }
 
    private static void readMagic(PrimitiveInputStream pis) throws IOException, MeshIOException {
@@ -139,6 +150,7 @@ public class MbwfIO {
 
    private static void writeHeader(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException {
       pos.write(MAGIC);
+      pos.writeShort(MAX_VERSION, IS_BIG_ENDIAN);
       Set<MeshVertexType> usedTypes = new HashSet<>(Arrays.asList(saver.getVertexFormat()));
       short metaData = 0;
       if (usedTypes.contains(MeshVertexType.Position_Z))

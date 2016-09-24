@@ -47,6 +47,7 @@ public class MbwfIOReadTest {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       PrimitiveOutputStream pos = new PrimitiveOutputStream(baos);
       pos.write(new byte[] { 'M', 'B', 'W', 'F' });
+      pos.writeShort((short) 1, IS_BIG_ENDIAN);
       short metadata = 0;
       if (types.contains(MeshVertexType.Position_Z))
          metadata += 1 << 15;
@@ -153,8 +154,8 @@ public class MbwfIOReadTest {
       System.out.println(MbwfIO.encodeAsByte(-1, true));
       System.out.println(MbwfIO.encodeAsByte(0, true));
       System.out.println(MbwfIO.encodeAsByte(1, true));
-      System.out.println(MbwfIO.encodeAsByte(-1, false));
       System.out.println(MbwfIO.encodeAsByte(0, false));
+      System.out.println(MbwfIO.encodeAsByte(0.5f, false));
       System.out.println(MbwfIO.encodeAsByte(1, false));
    }
 
@@ -164,8 +165,8 @@ public class MbwfIOReadTest {
       System.out.println(MbwfIO.encodeAsShort(-1, true));
       System.out.println(MbwfIO.encodeAsShort(0, true));
       System.out.println(MbwfIO.encodeAsShort(1, true));
-      System.out.println(MbwfIO.encodeAsShort(-1, false));
       System.out.println(MbwfIO.encodeAsShort(0, false));
+      System.out.println(MbwfIO.encodeAsShort(0.5f, false));
       System.out.println(MbwfIO.encodeAsShort(1, false));
    }
 }

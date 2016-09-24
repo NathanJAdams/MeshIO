@@ -64,6 +64,8 @@ public class MbwfIOWriteTest {
             : faceIndices.length / 3;
       byte[] magicBytes = new byte[4];
       pis.read(magicBytes);
+      short version = pis.readShort(IS_BIG_ENDIAN);
+      Assert.assertEquals(1, version);
       Assert.assertArrayEquals(new byte[] { 'M', 'B', 'W', 'F' }, magicBytes);
       short metadata = 0;
       if (types.contains(MeshVertexType.Position_Z))
