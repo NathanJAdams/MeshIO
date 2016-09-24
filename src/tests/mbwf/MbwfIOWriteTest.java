@@ -20,10 +20,15 @@ public class MbwfIOWriteTest {
    private static final boolean IS_BIG_ENDIAN = true;
    private static final float   EQUALS_DELTA  = 1E-4f;
 
-   @Test
-   public void testWrite() throws IOException {
+   @Test(expected = MeshIOException.class)
+   public void testBadWrite() throws IOException, MeshIOException {
       testWriteMesh(null, null, null);
       testWriteMesh(format(), vertices(), faces());
+      testWriteMesh(format(MeshVertexType.Position_X), vertices(), faces());
+   }
+
+   @Test
+   public void testWrite() throws IOException, MeshIOException {
       testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(), faces());
       testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(0, 0, 0), faces());
       testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(0, 0, 0), faces(0, 1, 2));
@@ -42,17 +47,13 @@ public class MbwfIOWriteTest {
       return faces;
    }
 
-   private void testWriteMesh(MeshVertexType[] vertexFormat, float[] vertexData, int[] faceIndices) throws IOException {
+   private void testWriteMesh(MeshVertexType[] vertexFormat, float[] vertexData, int[] faceIndices) throws IOException, MeshIOException {
       Set<MeshVertexType> types = new HashSet<>();
       if (vertexFormat != null)
          types.addAll(Arrays.asList(vertexFormat));
       Mesh mesh = new Mesh(vertexFormat, vertexData, faceIndices);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      try {
-         MbwfIO.write(mesh, baos);
-      } catch (MeshIOException e) {
-         Assert.fail();
-      }
+      MbwfIO.write(mesh, baos);
       byte[] buffer = baos.toByteArray();
       ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
       PrimitiveInputStream pis = new PrimitiveInputStream(bais);
@@ -72,7 +73,7 @@ public class MbwfIOWriteTest {
          metadata += 1 << 15;
       if (types.contains(MeshVertexType.Normal_X) || types.contains(MeshVertexType.Normal_Y) || types.contains(MeshVertexType.Normal_Z))
          metadata += 1 << 14;
-      if (types.contains(MeshVertexType.TextureCoordinate_U) || types.contains(MeshVertexType.TextureCoordinate_V))
+      if (types.contains(MeshVertexType.ImageCoord_X) || types.contains(MeshVertexType.ImageCoord_Y))
          metadata += 1 << 13;
       if (types.contains(MeshVertexType.Color_R) || types.contains(MeshVertexType.Color_G) || types.contains(MeshVertexType.Color_B)
             || types.contains(MeshVertexType.Color_A))
@@ -112,8 +113,8 @@ public class MbwfIOWriteTest {
       case Color_G:
       case Color_B:
       case Color_A:
-      case TextureCoordinate_U:
-      case TextureCoordinate_V:
+      case ImageCoord_X:
+      case ImageCoord_Y:
          return (float) ((double) pis.readByte() / Byte.MAX_VALUE);
       default:
          throw new IOException();

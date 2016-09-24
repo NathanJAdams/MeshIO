@@ -11,6 +11,6 @@ public enum MeshVertexType {
    Color_G,
    Color_B,
    Color_A,
-   TextureCoordinate_U,
-   TextureCoordinate_V,
+   ImageCoord_X,
+   ImageCoord_Y,
 }

@@ -53,7 +53,7 @@ public class MbwfIOReadTest {
          metadata += 1 << 15;
       if (types.contains(MeshVertexType.Normal_X) || types.contains(MeshVertexType.Normal_Y) || types.contains(MeshVertexType.Normal_Z))
          metadata += 1 << 14;
-      if (types.contains(MeshVertexType.TextureCoordinate_U) || types.contains(MeshVertexType.TextureCoordinate_V))
+      if (types.contains(MeshVertexType.ImageCoord_X) || types.contains(MeshVertexType.ImageCoord_Y))
          metadata += 1 << 13;
       if (types.contains(MeshVertexType.Color_R) || types.contains(MeshVertexType.Color_G) || types.contains(MeshVertexType.Color_B)
             || types.contains(MeshVertexType.Color_A))
@@ -117,8 +117,8 @@ public class MbwfIOReadTest {
       case Color_G:
       case Color_B:
       case Color_A:
-      case TextureCoordinate_U:
-      case TextureCoordinate_V:
+      case ImageCoord_X:
+      case ImageCoord_Y:
          pos.writeByte((byte) (Byte.MAX_VALUE * datum));
          break;
       default:

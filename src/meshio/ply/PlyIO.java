@@ -52,8 +52,8 @@ public class PlyIO {
       addPropertyNameMapping(MeshVertexType.Color_G, PROPERTY_COLOR_G_NAME);
       addPropertyNameMapping(MeshVertexType.Color_B, PROPERTY_COLOR_B_NAME);
       addPropertyNameMapping(MeshVertexType.Color_A, PROPERTY_COLOR_A_NAME);
-      addPropertyNameMapping(MeshVertexType.TextureCoordinate_U, PROPERTY_TEXTURE_COORDINATE_U_NAME);
-      addPropertyNameMapping(MeshVertexType.TextureCoordinate_V, PROPERTY_TEXTURE_COORDINATE_V_NAME);
+      addPropertyNameMapping(MeshVertexType.ImageCoord_X, PROPERTY_TEXTURE_COORDINATE_U_NAME);
+      addPropertyNameMapping(MeshVertexType.ImageCoord_Y, PROPERTY_TEXTURE_COORDINATE_V_NAME);
    }
 
    private static void addPropertyNameMapping(MeshVertexType type, String name) {
