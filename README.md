@@ -3,7 +3,7 @@
 MIT Licence
 
 <h3>Formats supported</h3>
-Currently the only supported format is PLY, support for further formats will follow.
+Currently the only supported formats are PLY and MBWF, support for further formats will follow.
 
 
 <h3>Read</h3>
