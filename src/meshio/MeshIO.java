@@ -30,6 +30,7 @@ public class MeshIO {
       }
    }
 
+   private static final Map<String, IMeshFormat> EXTENSION_FORMATS      = new HashMap<>();
    public static final IMeshFormat               Mbwf                   = new MeshFormat("mbwf") {
                                                                            @Override
                                                                            public <T> T read(IMeshBuilder<T> builder, InputStream is)
@@ -82,7 +83,6 @@ public class MeshIO {
                                                                               PlyIO.write(saver, os, PlyFormat.BINARY_LITTLE_ENDIAN_1_0);
                                                                            }
                                                                         };
-   private static final Map<String, IMeshFormat> EXTENSION_FORMATS      = new HashMap<>();
 
    private MeshIO() {
    }
