@@ -12,6 +12,7 @@ import meshio.IMeshBuilder;
 import meshio.IMeshSaver;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
+import meshio.util.FormatIndexes;
 import meshio.util.PrimitiveInputStream;
 import meshio.util.PrimitiveOutputStream;
 
@@ -150,14 +151,21 @@ public class PlyIO {
 
    private static void readVertices(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder<?> builder, List<MeshVertexType> vertexFormat,
          List<PlyDataType> vertexDataTypes, int numVertices) throws IOException {
-      float[] vertexData = new float[vertexFormat.size()];
+      MeshVertexType[] builderVertexFormat = builder.getVertexFormat();
+      Map<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(builderVertexFormat);
+      if (typeIndexes.isEmpty())
+         return;
+      float[] readVertexData = new float[vertexFormat.size()];
+      float[] formattedVertexData = new float[typeIndexes.size()];
       for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++) {
-         plyFormat.fillVertexData(pis, vertexData, vertexDataTypes.get(vertexIndex));
-         for (int vertexDatumIndex = 0; vertexDatumIndex < vertexData.length; vertexDatumIndex++) {
-            MeshVertexType vertexDatumType = vertexFormat.get(vertexDatumIndex);
-            float datum = vertexData[vertexDatumIndex];
-            builder.setVertexDatum(vertexIndex, vertexDatumType, datum);
+         plyFormat.fillVertexData(pis, readVertexData, vertexDataTypes.get(vertexIndex));
+         for (int vertexFormatIndex = 0; vertexFormatIndex < vertexFormat.size(); vertexFormatIndex++) {
+            MeshVertexType readType = vertexFormat.get(vertexFormatIndex);
+            Integer indexObj = typeIndexes.get(readType);
+            if (indexObj != null)
+               formattedVertexData[indexObj] = readVertexData[vertexFormatIndex];
          }
+         builder.setVertexData(vertexIndex, formattedVertexData);
       }
    }
 
@@ -196,13 +204,13 @@ public class PlyIO {
          if (vertexFormat != null) {
             float[] vertexData = new float[vertexFormat.length];
             for (int i = 0; i < saver.getVertexCount(); i++) {
-               saver.fillVertexData(i, vertexData);
+               saver.getVertexData(i, vertexData);
                plyFormat.writeVertexData(pos, vertexData, PlyDataType.Float);
             }
          }
          int[] faceIndices = new int[3];
          for (int i = 0; i < saver.getFaceCount(); i++) {
-            saver.fillFaceIndices(i, faceIndices);
+            saver.getFaceIndices(i, faceIndices);
             plyFormat.writeFaceIndices(pos, faceIndices, PlyDataType.Uchar, PlyDataType.Int);
          }
       } catch (IOException ioe) {

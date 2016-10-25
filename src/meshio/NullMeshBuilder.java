@@ -2,6 +2,11 @@ package meshio;
 
 public class NullMeshBuilder<T> implements IMeshBuilder<T> {
    @Override
+   public MeshVertexType[] getVertexFormat() {
+      return null;
+   }
+
+   @Override
    public T build() {
       return null;
    }
@@ -15,10 +20,10 @@ public class NullMeshBuilder<T> implements IMeshBuilder<T> {
    }
 
    @Override
-   public void setVertexDatum(int vertexIndex, MeshVertexType type, float datum) {
+   public void setVertexData(int vertexIndex, float[] vertexData) {
    }
 
    @Override
-   public void setFaceIndices(int faceIndex, int[] indices) {
+   public void setFaceIndices(int faceIndex, int[] faceIndices) {
    }
 }

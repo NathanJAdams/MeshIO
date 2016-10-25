@@ -17,10 +17,10 @@ public class NullMeshSaver implements IMeshSaver {
    }
 
    @Override
-   public void fillVertexData(int vertexIndex, float[] vertexData) {
+   public void getVertexData(int vertexIndex, float[] vertexData) {
    }
 
    @Override
-   public void fillFaceIndices(int faceIndex, int[] faceIndices) {
+   public void getFaceIndices(int faceIndex, int[] faceIndices) {
    }
 }

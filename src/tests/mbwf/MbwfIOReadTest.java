@@ -13,6 +13,7 @@ import org.junit.Test;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
 import meshio.mbwf.MbwfIO;
+import meshio.util.DatumEnDecode;
 import meshio.util.PrimitiveOutputStream;
 import tests.Mesh;
 import tests.MeshBuilder;
@@ -68,8 +69,8 @@ public class MbwfIOReadTest {
       int numFaces = (faceIndices == null)
             ? 0
             : faceIndices.length / 3;
-      pos.writeInt(numFaces, IS_BIG_ENDIAN);
       writeVertices(vertexFormat, numVertices, vertexData, pos);
+      pos.writeInt(numFaces, IS_BIG_ENDIAN);
       writeIndices(numFaces, faceIndices, pos);
       pos.flush();
       byte[] buffer = baos.toByteArray();
@@ -129,44 +130,44 @@ public class MbwfIOReadTest {
    @Test
    public void testDecodeByte() {
       System.out.println("=====Decoding byte=====");
-      System.out.println(MbwfIO.decodeByte((byte) 0x81, true));
-      System.out.println(MbwfIO.decodeByte((byte) 0, true));
-      System.out.println(MbwfIO.decodeByte((byte) 0x7F, true));
-      System.out.println(MbwfIO.decodeByte((byte) 0x81, false));
-      System.out.println(MbwfIO.decodeByte((byte) 0, false));
-      System.out.println(MbwfIO.decodeByte((byte) 0x7F, false));
+      System.out.println(DatumEnDecode.decodeByte((byte) 0x81, true));
+      System.out.println(DatumEnDecode.decodeByte((byte) 0, true));
+      System.out.println(DatumEnDecode.decodeByte((byte) 0x7F, true));
+      System.out.println(DatumEnDecode.decodeByte((byte) 0x81, false));
+      System.out.println(DatumEnDecode.decodeByte((byte) 0, false));
+      System.out.println(DatumEnDecode.decodeByte((byte) 0x7F, false));
    }
 
    @Test
    public void testDecodeShort() {
       System.out.println("=====Decoding short=====");
-      System.out.println(MbwfIO.decodeShort((short) 0x8001, true));
-      System.out.println(MbwfIO.decodeShort((short) 0, true));
-      System.out.println(MbwfIO.decodeShort((short) 0x7FFF, true));
-      System.out.println(MbwfIO.decodeShort((short) 0x8001, false));
-      System.out.println(MbwfIO.decodeShort((short) 0, false));
-      System.out.println(MbwfIO.decodeShort((short) 0x7FFF, false));
+      System.out.println(DatumEnDecode.decodeShort((short) 0x8001, true));
+      System.out.println(DatumEnDecode.decodeShort((short) 0, true));
+      System.out.println(DatumEnDecode.decodeShort((short) 0x7FFF, true));
+      System.out.println(DatumEnDecode.decodeShort((short) 0x8001, false));
+      System.out.println(DatumEnDecode.decodeShort((short) 0, false));
+      System.out.println(DatumEnDecode.decodeShort((short) 0x7FFF, false));
    }
 
    @Test
    public void testEncodeByte() {
       System.out.println("=====Encoding byte=====");
-      System.out.println(MbwfIO.encodeAsByte(-1, true));
-      System.out.println(MbwfIO.encodeAsByte(0, true));
-      System.out.println(MbwfIO.encodeAsByte(1, true));
-      System.out.println(MbwfIO.encodeAsByte(0, false));
-      System.out.println(MbwfIO.encodeAsByte(0.5f, false));
-      System.out.println(MbwfIO.encodeAsByte(1, false));
+      System.out.println(DatumEnDecode.encodeAsByte(-1, true));
+      System.out.println(DatumEnDecode.encodeAsByte(0, true));
+      System.out.println(DatumEnDecode.encodeAsByte(1, true));
+      System.out.println(DatumEnDecode.encodeAsByte(0, false));
+      System.out.println(DatumEnDecode.encodeAsByte(0.5f, false));
+      System.out.println(DatumEnDecode.encodeAsByte(1, false));
    }
 
    @Test
    public void testEncodeShort() {
       System.out.println("=====Encoding short=====");
-      System.out.println(MbwfIO.encodeAsShort(-1, true));
-      System.out.println(MbwfIO.encodeAsShort(0, true));
-      System.out.println(MbwfIO.encodeAsShort(1, true));
-      System.out.println(MbwfIO.encodeAsShort(0, false));
-      System.out.println(MbwfIO.encodeAsShort(0.5f, false));
-      System.out.println(MbwfIO.encodeAsShort(1, false));
+      System.out.println(DatumEnDecode.encodeAsShort(-1, true));
+      System.out.println(DatumEnDecode.encodeAsShort(0, true));
+      System.out.println(DatumEnDecode.encodeAsShort(1, true));
+      System.out.println(DatumEnDecode.encodeAsShort(0, false));
+      System.out.println(DatumEnDecode.encodeAsShort(0.5f, false));
+      System.out.println(DatumEnDecode.encodeAsShort(1, false));
    }
 }

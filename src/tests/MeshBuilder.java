@@ -18,6 +18,11 @@ public class MeshBuilder implements IMeshBuilder<Mesh> {
    }
 
    @Override
+   public MeshVertexType[] getVertexFormat() {
+      return vertexFormat;
+   }
+
+   @Override
    public void setVertexCount(int vertexCount) {
       int verticesLength = (vertexFormat == null)
             ? 0
@@ -31,10 +36,9 @@ public class MeshBuilder implements IMeshBuilder<Mesh> {
    }
 
    @Override
-   public void setVertexDatum(int vertexIndex, MeshVertexType type, float datum) {
+   public void setVertexData(int vertexIndex, float[] vertexData) {
       for (int vertexFormatIndex = 0; vertexFormatIndex < vertexFormat.length; vertexFormatIndex++)
-         if (type == vertexFormat[vertexFormatIndex])
-            vertices[vertexIndex * vertexFormat.length + vertexFormatIndex] = datum;
+         vertices[vertexIndex * vertexFormat.length + vertexFormatIndex] = vertexData[vertexFormatIndex];
    }
 
    @Override

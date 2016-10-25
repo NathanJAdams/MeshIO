@@ -82,7 +82,6 @@ public class MbwfIOWriteTest {
          metadata += 1 << 11;
       Assert.assertEquals(metadata, pis.readShort(IS_BIG_ENDIAN));
       Assert.assertEquals(vertexCount, pis.readInt(IS_BIG_ENDIAN));
-      Assert.assertEquals(faceCount, pis.readInt(IS_BIG_ENDIAN));
       if (vertexFormat != null && vertexData != null) {
          for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
             for (int datumIndex = 0; datumIndex < vertexFormat.length; datumIndex++) {
@@ -93,6 +92,7 @@ public class MbwfIOWriteTest {
             }
          }
       }
+      Assert.assertEquals(faceCount, pis.readInt(IS_BIG_ENDIAN));
       int faceIndicesCount = faceCount * 3;
       for (int faceIndicesIndex = 0; faceIndicesIndex < faceIndicesCount; faceIndicesIndex++) {
          int actualFaceIndex = pis.readByte();

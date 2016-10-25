@@ -1,13 +1,11 @@
 package meshio;
 
-public interface IMeshSaver {
-   MeshVertexType[] getVertexFormat();
-
+public interface IMeshSaver extends IFormattableMesh {
    int getVertexCount();
 
    int getFaceCount();
 
-   void fillVertexData(int vertexIndex, float[] vertexData);
+   void getVertexData(int vertexIndex, float[] vertexData);
 
-   void fillFaceIndices(int faceIndex, int[] faceIndices);
+   void getFaceIndices(int faceIndex, int[] faceIndices);
 }

@@ -51,14 +51,14 @@ public class Mesh implements IMeshSaver {
    }
 
    @Override
-   public void fillVertexData(int vertexIndex, float[] vertexData) {
+   public void getVertexData(int vertexIndex, float[] vertexData) {
       int startIndex = vertexIndex * format.length;
       for (int i = 0; i < format.length; i++)
          vertexData[i] = vertices[startIndex + i];
    }
 
    @Override
-   public void fillFaceIndices(int faceIndex, int[] faceIndices) {
+   public void getFaceIndices(int faceIndex, int[] faceIndices) {
       int startIndex = faceIndex * VERTICES_PER_FACE;
       for (int i = 0; i < VERTICES_PER_FACE; i++)
          faceIndices[i] = indices[startIndex + i];

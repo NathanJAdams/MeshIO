@@ -1,13 +1,13 @@
 package meshio;
 
-public interface IMeshBuilder<T> {
-   T build();
-
+public interface IMeshBuilder<T> extends IFormattableMesh {
    void setVertexCount(int vertexCount);
 
    void setFaceCount(int faceCount);
 
-   void setVertexDatum(int vertexIndex, MeshVertexType type, float datum);
+   void setVertexData(int vertexIndex, float[] vertexData);
 
-   void setFaceIndices(int faceIndex, int[] indices);
+   void setFaceIndices(int faceIndex, int[] faceIndices);
+
+   T build();
 }

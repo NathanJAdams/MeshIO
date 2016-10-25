@@ -89,7 +89,7 @@ public class PlyIOWriteTest {
             int startIndex = faceIndex * 3;
             expectedFaceIndices[i] = faceIndices[startIndex + i];
          }
-         mesh.fillFaceIndices(faceIndex, expectedFaceIndices);
+         mesh.getFaceIndices(faceIndex, expectedFaceIndices);
          int[] actualFaceIndices = plyFormat.readFaceIndices(pis, PlyDataType.Uchar, PlyDataType.Int);
          Assert.assertArrayEquals(expectedFaceIndices, actualFaceIndices);
       }
