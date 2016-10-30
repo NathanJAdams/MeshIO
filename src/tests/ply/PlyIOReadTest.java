@@ -13,7 +13,7 @@ import meshio.ply.PlyDataType;
 import meshio.ply.PlyFormat;
 import meshio.ply.PlyIO;
 import meshio.util.PrimitiveOutputStream;
-import tests.Mesh;
+import tests.TestMesh;
 import tests.MeshBuilder;
 
 public class PlyIOReadTest {
@@ -86,13 +86,13 @@ public class PlyIOReadTest {
       pos.flush();
       byte[] buffer = baos.toByteArray();
       ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
-      Mesh actualMesh = null;
+      TestMesh actualMesh = null;
       try {
          actualMesh = PlyIO.read(new MeshBuilder(vertexFormat), bais);
       } catch (MeshIOException e) {
          Assert.fail();
       }
-      Mesh expectedMesh = new Mesh(vertexFormat, vertexData, faceIndices);
+      TestMesh expectedMesh = new TestMesh(vertexFormat, vertexData, faceIndices);
       Assert.assertEquals(expectedMesh, actualMesh);
    }
 

@@ -1,4 +1,4 @@
-package meshio.mesh.indices;
+package meshio.mesh;
 
 public interface IndicesDataType<T> {
    T createEmptyArray();

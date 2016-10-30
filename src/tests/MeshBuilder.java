@@ -3,7 +3,7 @@ package tests;
 import meshio.IMeshBuilder;
 import meshio.MeshVertexType;
 
-public class MeshBuilder implements IMeshBuilder<Mesh> {
+public class MeshBuilder implements IMeshBuilder<TestMesh> {
    private final MeshVertexType[] vertexFormat;
    private float[]                vertices;
    private int[]                  indices;
@@ -13,8 +13,8 @@ public class MeshBuilder implements IMeshBuilder<Mesh> {
    }
 
    @Override
-   public Mesh build() {
-      return new Mesh(vertexFormat, vertices, indices);
+   public TestMesh build() {
+      return new TestMesh(vertexFormat, vertices, indices);
    }
 
    @Override

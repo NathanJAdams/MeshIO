@@ -13,7 +13,7 @@ import meshio.ply.PlyDataType;
 import meshio.ply.PlyFormat;
 import meshio.ply.PlyIO;
 import meshio.util.PrimitiveInputStream;
-import tests.Mesh;
+import tests.TestMesh;
 
 public class PlyIOWriteTest {
    @Test
@@ -46,7 +46,7 @@ public class PlyIOWriteTest {
    }
 
    private void testWriteMesh(MeshVertexType[] vertexFormat, float[] vertexData, int[] faceIndices, PlyFormat plyFormat) throws IOException {
-      Mesh mesh = new Mesh(vertexFormat, vertexData, faceIndices);
+      TestMesh mesh = new TestMesh(vertexFormat, vertexData, faceIndices);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try {
          PlyIO.write(mesh, baos, plyFormat);

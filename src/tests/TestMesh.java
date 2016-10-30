@@ -5,14 +5,14 @@ import java.util.Arrays;
 import meshio.IMeshSaver;
 import meshio.MeshVertexType;
 
-public class Mesh implements IMeshSaver {
+public class TestMesh implements IMeshSaver {
    private static final int       VERTICES_PER_FACE = 3;
    private final MeshVertexType[] format;
    private final float[]          vertices;
    private final int[]            indices;
    private final int              hash;
 
-   public Mesh(MeshVertexType[] format, float[] vertices, int[] indices) {
+   public TestMesh(MeshVertexType[] format, float[] vertices, int[] indices) {
       this.format = (format == null)
             ? new MeshVertexType[0]
             : format;
@@ -77,7 +77,7 @@ public class Mesh implements IMeshSaver {
          return false;
       if (getClass() != obj.getClass())
          return false;
-      Mesh other = (Mesh) obj;
+      TestMesh other = (TestMesh) obj;
       boolean isFormatEqual = Arrays.equals(format, other.format);
       boolean isVerticesEqual = Arrays.equals(vertices, other.vertices);
       boolean isIndicesEqual = Arrays.equals(indices, other.indices);

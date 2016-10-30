@@ -14,7 +14,7 @@ import meshio.MeshIOException;
 import meshio.MeshVertexType;
 import meshio.mbwf.MbwfIO;
 import meshio.util.PrimitiveInputStream;
-import tests.Mesh;
+import tests.TestMesh;
 
 public class MbwfIOWriteTest {
    private static final boolean IS_BIG_ENDIAN = true;
@@ -51,7 +51,7 @@ public class MbwfIOWriteTest {
       Set<MeshVertexType> types = new HashSet<>();
       if (vertexFormat != null)
          types.addAll(Arrays.asList(vertexFormat));
-      Mesh mesh = new Mesh(vertexFormat, vertexData, faceIndices);
+      TestMesh mesh = new TestMesh(vertexFormat, vertexData, faceIndices);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       MbwfIO.write(mesh, baos);
       byte[] buffer = baos.toByteArray();

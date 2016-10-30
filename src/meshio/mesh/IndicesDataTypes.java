@@ -1,4 +1,4 @@
-package meshio.mesh.indices;
+package meshio.mesh;
 
 import java.util.ArrayList;
 import java.util.Arrays;

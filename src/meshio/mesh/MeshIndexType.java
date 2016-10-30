@@ -1,4 +1,4 @@
-package meshio.mesh.indices;
+package meshio.mesh;
 
 public enum MeshIndexType {
    Mesh(new int[] { 0, 1, 2 }),

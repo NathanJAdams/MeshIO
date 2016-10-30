@@ -15,8 +15,8 @@ import meshio.MeshVertexType;
 import meshio.mbwf.MbwfIO;
 import meshio.util.DatumEnDecode;
 import meshio.util.PrimitiveOutputStream;
-import tests.Mesh;
 import tests.MeshBuilder;
+import tests.TestMesh;
 
 public class MbwfIOReadTest {
    private static final boolean IS_BIG_ENDIAN = true;
@@ -75,13 +75,13 @@ public class MbwfIOReadTest {
       pos.flush();
       byte[] buffer = baos.toByteArray();
       ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
-      Mesh actualMesh = null;
+      TestMesh actualMesh = null;
       try {
          actualMesh = MbwfIO.read(new MeshBuilder(vertexFormat), bais);
       } catch (MeshIOException e) {
          Assert.fail();
       }
-      Mesh expectedMesh = new Mesh(vertexFormat, vertexData, faceIndices);
+      TestMesh expectedMesh = new TestMesh(vertexFormat, vertexData, faceIndices);
       Assert.assertEquals(expectedMesh, actualMesh);
    }
 
