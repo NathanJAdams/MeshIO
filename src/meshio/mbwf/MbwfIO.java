@@ -4,16 +4,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.EnumMap;
 
+import io.PrimitiveInputStream;
+import io.PrimitiveOutputStream;
 import meshio.IMeshBuilder;
 import meshio.IMeshSaver;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
+import meshio.mesh.IMesh;
 import meshio.util.DatumEnDecode;
 import meshio.util.FormatIndexes;
-import meshio.util.PrimitiveInputStream;
-import meshio.util.PrimitiveOutputStream;
 
 public class MbwfIO {
    private static final boolean IS_BIG_ENDIAN        = true;
@@ -25,7 +26,7 @@ public class MbwfIO {
    private static final int     IS_COLORS_MASK       = 1 << 12;
    private static final int     IS_COLOR_ALPHA_MASK  = 1 << 11;
 
-   public static <T> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
+   public static IMesh read(IMeshBuilder builder, InputStream is) throws MeshIOException {
       PrimitiveInputStream pis = null;
       try {
          pis = new PrimitiveInputStream(is);
@@ -53,14 +54,14 @@ public class MbwfIO {
       }
    }
 
-   private static <T> T readWithVersion(IMeshBuilder<T> builder, PrimitiveInputStream pis, short version) throws IOException {
+   private static IMesh readWithVersion(IMeshBuilder builder, PrimitiveInputStream pis, short version) throws IOException {
       short metadata = pis.readShort(IS_BIG_ENDIAN);
       readVertices(builder, pis, metadata);
       readFaces(builder, pis, metadata);
       return builder.build();
    }
 
-   private static void readVertices(IMeshBuilder<?> builder, PrimitiveInputStream pis, short metadata) throws IOException {
+   private static void readVertices(IMeshBuilder builder, PrimitiveInputStream pis, short metadata) throws IOException {
       int vertexCount = pis.readInt(IS_BIG_ENDIAN);
       builder.setVertexCount(vertexCount);
       boolean is3D = (metadata & IS_3D_MASK) != 0;
@@ -69,8 +70,8 @@ public class MbwfIO {
       boolean isColors = (metadata & IS_COLORS_MASK) != 0;
       boolean isColorAlpha = (metadata & IS_COLOR_ALPHA_MASK) != 0;
       MeshVertexType[] format = builder.getVertexFormat();
-      Map<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(format);
-      float[] vertexData = new float[typeIndexes.size()];
+      EnumMap<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(format);
+      float[] vertexData = new float[format.length];
       for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
          readShorts(vertexData, typeIndexes, pis, true, MeshVertexType.Position_X, MeshVertexType.Position_Y);
          if (is3D)
@@ -92,15 +93,15 @@ public class MbwfIO {
       }
    }
 
-   private static void readShorts(float[] vertexData, Map<MeshVertexType, Integer> typeIndexes, PrimitiveInputStream pis, boolean areNegativesUsed,
-         MeshVertexType... types) throws IOException {
+   private static void readShorts(float[] vertexData, EnumMap<MeshVertexType, Integer> typeIndexes, PrimitiveInputStream pis,
+         boolean areNegativesUsed, MeshVertexType... types) throws IOException {
       for (int i = 0; i < types.length; i++) {
          float value = DatumEnDecode.decodeShort(pis.readShort(IS_BIG_ENDIAN), areNegativesUsed);
          setVertexDatum(vertexData, typeIndexes, types[i], value);
       }
    }
 
-   private static void readBytes(float[] vertexData, Map<MeshVertexType, Integer> typeIndexes, PrimitiveInputStream pis, boolean areNegativesUsed,
+   private static void readBytes(float[] vertexData, EnumMap<MeshVertexType, Integer> typeIndexes, PrimitiveInputStream pis, boolean areNegativesUsed,
          MeshVertexType... types) throws IOException {
       for (int i = 0; i < types.length; i++) {
          float value = DatumEnDecode.decodeByte(pis.readByte(), areNegativesUsed);
@@ -108,13 +109,13 @@ public class MbwfIO {
       }
    }
 
-   private static void setVertexDatum(float[] vertexData, Map<MeshVertexType, Integer> typeIndexes, MeshVertexType type, float value) {
+   private static void setVertexDatum(float[] vertexData, EnumMap<MeshVertexType, Integer> typeIndexes, MeshVertexType type, float value) {
       Integer indexObject = typeIndexes.get(type);
       if (indexObject != null)
          vertexData[indexObject] = value;
    }
 
-   private static void readFaces(IMeshBuilder<?> builder, PrimitiveInputStream pis, int metadata) throws IOException {
+   private static void readFaces(IMeshBuilder builder, PrimitiveInputStream pis, int metadata) throws IOException {
       int faceCount = pis.readInt(IS_BIG_ENDIAN);
       builder.setFaceCount(faceCount);
       int numBytes;
@@ -143,7 +144,7 @@ public class MbwfIO {
       try {
          pos = new PrimitiveOutputStream(os);
          MeshVertexType[] format = saver.getVertexFormat();
-         Map<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(format);
+         EnumMap<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(format);
          short metadata = createMetadata(typeIndexes);
          writeHeader(pos, metadata);
          writeVertices(saver, pos, metadata, typeIndexes);
@@ -160,7 +161,7 @@ public class MbwfIO {
       }
    }
 
-   private static short createMetadata(Map<MeshVertexType, Integer> typeIndexes) throws MeshIOException {
+   private static short createMetadata(EnumMap<MeshVertexType, Integer> typeIndexes) throws MeshIOException {
       if (!typeIndexes.containsKey(MeshVertexType.Position_X) || !typeIndexes.containsKey(MeshVertexType.Position_Y))
          throw new MeshIOException("No position data found");
       short metaData = 0;
@@ -187,7 +188,7 @@ public class MbwfIO {
       pos.writeShort(metadata, IS_BIG_ENDIAN);
    }
 
-   private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos, short metadata, Map<MeshVertexType, Integer> typeIndexes)
+   private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos, short metadata, EnumMap<MeshVertexType, Integer> typeIndexes)
          throws IOException, MeshIOException {
       int vertexCount = saver.getVertexCount();
       pos.writeInt(vertexCount, IS_BIG_ENDIAN);
@@ -217,7 +218,7 @@ public class MbwfIO {
       }
    }
 
-   private static void writeVertexData(PrimitiveOutputStream pos, float[] vertexData, Map<MeshVertexType, Integer> typeIndexes,
+   private static void writeVertexData(PrimitiveOutputStream pos, float[] vertexData, EnumMap<MeshVertexType, Integer> typeIndexes,
          MeshVertexType... types) throws IOException, MeshIOException {
       for (int i = 0; i < types.length; i++) {
          MeshVertexType type = types[i];

@@ -4,17 +4,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.PrimitiveInputStream;
+import io.PrimitiveOutputStream;
 import meshio.IMeshBuilder;
 import meshio.IMeshSaver;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
+import meshio.mesh.IMesh;
 import meshio.util.FormatIndexes;
-import meshio.util.PrimitiveInputStream;
-import meshio.util.PrimitiveOutputStream;
 
 public class PlyIO {
    private static final String                      PLY                                = "ply";
@@ -62,7 +64,7 @@ public class PlyIO {
       PROPERTY_NAMES.put(type, name);
    }
 
-   public static <T> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
+   public static IMesh read(IMeshBuilder builder, InputStream is) throws MeshIOException {
       PrimitiveInputStream pis = null;
       try {
          pis = new PrimitiveInputStream(is);
@@ -149,12 +151,10 @@ public class PlyIO {
       }
    }
 
-   private static void readVertices(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder<?> builder, List<MeshVertexType> vertexFormat,
+   private static void readVertices(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder builder, List<MeshVertexType> vertexFormat,
          List<PlyDataType> vertexDataTypes, int numVertices) throws IOException {
       MeshVertexType[] builderVertexFormat = builder.getVertexFormat();
-      Map<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(builderVertexFormat);
-      if (typeIndexes.isEmpty())
-         return;
+      EnumMap<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(builderVertexFormat);
       float[] readVertexData = new float[vertexFormat.size()];
       float[] formattedVertexData = new float[typeIndexes.size()];
       for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++) {
@@ -169,7 +169,7 @@ public class PlyIO {
       }
    }
 
-   private static void readFaces(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder<?> builder, PlyDataType countType, PlyDataType indexType,
+   private static void readFaces(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder builder, PlyDataType countType, PlyDataType indexType,
          int numFaces) throws IOException {
       for (int faceIndex = 0; faceIndex < numFaces; faceIndex++)
          builder.setFaceIndices(faceIndex, plyFormat.readFaceIndices(pis, countType, indexType));

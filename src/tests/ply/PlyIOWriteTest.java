@@ -7,46 +7,36 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.PrimitiveInputStream;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
+import meshio.mesh.EditableMesh;
 import meshio.ply.PlyDataType;
 import meshio.ply.PlyFormat;
 import meshio.ply.PlyIO;
-import meshio.util.PrimitiveInputStream;
-import tests.TestMesh;
+import tests.AReadWriteTest;
 
-public class PlyIOWriteTest {
+public class PlyIOWriteTest extends AReadWriteTest {
    @Test
    public void testWrite() throws IOException {
-      testWriteMesh(null, null, null);
       testWriteMesh(format(), vertices(), faces());
       testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(), faces());
-      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(0, 0, 0), faces());
-      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(0, 0, 0), faces(0, 1, 2));
-      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y), vertices(1, 2, 3, 4), faces(0, 1, 2));
-      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Color_R), vertices(1, 2, 3, 4), faces(1, 2, 3));
+      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(new float[] { 0, 0, 0 }),
+            faces());
+      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(new float[] { 0, 0, 0 }),
+            faces(new int[] { 0, 1, 2 }));
+      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y), vertices(new float[] { 1, 2, 3, 4 }), faces(new int[] { 0, 1, 2 }));
+      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Color_R), vertices(new float[] { 1, 2, 3, 4 }), faces(new int[] { 1, 2, 3 }));
    }
 
-   private MeshVertexType[] format(MeshVertexType... types) {
-      return types;
-   }
-
-   private float[] vertices(float... vertices) {
-      return vertices;
-   }
-
-   private int[] faces(int... faces) {
-      return faces;
-   }
-
-   private void testWriteMesh(MeshVertexType[] format, float[] vertexData, int[] faceIndices) throws IOException {
+   private void testWriteMesh(MeshVertexType[] format, float[][] vertexData, int[][] faceIndices) throws IOException {
       testWriteMesh(format, vertexData, faceIndices, PlyFormat.ASCII_1_0);
       testWriteMesh(format, vertexData, faceIndices, PlyFormat.BINARY_BIG_ENDIAN_1_0);
       testWriteMesh(format, vertexData, faceIndices, PlyFormat.BINARY_LITTLE_ENDIAN_1_0);
    }
 
-   private void testWriteMesh(MeshVertexType[] vertexFormat, float[] vertexData, int[] faceIndices, PlyFormat plyFormat) throws IOException {
-      TestMesh mesh = new TestMesh(vertexFormat, vertexData, faceIndices);
+   private void testWriteMesh(MeshVertexType[] vertexFormat, float[][] vertexData, int[][] faceIndices, PlyFormat plyFormat) throws IOException {
+      EditableMesh mesh = createMesh(vertexFormat, vertexData, faceIndices);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try {
          PlyIO.write(mesh, baos, plyFormat);
@@ -58,10 +48,10 @@ public class PlyIOWriteTest {
       PrimitiveInputStream pis = new PrimitiveInputStream(bais);
       int vertexCount = (vertexFormat == null || vertexData == null || vertexFormat.length == 0)
             ? 0
-            : vertexData.length / vertexFormat.length;
+            : vertexData.length;
       int faceCount = (faceIndices == null)
             ? 0
-            : faceIndices.length / 3;
+            : faceIndices.length;
       Assert.assertEquals("ply", pis.readLine());
       Assert.assertEquals("format " + plyFormat.getEncoding() + ' ' + plyFormat.getVersion(), pis.readLine());
       Assert.assertEquals("element vertex " + vertexCount, pis.readLine());
@@ -76,8 +66,7 @@ public class PlyIOWriteTest {
          float[] actualVertexData = new float[vertexFormat.length];
          for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
             for (int i = 0; i < vertexFormat.length; i++) {
-               int startIndex = vertexIndex * vertexFormat.length;
-               expectedVertexData[i] = vertexData[startIndex + i];
+               expectedVertexData[i] = vertexData[vertexIndex][i];
             }
             plyFormat.fillVertexData(pis, actualVertexData, PlyDataType.Float);
             Assert.assertArrayEquals(expectedVertexData, actualVertexData, (float) 1E-6);
@@ -86,8 +75,7 @@ public class PlyIOWriteTest {
       int[] expectedFaceIndices = new int[3];
       for (int faceIndex = 0; faceIndex < faceCount; faceIndex++) {
          for (int i = 0; i < 3; i++) {
-            int startIndex = faceIndex * 3;
-            expectedFaceIndices[i] = faceIndices[startIndex + i];
+            expectedFaceIndices[i] = faceIndices[faceIndex][i];
          }
          mesh.getFaceIndices(faceIndex, expectedFaceIndices);
          int[] actualFaceIndices = plyFormat.readFaceIndices(pis, PlyDataType.Uchar, PlyDataType.Int);

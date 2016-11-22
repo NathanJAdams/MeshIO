@@ -1,46 +1,22 @@
 package meshio.mesh;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
+import collections.EnumIntMap;
 import meshio.MeshVertexType;
 
 public class MeshVertices {
-   private MeshVertexType[]             format            = new MeshVertexType[0];
-   private Map<MeshVertexType, Integer> formatTypeIndexes = new HashMap<>();
-   private float[]                      vertexData        = new float[0];
-   private int                          vertexCount;
+   private MeshVertexType[]           format            = new MeshVertexType[0];
+   private EnumIntMap<MeshVertexType> formatTypeIndexes = new EnumIntMap<>(MeshVertexType.getValues());
+   private float[]                    vertexData        = new float[0];
+   private int                        vertexCount;
 
-   public float[] getVerticesData() {
-      return vertexData;
+   public MeshVertices(MeshVertexType... format) {
+      this.format = format;
    }
 
    public MeshVertexType[] getFormat() {
       return format;
-   }
-
-   public void setFormat(MeshVertexType... format) {
-      Map<MeshVertexType, Integer> newFormatTypeIndexes = createNewFormatTypeIndexes(format);
-      int numOldFormatTypes = formatTypeIndexes.size();
-      int numNewFormatTypes = newFormatTypeIndexes.size();
-      float[] newVertexData = new float[vertexCount * numNewFormatTypes];
-      for (Entry<MeshVertexType, Integer> entry : newFormatTypeIndexes.entrySet()) {
-         Integer oldIndexObj = formatTypeIndexes.get(entry.getKey());
-         if (oldIndexObj != null) {
-            int oldFormatTypeIndex = oldIndexObj;
-            int newFormatTypeIndex = entry.getValue();
-            for (int i = 0; i < vertexCount; i++) {
-               int oldOffset = oldFormatTypeIndex + i * numOldFormatTypes;
-               int newOffset = newFormatTypeIndex + i * numNewFormatTypes;
-               newVertexData[newOffset] = vertexData[oldOffset];
-            }
-         }
-      }
-      this.format = format;
-      this.formatTypeIndexes = newFormatTypeIndexes;
-      this.vertexData = newVertexData;
    }
 
    public int getVertexCount() {
@@ -49,7 +25,7 @@ public class MeshVertices {
 
    public void setVertexCount(int vertexCount) {
       this.vertexCount = vertexCount;
-      int newLength = vertexCount * formatTypeIndexes.size();
+      int newLength = vertexCount * format.length;
       boolean isLarger = (newLength > vertexData.length);
       if (newLength * 2 <= vertexData.length || isLarger) {
          if (isLarger && newLength < 2 * vertexData.length)
@@ -58,19 +34,24 @@ public class MeshVertices {
       }
    }
 
+   public float[] getVerticesAsFormat(MeshVertexType... format) {
+      // TODO do this properly
+      return vertexData;
+   }
+
    public float getVertexDatum(int vertexIndex, MeshVertexType type) {
-      Integer typeIndexObj = formatTypeIndexes.get(type);
-      if (typeIndexObj == null)
+      int typeIndex = formatTypeIndexes.get(type);
+      if (typeIndex == -1)
          return 0;
-      int offset = typeIndexObj + vertexIndex * formatTypeIndexes.size();
+      int offset = typeIndex + vertexIndex * format.length;
       return vertexData[offset];
    }
 
    public void setVertexDatum(int vertexIndex, MeshVertexType type, float datum) {
-      Integer typeIndexObj = formatTypeIndexes.get(type);
-      if (typeIndexObj == null)
+      int typeIndex = formatTypeIndexes.get(type);
+      if (typeIndex == -1)
          return;
-      int offset = typeIndexObj + vertexIndex * formatTypeIndexes.size();
+      int offset = typeIndex + vertexIndex * format.length;
       vertexData[offset] = datum;
    }
 
@@ -83,13 +64,6 @@ public class MeshVertices {
    public void setVertexData(int vertexIndex, float[] vertexData) {
       int offset = vertexIndex * format.length;
       for (int i = 0; i < vertexData.length; i++)
-         vertexData[offset + i] = vertexData[i];
-   }
-
-   private Map<MeshVertexType, Integer> createNewFormatTypeIndexes(MeshVertexType[] format) {
-      Map<MeshVertexType, Integer> formatTypeIndexes = new HashMap<>();
-      for (int i = 0; i < format.length; i++)
-         formatTypeIndexes.put(format[i], i);
-      return formatTypeIndexes;
+         this.vertexData[offset + i] = vertexData[i];
    }
 }

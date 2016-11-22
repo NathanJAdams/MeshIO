@@ -1,6 +1,8 @@
 package meshio;
 
-public interface IMeshBuilder<T> extends IFormattableMesh {
+import meshio.mesh.IMesh;
+
+public interface IMeshBuilder extends IMeshInfo {
    void setVertexCount(int vertexCount);
 
    void setFaceCount(int faceCount);
@@ -9,5 +11,5 @@ public interface IMeshBuilder<T> extends IFormattableMesh {
 
    void setFaceIndices(int faceIndex, int[] faceIndices);
 
-   T build();
+   IMesh build();
 }

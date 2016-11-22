@@ -7,40 +7,30 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.PrimitiveOutputStream;
+import meshio.MeshFormats;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
+import meshio.mesh.EditableMesh;
 import meshio.ply.PlyDataType;
 import meshio.ply.PlyFormat;
 import meshio.ply.PlyIO;
-import meshio.util.PrimitiveOutputStream;
-import tests.TestMesh;
-import tests.MeshBuilder;
+import tests.AReadWriteTest;
 
-public class PlyIOReadTest {
+public class PlyIOReadTest extends AReadWriteTest {
    @Test
    public void testRead() throws IOException {
-      testReadMesh(null, null, null);
       testReadMesh(format(), vertices(), faces());
       testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(), faces());
-      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(0, 0, 0), faces());
-      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(0, 0, 0), faces(0, 1, 2));
-      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y), vertices(1, 2, 3, 4), faces(0, 1, 2));
-      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Color_R), vertices(1, 2, 3, 4), faces(1, 2, 3));
+      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(new float[] { 0, 0, 0 }),
+            faces());
+      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(new float[] { 0, 0, 0 }),
+            faces(new int[] { 0, 1, 2 }));
+      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y), vertices(new float[] { 1, 2, 3, 4 }), faces(new int[] { 0, 1, 2 }));
+      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Color_R), vertices(new float[] { 1, 2, 3, 4 }), faces(new int[] { 1, 2, 3 }));
    }
 
-   private MeshVertexType[] format(MeshVertexType... types) {
-      return types;
-   }
-
-   private float[] vertices(float... vertices) {
-      return vertices;
-   }
-
-   private int[] faces(int... faces) {
-      return faces;
-   }
-
-   private void testReadMesh(MeshVertexType[] vertexFormat, float[] vertexData, int[] faceIndices) throws IOException {
+   private void testReadMesh(MeshVertexType[] vertexFormat, float[][] vertexData, int[][] faceIndices) throws IOException {
       PlyDataType[] verticesDataTypes = { PlyDataType.Float, PlyDataType.Double };
       PlyDataType[] indicesDataTypes = { PlyDataType.Uchar, PlyDataType.Char, PlyDataType.Uint, PlyDataType.Int, PlyDataType.Ulong,
             PlyDataType.Long };
@@ -58,7 +48,7 @@ public class PlyIOReadTest {
    }
 
    private void testReadMesh(PlyDataType vertexDataType, PlyDataType indicesCountType, PlyDataType indicesType, MeshVertexType[] vertexFormat,
-         float[] vertexData, int[] faceIndices, PlyFormat plyFormat) throws IOException {
+         float[][] vertexData, int[][] faceIndices, PlyFormat plyFormat) throws IOException {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       PrimitiveOutputStream pos = new PrimitiveOutputStream(baos);
       pos.writeLine("ply");
@@ -67,10 +57,10 @@ public class PlyIOReadTest {
       writeComment(pos);
       int numVertices = (vertexFormat == null || vertexData == null || vertexFormat.length == 0)
             ? 0
-            : vertexData.length / vertexFormat.length;
+            : vertexData.length;
       int numFaces = (faceIndices == null)
             ? 0
-            : faceIndices.length / 3;
+            : faceIndices.length;
       pos.writeLine("element vertex " + numVertices);
       writeComment(pos);
       if (vertexFormat != null)
@@ -86,29 +76,29 @@ public class PlyIOReadTest {
       pos.flush();
       byte[] buffer = baos.toByteArray();
       ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
-      TestMesh actualMesh = null;
+      EditableMesh actualMesh = new EditableMesh();
+      actualMesh.setVertexFormat(vertexFormat);
       try {
-         actualMesh = PlyIO.read(new MeshBuilder(vertexFormat), bais);
+         MeshFormats.Ply_WritesAscii.read(actualMesh, bais);
       } catch (MeshIOException e) {
          Assert.fail();
       }
-      TestMesh expectedMesh = new TestMesh(vertexFormat, vertexData, faceIndices);
-      Assert.assertEquals(expectedMesh, actualMesh);
+      EditableMesh expectedMesh = createMesh(vertexFormat, vertexData, faceIndices);
+      checkMeshEquals(expectedMesh, actualMesh);
    }
 
    private void writeComment(PrimitiveOutputStream pos) throws IOException {
       pos.writeLine("comment blah blah blah");
    }
 
-   private void writeVertices(PlyFormat plyFormat, MeshVertexType[] vertexFormat, PlyDataType vertexDataType, int numVertices, float[] vertexData,
+   private void writeVertices(PlyFormat plyFormat, MeshVertexType[] vertexFormat, PlyDataType vertexDataType, int numVertices, float[][] vertexData,
          PrimitiveOutputStream pos) throws IOException {
       if (plyFormat == PlyFormat.ASCII_1_0) {
          StringBuilder sb = new StringBuilder();
          for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++) {
             sb.setLength(0);
-            int startIndex = vertexIndex * vertexFormat.length;
             for (int datumIndex = 0; datumIndex < vertexFormat.length; datumIndex++) {
-               sb.append(vertexData[startIndex + datumIndex]);
+               sb.append(vertexData[vertexIndex][datumIndex]);
                sb.append(' ');
             }
             sb.setLength(sb.length() - 1);
@@ -120,16 +110,14 @@ public class PlyIOReadTest {
       }
    }
 
-   private void writeVerticesBinary(MeshVertexType[] vertexFormat, PlyDataType vertexDataType, int numVertices, float[] vertexData,
+   private void writeVerticesBinary(MeshVertexType[] vertexFormat, PlyDataType vertexDataType, int numVertices, float[][] vertexData,
          PrimitiveOutputStream pos, boolean isBigEndian) throws IOException {
-      for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++) {
-         int startIndex = vertexIndex * vertexFormat.length;
+      for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++)
          for (int datumIndex = 0; datumIndex < vertexFormat.length; datumIndex++)
-            vertexDataType.writeReal(pos, isBigEndian, vertexData[startIndex + datumIndex]);
-      }
+            vertexDataType.writeReal(pos, isBigEndian, vertexData[vertexIndex][datumIndex]);
    }
 
-   private void writeIndices(PlyFormat plyFormat, PlyDataType countType, PlyDataType indicesType, int numFaces, int[] indices,
+   private void writeIndices(PlyFormat plyFormat, PlyDataType countType, PlyDataType indicesType, int numFaces, int[][] indices,
          PrimitiveOutputStream pos) throws IOException {
       if (plyFormat == PlyFormat.ASCII_1_0) {
          StringBuilder sb = new StringBuilder();
@@ -139,7 +127,7 @@ public class PlyIOReadTest {
             sb.append(' ');
             int startIndex = faceIndex * 3;
             for (int datumIndex = 0; datumIndex < 3; datumIndex++) {
-               sb.append(indices[startIndex + datumIndex]);
+               sb.append(indices[startIndex][datumIndex]);
                sb.append(' ');
             }
             sb.setLength(sb.length() - 1);
@@ -151,13 +139,12 @@ public class PlyIOReadTest {
       }
    }
 
-   private void writeIndicesBinary(PlyFormat plyFormat, PlyDataType countType, PlyDataType indicesType, int numFaces, int[] indices,
+   private void writeIndicesBinary(PlyFormat plyFormat, PlyDataType countType, PlyDataType indicesType, int numFaces, int[][] indices,
          PrimitiveOutputStream pos, boolean isBigEndian) throws IOException {
       for (int faceIndex = 0; faceIndex < numFaces; faceIndex++) {
          countType.writeInteger(pos, isBigEndian, 3);
-         int startIndex = faceIndex * 3;
          for (int datumIndex = 0; datumIndex < 3; datumIndex++)
-            indicesType.writeInteger(pos, isBigEndian, indices[startIndex + datumIndex]);
+            indicesType.writeInteger(pos, isBigEndian, indices[faceIndex][datumIndex]);
       }
    }
 }

@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import meshio.util.PrimitiveInputStream;
-import meshio.util.PrimitiveOutputStream;
+import io.PrimitiveInputStream;
+import io.PrimitiveOutputStream;
 
 public abstract class PlyFormat {
    private static class Ascii extends PlyFormat {

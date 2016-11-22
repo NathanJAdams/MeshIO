@@ -1,66 +1,44 @@
 package meshio.mesh;
 
 import java.lang.reflect.Array;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.ByteBuffer;
 
 public class MeshIndices<T> {
-   private final IndicesDataType<T>    indicesDataType;
-   private final Map<MeshIndexType, T> meshIndexTypeIndices = new HashMap<>();
+   private final IndicesDataType<T> indicesDataType;
+   private final MeshIndexType      meshIndexType;
+   private T                        indices;
 
-   public MeshIndices(IndicesDataType<T> indicesDataType) {
+   public MeshIndices(IndicesDataType<T> indicesDataType, MeshIndexType meshIndexType) {
       this.indicesDataType = indicesDataType;
-      for (MeshIndexType meshIndexType : MeshIndexType.values())
-         meshIndexTypeIndices.put(meshIndexType, indicesDataType.createEmptyArray());
+      this.meshIndexType = meshIndexType;
+      this.indices = indicesDataType.createEmptyArray();
    }
 
-   public T getIndicesData(MeshIndexType meshIndexType) {
-      return meshIndexTypeIndices.get(meshIndexType);
+   public ByteBuffer getIndicesBuffer() {
+      return indicesDataType.toByteBuffer(indices);
+   }
+
+   public boolean isValidVertexCount(int vertexCount) {
+      return indicesDataType.isValidVertexCount(vertexCount);
    }
 
    public int getFaceCount() {
-      T meshIndices = meshIndexTypeIndices.get(MeshIndexType.Mesh);
-      return Array.getLength(meshIndices) / MeshIndexType.Mesh.getOffsetsLength();
+      return Array.getLength(indices) / meshIndexType.getOffsetsLength();
    }
 
    public void setFaceCount(int faceCount) {
-      for (MeshIndexType meshIndexType : MeshIndexType.values()) {
-         T indices = meshIndexTypeIndices.get(meshIndexType);
-         indices = indicesDataType.createNewArray(indices, faceCount * meshIndexType.getOffsetsLength());
-         meshIndexTypeIndices.put(meshIndexType, indices);
-      }
+      this.indices = indicesDataType.createNewArray(indices, faceCount * meshIndexType.getOffsetsLength());
    }
 
-   public int getFaceIndex(int faceIndex, int faceCornerIndex) {
-      T meshIndices = meshIndexTypeIndices.get(MeshIndexType.Mesh);
-      int offset = faceCornerIndex + faceIndex * MeshIndexType.Mesh.getOffsetsLength();
-      return Array.getInt(meshIndices, offset);
-   }
-
-   public void setFaceIndex(int faceIndex, int faceCornerIndex, int index) {
-      for (MeshIndexType meshIndexType : MeshIndexType.values()) {
-         T indices = meshIndexTypeIndices.get(meshIndexType);
-         int meshOffset = faceCornerIndex + faceIndex * meshIndexType.getOffsetsLength();
-         // TODO mesh will set 1 value, outline will set 2 values
-         indicesDataType.setValue(indices, meshOffset, index);
-      }
+   public void setFaceIndex(int faceIndex, int faceCornerIndex, int vertexIndex) {
+      meshIndexType.setFaceIndex(indicesDataType, indices, faceIndex, faceCornerIndex, vertexIndex);
    }
 
    public void getFaceIndices(int faceIndex, int[] faceIndices) {
-      T meshIndices = meshIndexTypeIndices.get(MeshIndexType.Mesh);
-      int offsetsLength = MeshIndexType.Mesh.getOffsetsLength();
-      int offset = faceIndex * offsetsLength;
-      for (int i = 0; i < offsetsLength; i++)
-         faceIndices[i] = Array.getInt(meshIndices, offset + i);
+      meshIndexType.getFaceIndices(indicesDataType, indices, faceIndex, faceIndices);
    }
 
    public void setFaceIndices(int faceIndex, int[] faceIndices) {
-      for (MeshIndexType meshIndexType : MeshIndexType.values()) {
-         T indices = meshIndexTypeIndices.get(meshIndexType);
-         int offset = faceIndex * MeshIndexType.Mesh.getOffsetsLength();
-         // TODO mesh will set 3 values, outline will set 6 values
-         for (int i = 0; i < faceIndices.length; i++)
-            indicesDataType.setValue(indices, offset + i, faceIndices[i]);
-      }
+      meshIndexType.setFaceIndices(indicesDataType, indices, faceIndex, faceIndices);
    }
 }

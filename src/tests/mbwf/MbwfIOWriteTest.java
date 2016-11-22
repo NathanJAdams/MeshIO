@@ -10,19 +10,19 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.PrimitiveInputStream;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
 import meshio.mbwf.MbwfIO;
-import meshio.util.PrimitiveInputStream;
-import tests.TestMesh;
+import meshio.mesh.EditableMesh;
+import tests.AReadWriteTest;
 
-public class MbwfIOWriteTest {
+public class MbwfIOWriteTest extends AReadWriteTest {
    private static final boolean IS_BIG_ENDIAN = true;
    private static final float   EQUALS_DELTA  = 1E-4f;
 
    @Test(expected = MeshIOException.class)
    public void testBadWrite() throws IOException, MeshIOException {
-      testWriteMesh(null, null, null);
       testWriteMesh(format(), vertices(), faces());
       testWriteMesh(format(MeshVertexType.Position_X), vertices(), faces());
    }
@@ -30,28 +30,19 @@ public class MbwfIOWriteTest {
    @Test
    public void testWrite() throws IOException, MeshIOException {
       testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(), faces());
-      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(0, 0, 0), faces());
-      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(0, 0, 0), faces(0, 1, 2));
-      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y), vertices(-1, 1, -0.5f, 0.25f), faces(0, 1, 2));
+      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(new float[] { 0, 0, 0 }),
+            faces());
+      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(new float[] { 0, 0, 0 }),
+            faces(new int[] { 0, 1, 2 }));
+      testWriteMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y), vertices(new float[] { -1, 1, -0.5f, 0.25f }),
+            faces(new int[] { 0, 1, 2 }));
    }
 
-   private MeshVertexType[] format(MeshVertexType... types) {
-      return types;
-   }
-
-   private float[] vertices(float... vertices) {
-      return vertices;
-   }
-
-   private int[] faces(int... faces) {
-      return faces;
-   }
-
-   private void testWriteMesh(MeshVertexType[] vertexFormat, float[] vertexData, int[] faceIndices) throws IOException, MeshIOException {
+   private void testWriteMesh(MeshVertexType[] vertexFormat, float[][] vertexData, int[][] faceIndices) throws IOException, MeshIOException {
       Set<MeshVertexType> types = new HashSet<>();
       if (vertexFormat != null)
          types.addAll(Arrays.asList(vertexFormat));
-      TestMesh mesh = new TestMesh(vertexFormat, vertexData, faceIndices);
+      EditableMesh mesh = createMesh(vertexFormat, vertexData, faceIndices);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       MbwfIO.write(mesh, baos);
       byte[] buffer = baos.toByteArray();
@@ -59,10 +50,10 @@ public class MbwfIOWriteTest {
       PrimitiveInputStream pis = new PrimitiveInputStream(bais);
       int vertexCount = (vertexFormat == null || vertexData == null || vertexFormat.length == 0)
             ? 0
-            : vertexData.length / vertexFormat.length;
+            : vertexData.length;
       int faceCount = (faceIndices == null)
             ? 0
-            : faceIndices.length / 3;
+            : faceIndices.length;
       byte[] magicBytes = new byte[4];
       pis.read(magicBytes);
       short version = pis.readShort(IS_BIG_ENDIAN);
@@ -85,7 +76,7 @@ public class MbwfIOWriteTest {
       if (vertexFormat != null && vertexData != null) {
          for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
             for (int datumIndex = 0; datumIndex < vertexFormat.length; datumIndex++) {
-               float expected = vertexData[vertexIndex * vertexFormat.length + datumIndex];
+               float expected = vertexData[vertexIndex][datumIndex];
                MeshVertexType type = vertexFormat[datumIndex];
                float datum = convertRaw(pis, type);
                Assert.assertEquals(expected, datum, EQUALS_DELTA);
@@ -93,10 +84,11 @@ public class MbwfIOWriteTest {
          }
       }
       Assert.assertEquals(faceCount, pis.readInt(IS_BIG_ENDIAN));
-      int faceIndicesCount = faceCount * 3;
-      for (int faceIndicesIndex = 0; faceIndicesIndex < faceIndicesCount; faceIndicesIndex++) {
-         int actualFaceIndex = pis.readByte();
-         Assert.assertEquals(actualFaceIndex, faceIndices[faceIndicesIndex]);
+      for (int faceIndex = 0; faceIndex < faceCount; faceIndex++) {
+         for (int faceIndicesIndex = 0; faceIndicesIndex < 3; faceIndicesIndex++) {
+            int actualFaceIndex = pis.readByte();
+            Assert.assertEquals(actualFaceIndex, faceIndices[faceIndex][faceIndicesIndex]);
+         }
       }
    }
 

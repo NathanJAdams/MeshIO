@@ -10,38 +10,26 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.PrimitiveOutputStream;
+import meshio.MeshFormats;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
-import meshio.mbwf.MbwfIO;
+import meshio.mesh.EditableMesh;
 import meshio.util.DatumEnDecode;
-import meshio.util.PrimitiveOutputStream;
-import tests.MeshBuilder;
-import tests.TestMesh;
+import tests.AReadWriteTest;
 
-public class MbwfIOReadTest {
+public class MbwfIOReadTest extends AReadWriteTest {
    private static final boolean IS_BIG_ENDIAN = true;
 
    @Test
    public void testRead() throws IOException {
-      testReadMesh(null, null, null);
       testReadMesh(format(), vertices(), faces());
-      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y), vertices(0, 0), faces(0, 1, 2));
-      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(-1, 0, 1), faces(0, 1, 2));
+      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y), vertices(new float[] { 0, 0 }), faces(new int[] { 0, 1, 2 }));
+      testReadMesh(format(MeshVertexType.Position_X, MeshVertexType.Position_Y, MeshVertexType.Position_Z), vertices(new float[] { -1, 0, 1 }),
+            faces(new int[] { 0, 1, 2 }));
    }
 
-   private MeshVertexType[] format(MeshVertexType... types) {
-      return types;
-   }
-
-   private float[] vertices(float... vertices) {
-      return vertices;
-   }
-
-   private int[] faces(int... faces) {
-      return faces;
-   }
-
-   private void testReadMesh(MeshVertexType[] vertexFormat, float[] vertexData, int[] faceIndices) throws IOException {
+   private void testReadMesh(MeshVertexType[] vertexFormat, float[][] vertexData, int[][] faceIndices) throws IOException {
       Set<MeshVertexType> types = new HashSet<>();
       if (vertexFormat != null)
          types.addAll(Arrays.asList(vertexFormat));
@@ -64,43 +52,42 @@ public class MbwfIOReadTest {
       pos.writeShort(metadata, IS_BIG_ENDIAN);
       int numVertices = (vertexFormat == null || vertexData == null || vertexFormat.length == 0)
             ? 0
-            : vertexData.length / vertexFormat.length;
+            : vertexData.length;
       pos.writeInt(numVertices, IS_BIG_ENDIAN);
       int numFaces = (faceIndices == null)
             ? 0
-            : faceIndices.length / 3;
+            : faceIndices.length;
       writeVertices(vertexFormat, numVertices, vertexData, pos);
       pos.writeInt(numFaces, IS_BIG_ENDIAN);
       writeIndices(numFaces, faceIndices, pos);
       pos.flush();
       byte[] buffer = baos.toByteArray();
       ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
-      TestMesh actualMesh = null;
+      EditableMesh actualMesh = new EditableMesh();
+      actualMesh.setVertexFormat(vertexFormat);
       try {
-         actualMesh = MbwfIO.read(new MeshBuilder(vertexFormat), bais);
+         MeshFormats.Mbwf.read(actualMesh, bais);
       } catch (MeshIOException e) {
          Assert.fail();
       }
-      TestMesh expectedMesh = new TestMesh(vertexFormat, vertexData, faceIndices);
-      Assert.assertEquals(expectedMesh, actualMesh);
+      EditableMesh expectedMesh = createMesh(vertexFormat, vertexData, faceIndices);
+      checkMeshEquals(expectedMesh, actualMesh);
    }
 
-   private void writeVertices(MeshVertexType[] vertexFormat, int numVertices, float[] vertexData, PrimitiveOutputStream pos) throws IOException {
+   private void writeVertices(MeshVertexType[] vertexFormat, int numVertices, float[][] vertexData, PrimitiveOutputStream pos) throws IOException {
       for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++) {
-         int startIndex = vertexIndex * vertexFormat.length;
          for (int datumIndex = 0; datumIndex < vertexFormat.length; datumIndex++) {
             MeshVertexType type = vertexFormat[datumIndex];
-            float datum = vertexData[startIndex + datumIndex];
+            float datum = vertexData[vertexIndex][datumIndex];
             writeDatum(datum, type, pos);
          }
       }
    }
 
-   private void writeIndices(int numFaces, int[] indices, PrimitiveOutputStream pos) throws IOException {
+   private void writeIndices(int numFaces, int[][] indices, PrimitiveOutputStream pos) throws IOException {
       for (int faceIndex = 0; faceIndex < numFaces; faceIndex++) {
-         int startIndex = faceIndex * 3;
          for (int datumIndex = 0; datumIndex < 3; datumIndex++)
-            pos.writeByte((byte) indices[startIndex + datumIndex]);
+            pos.writeByte((byte) indices[faceIndex][datumIndex]);
       }
    }
 

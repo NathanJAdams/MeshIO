@@ -1,14 +1,23 @@
 package meshio;
 
-public class NullMeshBuilder<T> implements IMeshBuilder<T> {
+import meshio.mesh.IMesh;
+
+public class NullMeshBuilder implements IMeshBuilder {
+   private static final IMesh MESH = new NullMesh();
+
    @Override
    public MeshVertexType[] getVertexFormat() {
-      return null;
+      return MESH.getVertexFormat();
    }
 
    @Override
-   public T build() {
-      return null;
+   public int getVertexCount() {
+      return MESH.getVertexCount();
+   }
+
+   @Override
+   public int getFaceCount() {
+      return MESH.getFaceCount();
    }
 
    @Override
@@ -25,5 +34,10 @@ public class NullMeshBuilder<T> implements IMeshBuilder<T> {
 
    @Override
    public void setFaceIndices(int faceIndex, int[] faceIndices) {
+   }
+
+   @Override
+   public IMesh build() {
+      return MESH;
    }
 }

@@ -1,19 +1,23 @@
 package meshio;
 
+import meshio.mesh.IMesh;
+
 public class NullMeshSaver implements IMeshSaver {
+   private static final IMesh MESH = new NullMesh();
+
    @Override
    public MeshVertexType[] getVertexFormat() {
-      return new MeshVertexType[0];
+      return MESH.getVertexFormat();
    }
 
    @Override
    public int getVertexCount() {
-      return 0;
+      return MESH.getVertexCount();
    }
 
    @Override
    public int getFaceCount() {
-      return 0;
+      return MESH.getFaceCount();
    }
 
    @Override

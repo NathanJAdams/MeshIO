@@ -19,19 +19,17 @@ public class VerticesTest {
 
    @Test
    public void testVertexDataAfterFormatChange() {
-      MeshVertices vertices = new MeshVertices();
+      MeshVertices vertices = new MeshVertices(MeshVertexType.Color_R, MeshVertexType.Color_G, MeshVertexType.Color_B, MeshVertexType.Color_A);
       vertices.setVertexCount(5);
       int index = 3;
-      vertices.setFormat(MeshVertexType.Color_A, MeshVertexType.Color_B);
       vertices.setVertexDatum(index, MeshVertexType.Color_A, 11);
       vertices.setVertexDatum(index, MeshVertexType.Color_B, 23);
       float[] preVertexData = new float[2];
-      vertices.getVertexData(index, preVertexData);
+      vertices.getVerticesAsFormat(MeshVertexType.Color_A, MeshVertexType.Color_B);
       float preA = preVertexData[0];
       float preB = preVertexData[1];
-      vertices.setFormat(MeshVertexType.Color_R, MeshVertexType.Color_G, MeshVertexType.Color_B, MeshVertexType.Color_A);
       float[] postVertexData = new float[4];
-      vertices.getVertexData(index, postVertexData);
+      vertices.getVerticesAsFormat(MeshVertexType.Color_R, MeshVertexType.Color_G, MeshVertexType.Color_B, MeshVertexType.Color_A);
       float postA = postVertexData[3];
       float postB = postVertexData[2];
       Assert.assertEquals(preA, postA, DELTA);
@@ -40,9 +38,8 @@ public class VerticesTest {
 
    @Test
    public void testVertexDataAfterVertexCountChange() {
-      MeshVertices vertices = new MeshVertices();
+      MeshVertices vertices = new MeshVertices(MeshVertexType.Color_A);
       vertices.setVertexCount(2);
-      vertices.setFormat(MeshVertexType.Color_A);
       int index = 1;
       float datum = 23;
       vertices.setVertexDatum(index, MeshVertexType.Color_A, datum);
@@ -56,16 +53,14 @@ public class VerticesTest {
 
    @Test(expected = ArrayIndexOutOfBoundsException.class)
    public void testArrayExceptionOver() {
-      MeshVertices vertices = new MeshVertices();
-      vertices.setFormat(MeshVertexType.Color_A);
+      MeshVertices vertices = new MeshVertices(MeshVertexType.Color_A);
       vertices.setVertexCount(1);
       vertices.getVertexDatum(2, MeshVertexType.Color_A);
    }
 
    @Test(expected = ArrayIndexOutOfBoundsException.class)
    public void testArrayExceptionUnder() {
-      MeshVertices vertices = new MeshVertices();
-      vertices.setFormat(MeshVertexType.Color_A);
+      MeshVertices vertices = new MeshVertices(MeshVertexType.Color_A);
       vertices.setVertexCount(1);
       vertices.getVertexDatum(-1, MeshVertexType.Color_A);
    }

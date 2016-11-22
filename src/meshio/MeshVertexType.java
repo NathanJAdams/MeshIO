@@ -12,5 +12,10 @@ public enum MeshVertexType {
    Color_B,
    Color_A,
    ImageCoord_X,
-   ImageCoord_Y,
+   ImageCoord_Y;
+   private static final MeshVertexType[] VALUES = values();
+
+   public static MeshVertexType[] getValues() {
+      return VALUES;
+   }
 }
