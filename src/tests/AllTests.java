@@ -20,11 +20,11 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
-import collections.ListExt;
-import compare.ClassNameComparator;
-import functional.IFunction1;
-import functional.IPredicate1;
-import reflect.MethodExt;
+import util.ClassNameComparator;
+import util.IFunction1;
+import util.IPredicate1;
+import util.ListExt;
+import util.MethodExt;
 
 public class AllTests {
    @Test

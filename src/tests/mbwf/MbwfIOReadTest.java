@@ -10,16 +10,17 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.PrimitiveOutputStream;
 import meshio.MeshFormats;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
 import meshio.mesh.EditableMesh;
-import meshio.util.DatumEnDecode;
 import tests.AReadWriteTest;
+import util.DatumEnDecode;
+import util.PrimitiveOutputStream;
 
 public class MbwfIOReadTest extends AReadWriteTest {
    private static final boolean IS_BIG_ENDIAN = true;
+   private static final float   DELTA         = 0;
 
    @Test
    public void testRead() throws IOException {
@@ -116,45 +117,41 @@ public class MbwfIOReadTest extends AReadWriteTest {
 
    @Test
    public void testDecodeByte() {
-      System.out.println("=====Decoding byte=====");
-      System.out.println(DatumEnDecode.decodeByte((byte) 0x81, true));
-      System.out.println(DatumEnDecode.decodeByte((byte) 0, true));
-      System.out.println(DatumEnDecode.decodeByte((byte) 0x7F, true));
-      System.out.println(DatumEnDecode.decodeByte((byte) 0x81, false));
-      System.out.println(DatumEnDecode.decodeByte((byte) 0, false));
-      System.out.println(DatumEnDecode.decodeByte((byte) 0x7F, false));
+      Assert.assertEquals(-1f, DatumEnDecode.decodeByte((byte) 0x81, true), DELTA);
+      Assert.assertEquals(0f, DatumEnDecode.decodeByte((byte) 0, true), DELTA);
+      Assert.assertEquals(1f, DatumEnDecode.decodeByte((byte) 0x7F, true), DELTA);
+      Assert.assertEquals(0f, DatumEnDecode.decodeByte((byte) 0x81, false), DELTA);
+      Assert.assertEquals(0.5f, DatumEnDecode.decodeByte((byte) 0, false), DELTA);
+      Assert.assertEquals(1f, DatumEnDecode.decodeByte((byte) 0x7F, false), DELTA);
    }
 
    @Test
    public void testDecodeShort() {
-      System.out.println("=====Decoding short=====");
-      System.out.println(DatumEnDecode.decodeShort((short) 0x8001, true));
-      System.out.println(DatumEnDecode.decodeShort((short) 0, true));
-      System.out.println(DatumEnDecode.decodeShort((short) 0x7FFF, true));
-      System.out.println(DatumEnDecode.decodeShort((short) 0x8001, false));
-      System.out.println(DatumEnDecode.decodeShort((short) 0, false));
-      System.out.println(DatumEnDecode.decodeShort((short) 0x7FFF, false));
+      Assert.assertEquals(-1f, DatumEnDecode.decodeShort((short) 0x8001, true), DELTA);
+      Assert.assertEquals(0f, DatumEnDecode.decodeShort((short) 0, true), DELTA);
+      Assert.assertEquals(1f, DatumEnDecode.decodeShort((short) 0x7FFF, true), DELTA);
+      Assert.assertEquals(0f, DatumEnDecode.decodeShort((short) 0x8001, false), DELTA);
+      Assert.assertEquals(0.5f, DatumEnDecode.decodeShort((short) 0, false), DELTA);
+      Assert.assertEquals(1f, DatumEnDecode.decodeShort((short) 0x7FFF, false), DELTA);
    }
 
    @Test
    public void testEncodeByte() {
-      System.out.println("=====Encoding byte=====");
-      System.out.println(DatumEnDecode.encodeAsByte(-1, true));
-      System.out.println(DatumEnDecode.encodeAsByte(0, true));
-      System.out.println(DatumEnDecode.encodeAsByte(1, true));
-      System.out.println(DatumEnDecode.encodeAsByte(0, false));
-      System.out.println(DatumEnDecode.encodeAsByte(0.5f, false));
-      System.out.println(DatumEnDecode.encodeAsByte(1, false));
+      Assert.assertEquals(-127, DatumEnDecode.encodeAsByte(-1, true));
+      Assert.assertEquals(0, DatumEnDecode.encodeAsByte(0, true));
+      Assert.assertEquals(127, DatumEnDecode.encodeAsByte(1, true));
+      Assert.assertEquals(-127, DatumEnDecode.encodeAsByte(0, false));
+      Assert.assertEquals(0, DatumEnDecode.encodeAsByte(0.5f, false));
+      Assert.assertEquals(127, DatumEnDecode.encodeAsByte(1, false));
    }
 
    @Test
    public void testEncodeShort() {
-      System.out.println("=====Encoding short=====");
-      System.out.println(DatumEnDecode.encodeAsShort(-1, true));
-      System.out.println(DatumEnDecode.encodeAsShort(0, true));
-      System.out.println(DatumEnDecode.encodeAsShort(1, true));
-      System.out.println(DatumEnDecode.encodeAsShort(0, false));
-      System.out.println(DatumEnDecode.encodeAsShort(0.5f, false));
-      System.out.println(DatumEnDecode.encodeAsShort(1, false));
+      Assert.assertEquals(-32767, DatumEnDecode.encodeAsShort(-1, true));
+      Assert.assertEquals(0, DatumEnDecode.encodeAsShort(0, true));
+      Assert.assertEquals(32767, DatumEnDecode.encodeAsShort(1, true));
+      Assert.assertEquals(-32767, DatumEnDecode.encodeAsShort(0, false));
+      Assert.assertEquals(0, DatumEnDecode.encodeAsShort(0.5f, false));
+      Assert.assertEquals(32767, DatumEnDecode.encodeAsShort(1, false));
    }
 }

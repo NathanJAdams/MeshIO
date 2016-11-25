@@ -2,8 +2,8 @@ package meshio.mesh;
 
 import java.util.Arrays;
 
-import collections.EnumIntMap;
 import meshio.MeshVertexType;
+import util.EnumIntMap;
 
 public class MeshVertices {
    private MeshVertexType[]           format            = new MeshVertexType[0];

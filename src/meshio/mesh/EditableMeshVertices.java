@@ -4,10 +4,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import collections.EnumFloatMap;
-import collections.MultiSet;
-import io.BufferExt;
 import meshio.MeshVertexType;
+import util.BufferExt;
+import util.EnumFloatMap;
+import util.MultiSet;
 
 public class EditableMeshVertices {
    private final List<EnumFloatMap<MeshVertexType>> vertexList            = new ArrayList<>();

@@ -9,14 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.PrimitiveInputStream;
-import io.PrimitiveOutputStream;
 import meshio.IMeshBuilder;
 import meshio.IMeshSaver;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
 import meshio.mesh.IMesh;
-import meshio.util.FormatIndexes;
+import util.FormatIndexes;
+import util.PrimitiveInputStream;
+import util.PrimitiveOutputStream;
 
 public class PlyIO {
    private static final String                      PLY                                = "ply";

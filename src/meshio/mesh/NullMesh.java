@@ -2,8 +2,8 @@ package meshio.mesh;
 
 import java.nio.ByteBuffer;
 
-import io.BufferExt;
 import meshio.MeshVertexType;
+import util.BufferExt;
 
 public class NullMesh implements IMesh {
    private static final MeshVertexType[] FORMAT          = new MeshVertexType[0];

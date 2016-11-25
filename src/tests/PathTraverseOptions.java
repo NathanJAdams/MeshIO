@@ -2,8 +2,8 @@ package tests;
 
 import java.nio.file.Path;
 
-import functional.FunctionalIdentities;
-import functional.IPredicate1;
+import util.FunctionalIdentities;
+import util.IPredicate1;
 
 public class PathTraverseOptions {
    private final boolean           recurse;

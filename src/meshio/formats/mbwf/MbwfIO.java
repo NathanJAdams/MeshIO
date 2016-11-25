@@ -6,15 +6,15 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumMap;
 
-import io.PrimitiveInputStream;
-import io.PrimitiveOutputStream;
 import meshio.IMeshBuilder;
 import meshio.IMeshSaver;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
 import meshio.mesh.IMesh;
-import meshio.util.DatumEnDecode;
-import meshio.util.FormatIndexes;
+import util.DatumEnDecode;
+import util.FormatIndexes;
+import util.PrimitiveInputStream;
+import util.PrimitiveOutputStream;
 
 public class MbwfIO {
    private static final boolean IS_BIG_ENDIAN        = true;

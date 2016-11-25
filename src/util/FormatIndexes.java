@@ -1,4 +1,4 @@
-package meshio.util;
+package util;
 
 import java.util.EnumMap;
 

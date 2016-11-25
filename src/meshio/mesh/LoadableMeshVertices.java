@@ -2,9 +2,9 @@ package meshio.mesh;
 
 import java.nio.ByteBuffer;
 
-import collections.EnumIntMap;
-import io.BufferExt;
 import meshio.MeshVertexType;
+import util.BufferExt;
+import util.EnumIntMap;
 
 public class LoadableMeshVertices {
    private final MeshVertexType[]     format;

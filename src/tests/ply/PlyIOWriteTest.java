@@ -7,7 +7,6 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.PrimitiveInputStream;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
 import meshio.formats.ply.PlyDataType;
@@ -15,6 +14,7 @@ import meshio.formats.ply.PlyFormat;
 import meshio.formats.ply.PlyIO;
 import meshio.mesh.EditableMesh;
 import tests.AReadWriteTest;
+import util.PrimitiveInputStream;
 
 public class PlyIOWriteTest extends AReadWriteTest {
    @Test

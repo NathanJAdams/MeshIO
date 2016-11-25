@@ -1,4 +1,4 @@
-package meshio.util;
+package util;
 
 public class DatumEnDecode {
    private static final long BYTE_RANGE  = 0xFE;
