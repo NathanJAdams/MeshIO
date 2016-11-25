@@ -1,4 +1,4 @@
-package meshio.ply;
+package meshio.formats.ply;
 
 import java.io.IOException;
 import java.io.InputStream;

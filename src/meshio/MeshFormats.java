@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import meshio.mbwf.MbwfIO;
+import meshio.formats.mbwf.MbwfIO;
+import meshio.formats.ply.PlyFormat;
+import meshio.formats.ply.PlyIO;
 import meshio.mesh.IMesh;
-import meshio.ply.PlyFormat;
-import meshio.ply.PlyIO;
 
 public class MeshFormats {
    private static abstract class MeshFormat implements IMeshFormat {

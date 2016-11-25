@@ -10,10 +10,10 @@ import org.junit.Test;
 import io.PrimitiveInputStream;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
+import meshio.formats.ply.PlyDataType;
+import meshio.formats.ply.PlyFormat;
+import meshio.formats.ply.PlyIO;
 import meshio.mesh.EditableMesh;
-import meshio.ply.PlyDataType;
-import meshio.ply.PlyFormat;
-import meshio.ply.PlyIO;
 import tests.AReadWriteTest;
 
 public class PlyIOWriteTest extends AReadWriteTest {

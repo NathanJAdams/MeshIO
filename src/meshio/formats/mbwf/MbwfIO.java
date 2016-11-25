@@ -1,4 +1,4 @@
-package meshio.mbwf;
+package meshio.formats.mbwf;
 
 import java.io.IOException;
 import java.io.InputStream;

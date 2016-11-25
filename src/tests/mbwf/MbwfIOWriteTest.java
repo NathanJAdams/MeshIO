@@ -13,7 +13,7 @@ import org.junit.Test;
 import io.PrimitiveInputStream;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
-import meshio.mbwf.MbwfIO;
+import meshio.formats.mbwf.MbwfIO;
 import meshio.mesh.EditableMesh;
 import tests.AReadWriteTest;
 

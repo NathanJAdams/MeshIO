@@ -1,6 +1,7 @@
-package meshio;
+package meshio.mesh;
 
-import meshio.mesh.IMesh;
+import meshio.IMeshBuilder;
+import meshio.MeshVertexType;
 
 public class NullMeshBuilder implements IMeshBuilder {
    private static final IMesh MESH = new NullMesh();

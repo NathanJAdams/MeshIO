@@ -1,6 +1,7 @@
-package meshio;
+package meshio.mesh;
 
-import meshio.mesh.IMesh;
+import meshio.IMeshSaver;
+import meshio.MeshVertexType;
 
 public class NullMeshSaver implements IMeshSaver {
    private static final IMesh MESH = new NullMesh();

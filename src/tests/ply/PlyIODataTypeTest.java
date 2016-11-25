@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import io.PrimitiveInputStream;
 import io.PrimitiveOutputStream;
-import meshio.ply.PlyDataType;
+import meshio.formats.ply.PlyDataType;
 
 public class PlyIODataTypeTest {
    @Test
