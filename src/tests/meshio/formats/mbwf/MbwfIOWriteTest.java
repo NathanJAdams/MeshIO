@@ -1,4 +1,4 @@
-package tests.mbwf;
+package tests.meshio.formats.mbwf;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

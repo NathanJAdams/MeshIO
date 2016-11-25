@@ -1,4 +1,4 @@
-package tests.ply;
+package tests.meshio.formats.ply;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

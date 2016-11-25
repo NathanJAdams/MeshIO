@@ -1,4 +1,4 @@
-package tests.mesh;
+package tests.meshio.mesh;
 
 import java.nio.ByteBuffer;
 
