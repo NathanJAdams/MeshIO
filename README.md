@@ -7,7 +7,7 @@ Currently the only supported formats are PLY and MBWF, support for further forma
 
 
 <h3>Read</h3>
-To read an object you need a builder object that implements IMeshBuilder\<YourMeshClass\>, and an input stream for the data. Then call the MeshIO.read() method.
+To read an object you need a builder object that implements IMeshBuilder\<YourMeshClass\> and an input stream for the data. Then call the MeshIO.read() method.
 
     try {
         YourMeshClass newMeshObject = MeshIO.read(MeshFormats.{Format}, meshBuilder, inputStream);
