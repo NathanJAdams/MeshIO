@@ -8,19 +8,19 @@ public class DatumEnDecode {
    public static byte encodeAsByte(float decoded, boolean areNegativesUsed) {
       return areNegativesUsed
             ? (byte) (decoded * Byte.MAX_VALUE)
-            : (byte) ((int) (decoded * BYTE_RANGE) - Byte.MAX_VALUE);
+            : (byte) (Math.round((decoded * BYTE_RANGE) - Byte.MAX_VALUE));
    }
 
    public static short encodeAsShort(float decoded, boolean areNegativesUsed) {
       return areNegativesUsed
             ? (short) (decoded * Short.MAX_VALUE)
-            : (short) ((int) (decoded * SHORT_RANGE) - Short.MAX_VALUE);
+            : (short) (Math.round((decoded * SHORT_RANGE) - Short.MAX_VALUE));
    }
 
    public static int encodeAsInt(float decoded, boolean areNegativesUsed) {
       return areNegativesUsed
             ? (int) (decoded * Integer.MAX_VALUE)
-            : (int) ((int) (decoded * INT_RANGE) - Integer.MAX_VALUE);
+            : (int) (Math.round((decoded * INT_RANGE) - Integer.MAX_VALUE));
    }
 
    public static float decodeByte(byte encoded, boolean areNegativesUsed) {
