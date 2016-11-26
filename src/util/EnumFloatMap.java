@@ -3,6 +3,10 @@ package util;
 public class EnumFloatMap<E extends Enum<E>> {
    private final float[] array;
 
+   public EnumFloatMap(Class<E> enumClass) {
+      this(enumClass.getEnumConstants());
+   }
+
    public EnumFloatMap(E[] enumConstants) {
       this.array = new float[enumConstants.length];
    }

@@ -76,9 +76,9 @@ public class MbwfFormat implements IMeshFormat {
       boolean isImageCoords = (metadata & IS_IMAGE_COORDS_MASK) != 0;
       boolean isColors = (metadata & IS_COLORS_MASK) != 0;
       boolean isColorAlpha = (metadata & IS_COLOR_ALPHA_MASK) != 0;
-      MeshVertexType[] format = builder.getVertexFormat();
-      EnumMap<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(format);
-      float[] vertexData = new float[format.length];
+      MeshVertexType[] vertexFormat = builder.getVertexFormat();
+      EnumMap<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(vertexFormat);
+      float[] vertexData = new float[vertexFormat.length];
       for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
          readShorts(vertexData, typeIndexes, pis, true, MeshVertexType.Position_X, MeshVertexType.Position_Y);
          if (is3D)

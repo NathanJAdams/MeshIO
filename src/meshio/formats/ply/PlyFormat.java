@@ -175,16 +175,16 @@ public abstract class PlyFormat implements IMeshFormat {
       }
    }
 
-   private static void readVertices(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder builder, List<MeshVertexType> vertexFormat,
+   private static void readVertices(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder builder, List<MeshVertexType> readVertexFormat,
          List<PlyDataType> vertexDataTypes, int numVertices) throws IOException {
-      MeshVertexType[] builderVertexFormat = builder.getVertexFormat();
-      EnumMap<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(builderVertexFormat);
-      float[] readVertexData = new float[vertexFormat.size()];
-      float[] formattedVertexData = new float[typeIndexes.size()];
+      MeshVertexType[] vertexFormat = builder.getVertexFormat();
+      EnumMap<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(vertexFormat);
+      float[] readVertexData = new float[readVertexFormat.size()];
+      float[] formattedVertexData = new float[vertexFormat.length];
       for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++) {
          plyFormat.fillVertexData(pis, readVertexData, vertexDataTypes.get(vertexIndex));
-         for (int vertexFormatIndex = 0; vertexFormatIndex < vertexFormat.size(); vertexFormatIndex++) {
-            MeshVertexType readType = vertexFormat.get(vertexFormatIndex);
+         for (int vertexFormatIndex = 0; vertexFormatIndex < readVertexFormat.size(); vertexFormatIndex++) {
+            MeshVertexType readType = readVertexFormat.get(vertexFormatIndex);
             Integer indexObj = typeIndexes.get(readType);
             if (indexObj != null)
                formattedVertexData[indexObj] = readVertexData[vertexFormatIndex];

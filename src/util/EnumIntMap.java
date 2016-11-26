@@ -3,6 +3,10 @@ package util;
 public class EnumIntMap<E extends Enum<E>> {
    private final int[] array;
 
+   public EnumIntMap(Class<E> enumClass) {
+      this(enumClass.getEnumConstants());
+   }
+
    public EnumIntMap(E[] enumConstants) {
       this.array = new int[enumConstants.length];
    }

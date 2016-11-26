@@ -12,12 +12,12 @@ import util.MultiSet;
 public class EditableMeshVertices {
    private final List<EnumFloatMap<MeshVertexType>> vertexList            = new ArrayList<>();
    private final MultiSet<MeshVertexType, Integer>  meshVertexTypeIndexes = new MultiSet<>();
-   private MeshVertexType[]                         format                = new MeshVertexType[] {};
+   private MeshVertexType[]                         format                = new MeshVertexType[0];
    private float[]                                  vertices              = new float[0];
    private int                                      vertexCount;
 
    public ByteBuffer toByteBuffer() {
-      return BufferExt.with(vertices);
+      return BufferExt.with(vertices, 0, vertexCount * format.length);
    }
 
    public MeshVertexType[] getFormat() {
@@ -39,13 +39,16 @@ public class EditableMeshVertices {
    }
 
    public void setVertexCount(int vertexCount) {
-      if (this.vertexCount > vertexCount)
+      int previousVertexCount = this.vertexCount;
+      this.vertexCount = vertexCount;
+      if (previousVertexCount > vertexCount) {
          for (int i = vertexCount; i < vertexList.size(); i++)
             vertexList.get(i).clear();
-      else if (this.vertexCount < vertexCount)
+      } else if (previousVertexCount < vertexCount) {
          for (int i = vertexList.size(); i < vertexCount; i++)
             vertexList.add(new EnumFloatMap<>(MeshVertexType.getValues()));
-      this.vertexCount = vertexCount;
+         updateVertices();
+      }
    }
 
    public float getVertexDatum(int vertexIndex, MeshVertexType meshVertexType) {
@@ -73,8 +76,8 @@ public class EditableMeshVertices {
    }
 
    private void updateVertices() {
-      this.vertices = new float[vertexList.size() * format.length];
-      for (int vertexIndex = 0; vertexIndex < vertexList.size(); vertexIndex++) {
+      this.vertices = new float[vertexCount * format.length];
+      for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
          int offsetIndex = vertexIndex * format.length;
          EnumFloatMap<MeshVertexType> vertex = vertexList.get(vertexIndex);
          for (int formatIndex = 0; formatIndex < format.length; formatIndex++)

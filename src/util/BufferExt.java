@@ -73,26 +73,42 @@ public class BufferExt {
    }
 
    public static ByteBuffer with(byte[] array) {
+      return with(array, 0, array.length);
+   }
+
+   public static ByteBuffer with(byte[] array, int offset, int length) {
       ByteBuffer bb = createByteBuffer(array.length * BYTES_PER_BYTE);
-      bb.put(array).position(0);
+      bb.put(array, offset, length).position(0);
       return bb;
    }
 
    public static ByteBuffer with(short[] array) {
+      return with(array, 0, array.length);
+   }
+
+   public static ByteBuffer with(short[] array, int offset, int length) {
       ByteBuffer bb = createByteBuffer(array.length * BYTES_PER_SHORT);
-      bb.asShortBuffer().put(array).position(0);
+      bb.asShortBuffer().put(array, offset, length).position(0);
       return bb;
    }
 
    public static ByteBuffer with(int[] array) {
+      return with(array, 0, array.length);
+   }
+
+   public static ByteBuffer with(int[] array, int offset, int length) {
       ByteBuffer bb = createByteBuffer(array.length * BYTES_PER_INT);
-      bb.asIntBuffer().put(array).position(0);
+      bb.asIntBuffer().put(array, offset, length).position(0);
       return bb;
    }
 
    public static ByteBuffer with(float[] array) {
+      return with(array, 0, array.length);
+   }
+
+   public static ByteBuffer with(float[] array, int offset, int length) {
       ByteBuffer bb = createByteBuffer(array.length * BYTES_PER_FLOAT);
-      bb.asFloatBuffer().put(array).position(0);
+      bb.asFloatBuffer().put(array, offset, length).position(0);
       return bb;
    }
 

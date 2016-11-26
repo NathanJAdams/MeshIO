@@ -4,17 +4,13 @@ import java.nio.ByteBuffer;
 
 import meshio.MeshVertexType;
 import util.BufferExt;
-import util.EnumIntMap;
 
 public class LoadableMeshVertices {
-   private final MeshVertexType[]     format;
-   private EnumIntMap<MeshVertexType> formatTypeIndexes = new EnumIntMap<>(MeshVertexType.getValues());
-   private float[]                    vertices;
+   private final MeshVertexType[] format;
+   private float[]                vertices;
 
    public LoadableMeshVertices(MeshVertexType... format) {
       this.format = format;
-      for (int i = 0; i < format.length; i++)
-         formatTypeIndexes.set(format[i], i);
    }
 
    public ByteBuffer toByteBuffer() {
@@ -37,9 +33,7 @@ public class LoadableMeshVertices {
 
    public void setVertexData(int vertexIndex, float[] vertexData) {
       int offset = vertexIndex * format.length;
-      for (int i = 0; i < vertexData.length && i < format.length; i++) {
-         int typeIndex = formatTypeIndexes.get(format[i]);
-         vertices[offset + typeIndex] = vertexData[i];
-      }
+      for (int i = 0; i < vertexData.length && i < format.length; i++)
+         vertices[offset + i] = vertexData[i];
    }
 }
