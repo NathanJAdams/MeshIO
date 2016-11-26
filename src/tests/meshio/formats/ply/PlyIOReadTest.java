@@ -7,12 +7,15 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import meshio.MeshFormats;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
 import meshio.formats.ply.PlyDataType;
 import meshio.formats.ply.PlyFormat;
-import meshio.formats.ply.PlyIO;
+import meshio.formats.ply.PlyFormatAscii;
+import meshio.formats.ply.PlyFormatAscii_1_0;
+import meshio.formats.ply.PlyFormatBinary;
+import meshio.formats.ply.PlyFormatBinaryBigEndian_1_0;
+import meshio.formats.ply.PlyFormatBinaryLittleEndian_1_0;
 import meshio.mesh.EditableMesh;
 import tests.AReadWriteTest;
 import util.PrimitiveOutputStream;
@@ -37,11 +40,11 @@ public class PlyIOReadTest extends AReadWriteTest {
       for (PlyDataType verticesDataType : verticesDataTypes) {
          for (PlyDataType indicesCountDataType : indicesDataTypes) {
             for (PlyDataType indicesDataType : indicesDataTypes) {
-               testReadMesh(verticesDataType, indicesCountDataType, indicesDataType, vertexFormat, vertexData, faceIndices, PlyFormat.ASCII_1_0);
+               testReadMesh(verticesDataType, indicesCountDataType, indicesDataType, vertexFormat, vertexData, faceIndices, new PlyFormatAscii_1_0());
                testReadMesh(verticesDataType, indicesCountDataType, indicesDataType, vertexFormat, vertexData, faceIndices,
-                     PlyFormat.BINARY_BIG_ENDIAN_1_0);
+                     new PlyFormatBinaryBigEndian_1_0());
                testReadMesh(verticesDataType, indicesCountDataType, indicesDataType, vertexFormat, vertexData, faceIndices,
-                     PlyFormat.BINARY_LITTLE_ENDIAN_1_0);
+                     new PlyFormatBinaryLittleEndian_1_0());
             }
          }
       }
@@ -65,7 +68,7 @@ public class PlyIOReadTest extends AReadWriteTest {
       writeComment(pos);
       if (vertexFormat != null)
          for (int vertexDataTypeIndex = 0; vertexDataTypeIndex < vertexFormat.length; vertexDataTypeIndex++)
-            pos.writeLine("property " + vertexDataType.getRepresentation() + ' ' + PlyIO.getPropertyName(vertexFormat[vertexDataTypeIndex]));
+            pos.writeLine("property " + vertexDataType.getRepresentation() + ' ' + PlyFormat.getPropertyName(vertexFormat[vertexDataTypeIndex]));
       pos.writeLine("element face " + numFaces);
       writeComment(pos);
       pos.writeLine("property list " + indicesCountType.getRepresentation() + ' ' + indicesType.getRepresentation() + " vertex_index");
@@ -79,7 +82,7 @@ public class PlyIOReadTest extends AReadWriteTest {
       EditableMesh actualMesh = new EditableMesh();
       actualMesh.setVertexFormat(vertexFormat);
       try {
-         MeshFormats.Ply_WritesAscii.read(actualMesh, bais);
+         new PlyFormatAscii_1_0().read(actualMesh, bais);
       } catch (MeshIOException e) {
          Assert.fail();
       }
@@ -93,7 +96,7 @@ public class PlyIOReadTest extends AReadWriteTest {
 
    private void writeVertices(PlyFormat plyFormat, MeshVertexType[] vertexFormat, PlyDataType vertexDataType, int numVertices, float[][] vertexData,
          PrimitiveOutputStream pos) throws IOException {
-      if (plyFormat == PlyFormat.ASCII_1_0) {
+      if (plyFormat.getEncoding().equals("ascii") && plyFormat.getVersion().equals("1.0")) {
          StringBuilder sb = new StringBuilder();
          for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++) {
             sb.setLength(0);
@@ -104,8 +107,8 @@ public class PlyIOReadTest extends AReadWriteTest {
             sb.setLength(sb.length() - 1);
             pos.writeLine(sb.toString());
          }
-      } else if (plyFormat == PlyFormat.BINARY_BIG_ENDIAN_1_0 || plyFormat == PlyFormat.BINARY_LITTLE_ENDIAN_1_0) {
-         boolean isBigEndian = (plyFormat == PlyFormat.BINARY_BIG_ENDIAN_1_0);
+      } else if (plyFormat instanceof PlyFormatBinary) {
+         boolean isBigEndian = (plyFormat instanceof PlyFormatBinaryBigEndian_1_0);
          writeVerticesBinary(vertexFormat, vertexDataType, numVertices, vertexData, pos, isBigEndian);
       }
    }
@@ -119,7 +122,7 @@ public class PlyIOReadTest extends AReadWriteTest {
 
    private void writeIndices(PlyFormat plyFormat, PlyDataType countType, PlyDataType indicesType, int numFaces, int[][] indices,
          PrimitiveOutputStream pos) throws IOException {
-      if (plyFormat == PlyFormat.ASCII_1_0) {
+      if (plyFormat instanceof PlyFormatAscii) {
          StringBuilder sb = new StringBuilder();
          for (int faceIndex = 0; faceIndex < numFaces; faceIndex++) {
             sb.setLength(0);
@@ -133,8 +136,8 @@ public class PlyIOReadTest extends AReadWriteTest {
             sb.setLength(sb.length() - 1);
             pos.writeLine(sb.toString());
          }
-      } else if (plyFormat == PlyFormat.BINARY_BIG_ENDIAN_1_0 || plyFormat == PlyFormat.BINARY_LITTLE_ENDIAN_1_0) {
-         boolean isBigEndian = (plyFormat == PlyFormat.BINARY_BIG_ENDIAN_1_0);
+      } else if (plyFormat instanceof PlyFormatBinary) {
+         boolean isBigEndian = (plyFormat instanceof PlyFormatBinaryBigEndian_1_0);
          writeIndicesBinary(plyFormat, countType, indicesType, numFaces, indices, pos, isBigEndian);
       }
    }

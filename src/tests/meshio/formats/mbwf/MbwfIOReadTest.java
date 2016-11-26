@@ -10,9 +10,9 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
-import meshio.MeshFormats;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
+import meshio.formats.mbwf.MbwfFormat;
 import meshio.mesh.EditableMesh;
 import tests.AReadWriteTest;
 import util.DatumEnDecode;
@@ -67,7 +67,7 @@ public class MbwfIOReadTest extends AReadWriteTest {
       EditableMesh actualMesh = new EditableMesh();
       actualMesh.setVertexFormat(vertexFormat);
       try {
-         MeshFormats.Mbwf.read(actualMesh, bais);
+         new MbwfFormat().read(actualMesh, bais);
       } catch (MeshIOException e) {
          Assert.fail();
       }

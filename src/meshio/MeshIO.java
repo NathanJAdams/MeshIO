@@ -5,19 +5,41 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
+import meshio.formats.mbwf.MbwfFormat;
+import meshio.formats.ply.PlyFormatAscii_1_0;
 import meshio.mesh.IMesh;
 
 public class MeshIO {
-   public static IMesh read(IMeshFormat format, IMeshBuilder builder, InputStream is) throws MeshIOException {
+   private final Map<String, IMeshFormat> extensionFormats = new HashMap<>();
+
+   public MeshIO() {
+      registerMeshFormat(new PlyFormatAscii_1_0());
+      registerMeshFormat(new MbwfFormat());
+   }
+
+   public void registerMeshFormat(IMeshFormat meshFormat) {
+      extensionFormats.put(meshFormat.getFileExtension(), meshFormat);
+   }
+
+   public IMeshFormat getMeshFormatFromExtension(String extension) {
+      if (extension != null)
+         extension = extension.toLowerCase(Locale.ENGLISH);
+      return extensionFormats.get(extension);
+   }
+
+   public IMesh read(IMeshFormat format, IMeshBuilder builder, InputStream is) throws MeshIOException {
       return format.read(builder, is);
    }
 
-   public static void write(IMeshFormat format, IMeshSaver saver, OutputStream os) throws MeshIOException {
+   public void write(IMeshFormat format, IMeshSaver saver, OutputStream os) throws MeshIOException {
       format.write(saver, os);
    }
 
-   public static IMesh read(IMeshBuilder builder, String filePath) throws MeshIOException {
+   public IMesh read(IMeshBuilder builder, String filePath) throws MeshIOException {
       IMeshFormat format = getFormatFromFilePath(filePath);
       try {
          FileInputStream fis = new FileInputStream(filePath);
@@ -27,7 +49,7 @@ public class MeshIO {
       }
    }
 
-   public static void write(IMeshSaver saver, String filePath) throws MeshIOException {
+   public void write(IMeshSaver saver, String filePath) throws MeshIOException {
       IMeshFormat format = getFormatFromFilePath(filePath);
       try {
          FileOutputStream fos = new FileOutputStream(filePath);
@@ -37,14 +59,14 @@ public class MeshIO {
       }
    }
 
-   private static IMeshFormat getFormatFromFilePath(String filePath) throws MeshIOException {
+   private IMeshFormat getFormatFromFilePath(String filePath) throws MeshIOException {
       if (filePath == null)
          throw new MeshIOException("Cannot find mesh format from null path");
       int lastDotIndex = filePath.lastIndexOf('.');
       if (lastDotIndex == -1)
          throw new MeshIOException("Cannot find mesh format from path: " + filePath);
       String extension = filePath.substring(lastDotIndex);
-      IMeshFormat format = MeshFormats.getFormatFromFileExtension(extension);
+      IMeshFormat format = extensionFormats.get(extension);
       if (format == null)
          throw new MeshIOException("Cannot find mesh format from path: " + filePath);
       return format;

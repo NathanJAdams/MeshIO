@@ -11,7 +11,9 @@ import meshio.MeshIOException;
 import meshio.MeshVertexType;
 import meshio.formats.ply.PlyDataType;
 import meshio.formats.ply.PlyFormat;
-import meshio.formats.ply.PlyIO;
+import meshio.formats.ply.PlyFormatAscii_1_0;
+import meshio.formats.ply.PlyFormatBinaryBigEndian_1_0;
+import meshio.formats.ply.PlyFormatBinaryLittleEndian_1_0;
 import meshio.mesh.EditableMesh;
 import tests.AReadWriteTest;
 import util.PrimitiveInputStream;
@@ -30,16 +32,16 @@ public class PlyIOWriteTest extends AReadWriteTest {
    }
 
    private void testWriteMesh(MeshVertexType[] format, float[][] vertexData, int[][] faceIndices) throws IOException {
-      testWriteMesh(format, vertexData, faceIndices, PlyFormat.ASCII_1_0);
-      testWriteMesh(format, vertexData, faceIndices, PlyFormat.BINARY_BIG_ENDIAN_1_0);
-      testWriteMesh(format, vertexData, faceIndices, PlyFormat.BINARY_LITTLE_ENDIAN_1_0);
+      testWriteMesh(format, vertexData, faceIndices, new PlyFormatAscii_1_0());
+      testWriteMesh(format, vertexData, faceIndices, new PlyFormatBinaryBigEndian_1_0());
+      testWriteMesh(format, vertexData, faceIndices, new PlyFormatBinaryLittleEndian_1_0());
    }
 
    private void testWriteMesh(MeshVertexType[] vertexFormat, float[][] vertexData, int[][] faceIndices, PlyFormat plyFormat) throws IOException {
       EditableMesh mesh = createMesh(vertexFormat, vertexData, faceIndices);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try {
-         PlyIO.write(mesh, baos, plyFormat);
+         plyFormat.write(mesh, baos);
       } catch (MeshIOException e) {
          Assert.fail();
       }
@@ -57,7 +59,7 @@ public class PlyIOWriteTest extends AReadWriteTest {
       Assert.assertEquals("element vertex " + vertexCount, pis.readLine());
       if (vertexFormat != null)
          for (int i = 0; i < vertexFormat.length; i++)
-            Assert.assertEquals("property float " + PlyIO.getPropertyName(vertexFormat[i]), pis.readLine());
+            Assert.assertEquals("property float " + PlyFormat.getPropertyName(vertexFormat[i]), pis.readLine());
       Assert.assertEquals("element face " + faceCount, pis.readLine());
       Assert.assertEquals("property list uchar int vertex_index", pis.readLine());
       Assert.assertEquals("end_header", pis.readLine());

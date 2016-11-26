@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.EnumMap;
 
 import meshio.IMeshBuilder;
+import meshio.IMeshFormat;
 import meshio.IMeshSaver;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
@@ -16,7 +17,7 @@ import util.FormatIndexes;
 import util.PrimitiveInputStream;
 import util.PrimitiveOutputStream;
 
-public class MbwfIO {
+public class MbwfFormat implements IMeshFormat {
    private static final boolean IS_BIG_ENDIAN        = true;
    private static final byte[]  MAGIC                = { 'M', 'B', 'W', 'F' };
    private static final short   MAX_VERSION          = 1;
@@ -26,7 +27,13 @@ public class MbwfIO {
    private static final int     IS_COLORS_MASK       = 1 << 12;
    private static final int     IS_COLOR_ALPHA_MASK  = 1 << 11;
 
-   public static IMesh read(IMeshBuilder builder, InputStream is) throws MeshIOException {
+   @Override
+   public String getFileExtension() {
+      return "mbwf";
+   }
+
+   @Override
+   public IMesh read(IMeshBuilder builder, InputStream is) throws MeshIOException {
       PrimitiveInputStream pis = null;
       try {
          pis = new PrimitiveInputStream(is);
@@ -135,7 +142,8 @@ public class MbwfIO {
       }
    }
 
-   public static void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
+   @Override
+   public void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
       if (saver == null)
          throw new MeshIOException("A mesh saver is required", new NullPointerException());
       if (os == null)

@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
-import meshio.formats.mbwf.MbwfIO;
+import meshio.formats.mbwf.MbwfFormat;
 import meshio.mesh.EditableMesh;
 import tests.AReadWriteTest;
 import util.PrimitiveInputStream;
@@ -44,7 +44,7 @@ public class MbwfIOWriteTest extends AReadWriteTest {
          types.addAll(Arrays.asList(vertexFormat));
       EditableMesh mesh = createMesh(vertexFormat, vertexData, faceIndices);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      MbwfIO.write(mesh, baos);
+      new MbwfFormat().write(mesh, baos);
       byte[] buffer = baos.toByteArray();
       ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
       PrimitiveInputStream pis = new PrimitiveInputStream(bais);
