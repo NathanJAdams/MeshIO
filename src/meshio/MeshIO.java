@@ -3,10 +3,7 @@ package meshio;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import meshio.formats.mbwf.MbwfFormat;
@@ -23,20 +20,6 @@ public class MeshIO {
 
    public void registerMeshFormat(IMeshFormat meshFormat) {
       extensionFormats.put(meshFormat.getFileExtension(), meshFormat);
-   }
-
-   public IMeshFormat getMeshFormatFromExtension(String extension) {
-      if (extension != null)
-         extension = extension.toLowerCase(Locale.ENGLISH);
-      return extensionFormats.get(extension);
-   }
-
-   public IMesh read(IMeshFormat format, IMeshBuilder builder, InputStream is) throws MeshIOException {
-      return format.read(builder, is);
-   }
-
-   public void write(IMeshFormat format, IMeshSaver saver, OutputStream os) throws MeshIOException {
-      format.write(saver, os);
    }
 
    public IMesh read(IMeshBuilder builder, String filePath) throws MeshIOException {
