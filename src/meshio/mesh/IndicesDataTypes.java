@@ -29,7 +29,7 @@ public class IndicesDataTypes {
 
                                                               @Override
                                                               public ByteBuffer toByteBuffer(byte[] array) {
-                                                                 return BufferExt.with(array);
+                                                                 return BufferUtil.with(array);
                                                               }
                                                            };
    public static final IndicesDataType<short[]>  Short     = new IndicesDataType<short[]>() {
@@ -55,7 +55,7 @@ public class IndicesDataTypes {
 
                                                               @Override
                                                               public ByteBuffer toByteBuffer(short[] array) {
-                                                                 return BufferExt.with(array);
+                                                                 return BufferUtil.with(array);
                                                               }
                                                            };
    public static final IndicesDataType<int[]>    Int       = new IndicesDataType<int[]>() {
@@ -81,7 +81,7 @@ public class IndicesDataTypes {
 
                                                               @Override
                                                               public ByteBuffer toByteBuffer(int[] array) {
-                                                                 return BufferExt.with(array);
+                                                                 return BufferUtil.with(array);
                                                               }
                                                            };
    private static final List<IndicesDataType<?>> ALL_TYPES = new ArrayList<>();

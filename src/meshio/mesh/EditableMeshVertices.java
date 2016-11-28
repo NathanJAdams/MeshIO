@@ -18,7 +18,7 @@ public class EditableMeshVertices {
    private int                                     vertexCount;
 
    public ByteBuffer toByteBuffer() {
-      return BufferExt.with(vertices, 0, vertexCount * format.length);
+      return BufferUtil.with(vertices, 0, vertexCount * format.length);
    }
 
    public MeshVertexType[] getFormat() {

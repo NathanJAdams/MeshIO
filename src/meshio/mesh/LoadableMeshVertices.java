@@ -13,7 +13,7 @@ public class LoadableMeshVertices {
    }
 
    public ByteBuffer toByteBuffer() {
-      return BufferExt.with(vertices);
+      return BufferUtil.with(vertices);
    }
 
    public MeshVertexType[] getFormat() {

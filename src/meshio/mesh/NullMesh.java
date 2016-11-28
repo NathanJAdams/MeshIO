@@ -6,8 +6,8 @@ import meshio.MeshVertexType;
 
 public class NullMesh implements IMesh {
    private static final MeshVertexType[] FORMAT          = new MeshVertexType[0];
-   private static final ByteBuffer       INDICES_BUFFER  = BufferExt.with(new short[0]);
-   private static final ByteBuffer       VERTICES_BUFFER = BufferExt.with(new float[0]);
+   private static final ByteBuffer       INDICES_BUFFER  = BufferUtil.with(new short[0]);
+   private static final ByteBuffer       VERTICES_BUFFER = BufferUtil.with(new float[0]);
 
    @Override
    public MeshVertexType[] getVertexFormat() {

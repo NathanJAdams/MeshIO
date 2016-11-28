@@ -3,7 +3,7 @@ package meshio.mesh;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class BufferExt {
+public class BufferUtil {
    public static final int        BYTES_PER_BYTE    = 1;
    public static final int        BYTES_PER_SHORT   = 2;
    public static final int        BYTES_PER_INT     = 4;
