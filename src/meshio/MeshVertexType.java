@@ -1,5 +1,7 @@
 package meshio;
 
+import java.util.EnumMap;
+
 public enum MeshVertexType {
    Position_X,
    Position_Y,
@@ -17,5 +19,13 @@ public enum MeshVertexType {
 
    public static MeshVertexType[] getValues() {
       return VALUES;
+   }
+
+   public static EnumMap<MeshVertexType, Integer> createTypeIndexes(MeshVertexType[] format) {
+      EnumMap<MeshVertexType, Integer> typeIndexes = new EnumMap<>(MeshVertexType.class);
+      if (format != null)
+         for (int i = 0; i < format.length; i++)
+            typeIndexes.put(format[i], i);
+      return typeIndexes;
    }
 }

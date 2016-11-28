@@ -1,4 +1,4 @@
-package util;
+package meshio.formats;
 
 import java.io.BufferedInputStream;
 import java.io.FilterInputStream;

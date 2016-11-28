@@ -1,17 +1,21 @@
 package tests;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -20,13 +24,20 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
-import util.ClassNameComparator;
-import util.IFunction1;
-import util.IPredicate1;
-import util.ListExt;
-import util.MethodExt;
-
 public class AllTests {
+   private final Comparator<Class<?>> classNameComparator = new Comparator<Class<?>>() {
+      @Override
+      public int compare(Class<?> a, Class<?> b) {
+         if (a != null && b != null)
+            return a.getSimpleName().compareTo(b.getSimpleName());
+         if (a != null)
+            return 1;
+         if (b != null)
+            return -1;
+         return 0;
+      }
+   };
+
    @Test
    public void test() {
       Class<?> allTestsClass = getClass();
@@ -36,7 +47,7 @@ public class AllTests {
       PathTraverseOptions options = createOptions(allTestsClass.getSimpleName());
       PathTraverser.traverse(allTestsBasePath, pathVisitor, options);
       List<Class<?>> testClasses = testPathsToTestClasses(allTestsBasePath, files);
-      Collections.sort(testClasses, new ClassNameComparator());
+      Collections.sort(testClasses, classNameComparator);
       runTestsAndShowResults(testClasses);
    }
 
@@ -65,20 +76,17 @@ public class AllTests {
    private List<Class<?>> testPathsToTestClasses(Path baseDirectoryPath, List<Path> testPaths) {
       final int baseDirectoryNameLength = baseDirectoryPath.toString().length() + 1;
       final int classExtensionLength = ".class".length();
-      Set<Class<?>> testClassSet = ListExt.toSet(testPaths, new IFunction1<Class<?>, Path>() {
-         @Override
-         public Class<?> function(Path path) {
-            String className = toClassName(path.toString());
-            String classFileName = className.substring(baseDirectoryNameLength, className.length() - classExtensionLength);
-            try {
-               Class<?> testClass = Class.forName(classFileName);
-               if (isValidTestClass(testClass))
-                  return testClass;
-            } catch (ClassNotFoundException e) {
-            }
-            return null;
+      Set<Class<?>> testClassSet = new HashSet<>();
+      for (Path testPath : testPaths) {
+         String className = toClassName(testPath.toString());
+         String classFileName = className.substring(baseDirectoryNameLength, className.length() - classExtensionLength);
+         try {
+            Class<?> testClass = Class.forName(classFileName);
+            if (isValidTestClass(testClass))
+               testClassSet.add(testClass);
+         } catch (ClassNotFoundException e) {
          }
-      });
+      }
       testClassSet.remove(null);
       return new ArrayList<Class<?>>(testClassSet);
    }
@@ -117,13 +125,34 @@ public class AllTests {
 
    private boolean isValidTestMethod(Method testMethod) {
       return (!Modifier.isStatic(testMethod.getModifiers()) && (testMethod.getParameterTypes().length == 0)
-            && MethodExt.isAnnotationPresent(testMethod, Test.class));
+            && isAnnotationPresent(testMethod, Test.class));
+   }
+
+   private static boolean isAnnotationPresent(Method method, Class<? extends Annotation> annotationClass) {
+      for (Method superMethod = method; superMethod != null; superMethod = getSuperMethod(superMethod))
+         if (superMethod.isAnnotationPresent(annotationClass))
+            return true;
+      return false;
+   }
+
+   private static Method getSuperMethod(Method method) {
+      for (Class<?> superClass = method.getDeclaringClass().getSuperclass(); superClass != Object.class
+            && superClass != null; superClass = superClass.getSuperclass()) {
+         try {
+            return superClass.getMethod(method.getName(), method.getParameterTypes());
+         } catch (NoSuchMethodException e) {
+         } catch (SecurityException e) {
+         }
+         // method not in this particular class, the next higher super class will be tried next
+      }
+      return null;
    }
 
    private void runTestsAndShowResults(List<Class<?>> testClasses) {
       assertNonZeroTests(testClasses.size());
       SortedMap<Class<?>, List<Failure>> failures = runTestsAndGetFailures(testClasses);
-      Set<Class<?>> passes = new HashSet<>(testClasses);
+      SortedSet<Class<?>> passes = new TreeSet<>(classNameComparator);
+      passes.addAll(testClasses);
       passes.removeAll(failures.keySet());
       printPassFailNames(passes, failures.keySet());
       printFailureDetails(failures);
@@ -137,7 +166,7 @@ public class AllTests {
    }
 
    private SortedMap<Class<?>, List<Failure>> runTestsAndGetFailures(List<Class<?>> testClasses) {
-      SortedMap<Class<?>, List<Failure>> testFailures = new TreeMap<>(new ClassNameComparator());
+      SortedMap<Class<?>, List<Failure>> testFailures = new TreeMap<>(classNameComparator);
       JUnitCore junit = new JUnitCore();
       for (Class<?> testClass : testClasses) {
          List<Failure> failures = runTestAndGetFailures(junit, testClass);

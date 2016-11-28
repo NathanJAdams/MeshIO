@@ -7,9 +7,9 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import meshio.formats.PrimitiveInputStream;
+import meshio.formats.PrimitiveOutputStream;
 import meshio.formats.ply.PlyDataType;
-import util.PrimitiveInputStream;
-import util.PrimitiveOutputStream;
 
 public class PlyIODataTypeTest {
    @Test

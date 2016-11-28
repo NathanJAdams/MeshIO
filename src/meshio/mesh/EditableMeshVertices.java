@@ -2,19 +2,20 @@ package meshio.mesh;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import meshio.MeshVertexType;
-import util.BufferExt;
-import util.EnumFloatMap;
-import util.MultiSet;
 
 public class EditableMeshVertices {
-   private final List<EnumFloatMap<MeshVertexType>> vertexList            = new ArrayList<>();
-   private final MultiSet<MeshVertexType, Integer>  meshVertexTypeIndexes = new MultiSet<>();
-   private MeshVertexType[]                         format                = new MeshVertexType[0];
-   private float[]                                  vertices              = new float[0];
-   private int                                      vertexCount;
+   private final List<EditableVertex>              vertexList            = new ArrayList<>();
+   private final Map<MeshVertexType, Set<Integer>> meshVertexTypeIndexes = new HashMap<>();
+   private MeshVertexType[]                        format                = new MeshVertexType[0];
+   private float[]                                 vertices              = new float[0];
+   private int                                     vertexCount;
 
    public ByteBuffer toByteBuffer() {
       return BufferExt.with(vertices, 0, vertexCount * format.length);
@@ -29,7 +30,7 @@ public class EditableMeshVertices {
          this.format = format;
          meshVertexTypeIndexes.clear();
          for (int i = 0; i < format.length; i++)
-            meshVertexTypeIndexes.add(format[i], i);
+            getValidIndexSet(format[i]).add(i);
          updateVertices();
       }
    }
@@ -46,17 +47,17 @@ public class EditableMeshVertices {
             vertexList.get(i).clear();
       } else if (previousVertexCount < vertexCount) {
          for (int i = vertexList.size(); i < vertexCount; i++)
-            vertexList.add(new EnumFloatMap<>(MeshVertexType.getValues()));
+            vertexList.add(new EditableVertex());
          updateVertices();
       }
    }
 
    public float getVertexDatum(int vertexIndex, MeshVertexType meshVertexType) {
-      return vertexList.get(vertexIndex).get(meshVertexType);
+      return vertexList.get(vertexIndex).getDatum(meshVertexType);
    }
 
    public void setVertexDatum(int vertexIndex, MeshVertexType meshVertexType, float datum) {
-      vertexList.get(vertexIndex).set(meshVertexType, datum);
+      vertexList.get(vertexIndex).setDatum(meshVertexType, datum);
       int offsetIndex = vertexIndex * format.length;
       for (int i = 0; i < format.length; i++)
          if (meshVertexType == format[i])
@@ -64,24 +65,33 @@ public class EditableMeshVertices {
    }
 
    public void getVertexData(int vertexIndex, float[] vertexData) {
-      EnumFloatMap<MeshVertexType> vertex = vertexList.get(vertexIndex);
+      EditableVertex vertex = vertexList.get(vertexIndex);
       for (int i = 0; i < format.length && i < vertexData.length; i++)
-         vertexData[i] = vertex.get(format[i]);
+         vertexData[i] = vertex.getDatum(format[i]);
    }
 
    public void setVertexData(int vertexIndex, float[] vertexData) {
-      EnumFloatMap<MeshVertexType> vertex = vertexList.get(vertexIndex);
+      EditableVertex vertex = vertexList.get(vertexIndex);
       for (int i = 0; i < format.length && i < vertexData.length; i++)
-         vertex.set(format[i], vertexData[i]);
+         vertex.setDatum(format[i], vertexData[i]);
    }
 
    private void updateVertices() {
       this.vertices = new float[vertexCount * format.length];
       for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
          int offsetIndex = vertexIndex * format.length;
-         EnumFloatMap<MeshVertexType> vertex = vertexList.get(vertexIndex);
+         EditableVertex vertex = vertexList.get(vertexIndex);
          for (int formatIndex = 0; formatIndex < format.length; formatIndex++)
-            vertices[offsetIndex + formatIndex] = vertex.get(format[formatIndex]);
+            vertices[offsetIndex + formatIndex] = vertex.getDatum(format[formatIndex]);
       }
+   }
+
+   private Set<Integer> getValidIndexSet(MeshVertexType meshVertexType) {
+      Set<Integer> indexes = meshVertexTypeIndexes.get(meshVertexType);
+      if (indexes == null) {
+         indexes = new HashSet<>();
+         meshVertexTypeIndexes.put(meshVertexType, indexes);
+      }
+      return indexes;
    }
 }

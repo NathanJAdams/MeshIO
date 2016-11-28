@@ -11,11 +11,9 @@ import meshio.IMeshFormat;
 import meshio.IMeshSaver;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
+import meshio.formats.PrimitiveInputStream;
+import meshio.formats.PrimitiveOutputStream;
 import meshio.mesh.IMesh;
-import util.DatumEnDecode;
-import util.FormatIndexes;
-import util.PrimitiveInputStream;
-import util.PrimitiveOutputStream;
 
 public class MbwfFormat implements IMeshFormat {
    private static final boolean IS_BIG_ENDIAN        = true;
@@ -77,7 +75,7 @@ public class MbwfFormat implements IMeshFormat {
       boolean isColors = (metadata & IS_COLORS_MASK) != 0;
       boolean isColorAlpha = (metadata & IS_COLOR_ALPHA_MASK) != 0;
       MeshVertexType[] vertexFormat = builder.getVertexFormat();
-      EnumMap<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(vertexFormat);
+      EnumMap<MeshVertexType, Integer> typeIndexes = MeshVertexType.createTypeIndexes(vertexFormat);
       float[] vertexData = new float[vertexFormat.length];
       for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
          readShorts(vertexData, typeIndexes, pis, true, MeshVertexType.Position_X, MeshVertexType.Position_Y);
@@ -152,7 +150,7 @@ public class MbwfFormat implements IMeshFormat {
       try {
          pos = new PrimitiveOutputStream(os);
          MeshVertexType[] format = saver.getVertexFormat();
-         EnumMap<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(format);
+         EnumMap<MeshVertexType, Integer> typeIndexes = MeshVertexType.createTypeIndexes(format);
          short metadata = createMetadata(typeIndexes);
          writeHeader(pos, metadata);
          writeVertices(saver, pos, metadata, typeIndexes);

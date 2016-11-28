@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import util.PrimitiveInputStream;
-import util.PrimitiveOutputStream;
+import meshio.formats.PrimitiveInputStream;
+import meshio.formats.PrimitiveOutputStream;
 
 public enum PlyDataType {
    Uchar("uchar", 1, Byte.MAX_VALUE),

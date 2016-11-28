@@ -14,10 +14,9 @@ import meshio.IMeshFormat;
 import meshio.IMeshSaver;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
+import meshio.formats.PrimitiveInputStream;
+import meshio.formats.PrimitiveOutputStream;
 import meshio.mesh.IMesh;
-import util.FormatIndexes;
-import util.PrimitiveInputStream;
-import util.PrimitiveOutputStream;
 
 public abstract class PlyFormat implements IMeshFormat {
    private static final Map<String, PlyFormat>      BY_ENCODING_VERSION                = new HashMap<>();
@@ -178,7 +177,7 @@ public abstract class PlyFormat implements IMeshFormat {
    private static void readVertices(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder builder, List<MeshVertexType> readVertexFormat,
          List<PlyDataType> vertexDataTypes, int numVertices) throws IOException {
       MeshVertexType[] vertexFormat = builder.getVertexFormat();
-      EnumMap<MeshVertexType, Integer> typeIndexes = FormatIndexes.createTypeIndexes(vertexFormat);
+      EnumMap<MeshVertexType, Integer> typeIndexes = MeshVertexType.createTypeIndexes(vertexFormat);
       float[] readVertexData = new float[readVertexFormat.size()];
       float[] formattedVertexData = new float[vertexFormat.length];
       for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++) {

@@ -7,11 +7,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import meshio.MeshVertexType;
+import meshio.mesh.BufferExt;
 import meshio.mesh.EditableMesh;
 import meshio.mesh.IndicesDataType;
 import meshio.mesh.IndicesDataTypes;
 import meshio.mesh.MeshIndexType;
-import util.BufferExt;
 
 public class MeshTest {
    private static final float DELTA = (float) 1E-12;

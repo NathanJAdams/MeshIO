@@ -9,14 +9,14 @@ import org.junit.Test;
 
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
+import meshio.formats.PrimitiveInputStream;
 import meshio.formats.ply.PlyDataType;
 import meshio.formats.ply.PlyFormat;
 import meshio.formats.ply.PlyFormatAscii_1_0;
 import meshio.formats.ply.PlyFormatBinaryBigEndian_1_0;
 import meshio.formats.ply.PlyFormatBinaryLittleEndian_1_0;
 import meshio.mesh.EditableMesh;
-import tests.AReadWriteTest;
-import util.PrimitiveInputStream;
+import tests.meshio.formats.AReadWriteTest;
 
 public class PlyIOWriteTest extends AReadWriteTest {
    @Test

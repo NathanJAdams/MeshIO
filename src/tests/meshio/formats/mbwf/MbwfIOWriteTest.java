@@ -12,10 +12,10 @@ import org.junit.Test;
 
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
+import meshio.formats.PrimitiveInputStream;
 import meshio.formats.mbwf.MbwfFormat;
 import meshio.mesh.EditableMesh;
-import tests.AReadWriteTest;
-import util.PrimitiveInputStream;
+import tests.meshio.formats.AReadWriteTest;
 
 public class MbwfIOWriteTest extends AReadWriteTest {
    private static final boolean IS_BIG_ENDIAN = true;

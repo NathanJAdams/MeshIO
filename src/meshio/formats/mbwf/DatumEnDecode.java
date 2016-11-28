@@ -1,4 +1,4 @@
-package util;
+package meshio.formats.mbwf;
 
 public class DatumEnDecode {
    private static final long BYTE_RANGE  = 0xFE;

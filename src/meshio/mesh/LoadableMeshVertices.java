@@ -3,7 +3,6 @@ package meshio.mesh;
 import java.nio.ByteBuffer;
 
 import meshio.MeshVertexType;
-import util.BufferExt;
 
 public class LoadableMeshVertices {
    private final MeshVertexType[] format;

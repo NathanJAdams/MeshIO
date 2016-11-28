@@ -2,16 +2,22 @@ package tests;
 
 import java.nio.file.Path;
 
-import util.FunctionalIdentities;
-import util.IPredicate1;
-
 public class PathTraverseOptions {
    private final boolean           recurse;
    private final IPredicate1<Path> directoryPathFilter;
    private final IPredicate1<Path> filePathFilter;
 
    public PathTraverseOptions() {
-      this(true, FunctionalIdentities.<Path> predicate1Accepter(), FunctionalIdentities.<Path> predicate1Accepter());
+      this(true, createAccepter(), createAccepter());
+   }
+
+   private static <T> IPredicate1<T> createAccepter() {
+      return new IPredicate1<T>() {
+         @Override
+         public boolean accepts(T t) {
+            return true;
+         }
+      };
    }
 
    private PathTraverseOptions(boolean recurse, IPredicate1<Path> directoryPathFilter, IPredicate1<Path> filePathFilter) {
