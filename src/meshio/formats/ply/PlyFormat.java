@@ -14,8 +14,8 @@ import meshio.IMeshFormat;
 import meshio.IMeshSaver;
 import meshio.MeshIOException;
 import meshio.MeshVertexType;
-import meshio.formats.PrimitiveInputStream;
-import meshio.formats.PrimitiveOutputStream;
+import meshio.io.PrimitiveInputStream;
+import meshio.io.PrimitiveOutputStream;
 import meshio.mesh.IMesh;
 
 public abstract class PlyFormat implements IMeshFormat {

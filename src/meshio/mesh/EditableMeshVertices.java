@@ -17,6 +17,14 @@ public class EditableMeshVertices {
    private float[]                                 vertices              = new float[0];
    private int                                     vertexCount;
 
+   public void clear() {
+      this.vertexList.clear();
+      this.meshVertexTypeIndexes.clear();
+      this.format = new MeshVertexType[0];
+      this.vertices = new float[0];
+      this.vertexCount = 0;
+   }
+
    public ByteBuffer toByteBuffer() {
       return BufferUtil.with(vertices, 0, vertexCount * format.length);
    }

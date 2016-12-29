@@ -52,6 +52,16 @@ public class EditableMesh implements IMesh, IMeshBuilder, IMeshSaver {
    }
 
    @Override
+   public void clear() {
+      for (Map<IndicesDataType<?>, MeshIndices<?>> subMap : indices.values())
+         for (MeshIndices<?> meshIndices : subMap.values())
+            meshIndices.clear();
+      vertices.clear();
+      meshIndexType = MeshIndexType.Mesh;
+      indicesDataType = IndicesDataTypes.Short;
+   }
+
+   @Override
    public boolean isValid() {
       return indicesDataType.isValidVertexCount(getVertexCount());
    }

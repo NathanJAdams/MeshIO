@@ -2,8 +2,8 @@ package meshio.formats.ply;
 
 import java.io.IOException;
 
-import meshio.formats.PrimitiveInputStream;
-import meshio.formats.PrimitiveOutputStream;
+import meshio.io.PrimitiveInputStream;
+import meshio.io.PrimitiveOutputStream;
 
 public class PlyFormatAscii extends PlyFormat {
    public PlyFormatAscii(String version) {

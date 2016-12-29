@@ -25,6 +25,10 @@ public class NullMesh implements IMesh {
    }
 
    @Override
+   public void clear() {
+   }
+
+   @Override
    public boolean isValid() {
       return true;
    }

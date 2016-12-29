@@ -25,6 +25,12 @@ public class LoadableMesh<T> implements IMesh, IMeshBuilder {
    }
 
    @Override
+   public void clear() {
+      indices.clear();
+      vertices.clear();
+   }
+
+   @Override
    public boolean isValid() {
       return indices.isValidVertexCount(getVertexCount());
    }

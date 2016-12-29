@@ -14,6 +14,10 @@ public class MeshIndices<T> {
       this.indices = indicesDataType.createEmptyArray();
    }
 
+   public void clear() {
+      this.indices = indicesDataType.createEmptyArray();
+   }
+
    public ByteBuffer getIndicesBuffer() {
       return indicesDataType.toByteBuffer(indices);
    }

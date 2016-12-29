@@ -8,6 +8,7 @@ import java.util.Map;
 
 import meshio.formats.mbwf.MbwfFormat;
 import meshio.formats.ply.PlyFormatAscii_1_0;
+import meshio.io.IOExt;
 import meshio.mesh.IMesh;
 
 public class MeshIO {
@@ -24,34 +25,44 @@ public class MeshIO {
 
    public IMesh read(IMeshBuilder builder, String filePath) throws MeshIOException {
       IMeshFormat format = getFormatFromFilePath(filePath);
+      FileInputStream fis = null;
       try {
-         FileInputStream fis = new FileInputStream(filePath);
+         fis = new FileInputStream(filePath);
          return format.read(builder, fis);
       } catch (FileNotFoundException e) {
          throw new MeshIOException("Cannot read from file at path: " + filePath);
+      } finally {
+         IOExt.close(fis);
       }
    }
 
    public void write(IMeshSaver saver, String filePath) throws MeshIOException {
       IMeshFormat format = getFormatFromFilePath(filePath);
+      FileOutputStream fos = null;
       try {
-         FileOutputStream fos = new FileOutputStream(filePath);
+         fos = new FileOutputStream(filePath);
          format.write(saver, fos);
       } catch (FileNotFoundException e) {
          throw new MeshIOException("Cannot write to file at path: " + filePath);
+      } finally {
+         IOExt.close(fos);
       }
    }
 
-   private IMeshFormat getFormatFromFilePath(String filePath) throws MeshIOException {
+   public IMeshFormat getFormatFromFilePath(String filePath) throws MeshIOException {
       if (filePath == null)
          throw new MeshIOException("Cannot find mesh format from null path");
       int lastDotIndex = filePath.lastIndexOf('.');
       if (lastDotIndex == -1)
-         throw new MeshIOException("Cannot find mesh format from path: " + filePath);
-      String extension = filePath.substring(lastDotIndex);
+         throw new MeshIOException("Cannot find mesh extension in path: " + filePath);
+      String extension = filePath.substring(lastDotIndex + 1);
+      return getFormatFromExtension(extension);
+   }
+
+   public IMeshFormat getFormatFromExtension(String extension) throws MeshIOException {
       IMeshFormat format = extensionFormats.get(extension);
       if (format == null)
-         throw new MeshIOException("Cannot find mesh format from path: " + filePath);
+         throw new MeshIOException("Cannot find mesh format from extension: " + extension);
       return format;
    }
 }

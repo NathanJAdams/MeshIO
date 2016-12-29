@@ -12,6 +12,10 @@ public class LoadableMeshVertices {
       this.format = format;
    }
 
+   public void clear() {
+      this.vertices = new float[0];
+   }
+
    public ByteBuffer toByteBuffer() {
       return BufferUtil.with(vertices);
    }
