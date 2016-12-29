@@ -8,7 +8,7 @@ import meshio.mesh.IMesh;
 public interface IMeshFormat {
    String getFileExtension();
 
-   IMesh read(IMeshBuilder builder, InputStream is) throws MeshIOException;
+   <T extends IMesh> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException;
 
    void write(IMeshSaver saver, OutputStream os) throws MeshIOException;
 }

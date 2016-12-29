@@ -8,7 +8,7 @@ import meshio.IMeshBuilder;
 import meshio.IMeshSaver;
 import meshio.MeshVertexType;
 
-public class EditableMesh implements IMesh, IMeshBuilder, IMeshSaver {
+public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSaver {
    private final Map<MeshIndexType, Map<IndicesDataType<?>, MeshIndices<?>>> indices         = new HashMap<>();
    private final EditableMeshVertices                                        vertices        = new EditableMeshVertices();
    private MeshIndexType                                                     meshIndexType   = MeshIndexType.Mesh;
@@ -77,7 +77,7 @@ public class EditableMesh implements IMesh, IMeshBuilder, IMeshSaver {
    }
 
    @Override
-   public IMesh build() {
+   public EditableMesh build() {
       return this;
    }
 

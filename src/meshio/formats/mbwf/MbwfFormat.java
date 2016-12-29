@@ -31,7 +31,7 @@ public class MbwfFormat implements IMeshFormat {
    }
 
    @Override
-   public IMesh read(IMeshBuilder builder, InputStream is) throws MeshIOException {
+   public <T extends IMesh> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
       PrimitiveInputStream pis = null;
       try {
          pis = new PrimitiveInputStream(is);
@@ -59,14 +59,14 @@ public class MbwfFormat implements IMeshFormat {
       }
    }
 
-   private static IMesh readWithVersion(IMeshBuilder builder, PrimitiveInputStream pis, short version) throws IOException {
+   private static <T extends IMesh> T readWithVersion(IMeshBuilder<T> builder, PrimitiveInputStream pis, short version) throws IOException {
       short metadata = pis.readShort(IS_BIG_ENDIAN);
       readVertices(builder, pis, metadata);
       readFaces(builder, pis, metadata);
       return builder.build();
    }
 
-   private static void readVertices(IMeshBuilder builder, PrimitiveInputStream pis, short metadata) throws IOException {
+   private static void readVertices(IMeshBuilder<?> builder, PrimitiveInputStream pis, short metadata) throws IOException {
       int vertexCount = pis.readInt(IS_BIG_ENDIAN);
       builder.setVertexCount(vertexCount);
       boolean is3D = (metadata & IS_3D_MASK) != 0;
@@ -120,7 +120,7 @@ public class MbwfFormat implements IMeshFormat {
          vertexData[indexObject] = value;
    }
 
-   private static void readFaces(IMeshBuilder builder, PrimitiveInputStream pis, int metadata) throws IOException {
+   private static void readFaces(IMeshBuilder<?> builder, PrimitiveInputStream pis, int metadata) throws IOException {
       int faceCount = pis.readInt(IS_BIG_ENDIAN);
       builder.setFaceCount(faceCount);
       int numBytes;

@@ -2,7 +2,7 @@ package meshio;
 
 import meshio.mesh.IMesh;
 
-public interface IMeshBuilder extends IMeshInfo {
+public interface IMeshBuilder<T extends IMesh> extends IMeshInfo {
    void setVertexCount(int vertexCount);
 
    void setFaceCount(int faceCount);
@@ -11,5 +11,5 @@ public interface IMeshBuilder extends IMeshInfo {
 
    void setFaceIndices(int faceIndex, int[] faceIndices);
 
-   IMesh build();
+   T build();
 }

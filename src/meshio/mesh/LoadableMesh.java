@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import meshio.IMeshBuilder;
 import meshio.MeshVertexType;
 
-public class LoadableMesh<T> implements IMesh, IMeshBuilder {
+public class LoadableMesh<T> implements IMesh, IMeshBuilder<LoadableMesh<T>> {
    private final MeshIndices<T>       indices;
    private final LoadableMeshVertices vertices;
 

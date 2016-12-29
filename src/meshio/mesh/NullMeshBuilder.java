@@ -3,8 +3,8 @@ package meshio.mesh;
 import meshio.IMeshBuilder;
 import meshio.MeshVertexType;
 
-public class NullMeshBuilder implements IMeshBuilder {
-   private static final IMesh MESH = new NullMesh();
+public class NullMeshBuilder implements IMeshBuilder<NullMesh> {
+   private static final NullMesh MESH = new NullMesh();
 
    @Override
    public MeshVertexType[] getVertexFormat() {
@@ -38,7 +38,7 @@ public class NullMeshBuilder implements IMeshBuilder {
    }
 
    @Override
-   public IMesh build() {
+   public NullMesh build() {
       return MESH;
    }
 }

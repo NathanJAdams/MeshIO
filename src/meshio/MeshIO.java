@@ -23,7 +23,7 @@ public class MeshIO {
       extensionFormats.put(meshFormat.getFileExtension(), meshFormat);
    }
 
-   public IMesh read(IMeshBuilder builder, String filePath) throws MeshIOException {
+   public <T extends IMesh> T read(IMeshBuilder<T> builder, String filePath) throws MeshIOException {
       IMeshFormat format = getFormatFromFilePath(filePath);
       FileInputStream fis = null;
       try {

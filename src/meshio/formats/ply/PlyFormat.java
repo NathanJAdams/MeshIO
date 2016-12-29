@@ -87,7 +87,7 @@ public abstract class PlyFormat implements IMeshFormat {
    }
 
    @Override
-   public IMesh read(IMeshBuilder builder, InputStream is) throws MeshIOException {
+   public <T extends IMesh> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
       PrimitiveInputStream pis = null;
       try {
          pis = new PrimitiveInputStream(is);
@@ -174,7 +174,7 @@ public abstract class PlyFormat implements IMeshFormat {
       }
    }
 
-   private static void readVertices(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder builder, List<MeshVertexType> readVertexFormat,
+   private static void readVertices(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder<?> builder, List<MeshVertexType> readVertexFormat,
          List<PlyDataType> vertexDataTypes, int numVertices) throws IOException {
       MeshVertexType[] vertexFormat = builder.getVertexFormat();
       EnumMap<MeshVertexType, Integer> typeIndexes = MeshVertexType.createTypeIndexes(vertexFormat);
@@ -192,7 +192,7 @@ public abstract class PlyFormat implements IMeshFormat {
       }
    }
 
-   private static void readFaces(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder builder, PlyDataType countType, PlyDataType indexType,
+   private static void readFaces(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder<?> builder, PlyDataType countType, PlyDataType indexType,
          int numFaces) throws IOException {
       for (int faceIndex = 0; faceIndex < numFaces; faceIndex++)
          builder.setFaceIndices(faceIndex, plyFormat.readFaceIndices(pis, countType, indexType));
