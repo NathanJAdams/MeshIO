@@ -19,7 +19,7 @@ import meshio.io.PrimitiveOutputStream;
 import meshio.mesh.IMesh;
 
 public abstract class PlyFormat implements IMeshFormat {
-   private static final Map<String, PlyFormat>      BY_ENCODING_VERSION                = new HashMap<>();
+   private static final Map<String, PlyFormat>      BY_ENCODING_VERSION                = new HashMap<String, PlyFormat>();
    private static final String                      PLY                                = "ply";
    private static final String                      FORMAT                             = "format";
    private static final String                      COMMENT                            = "comment";
@@ -30,8 +30,8 @@ public abstract class PlyFormat implements IMeshFormat {
    private static final String                      LIST                               = "list";
    private static final String                      VERTEX_INDEX                       = "vertex_index";
    private static final String                      END_HEADER                         = "end_header";
-   private static final Map<MeshVertexType, String> PROPERTY_NAMES                     = new HashMap<>();
-   private static final Map<String, MeshVertexType> PROPERTIES_BY_NAME                 = new HashMap<>();
+   private static final Map<MeshVertexType, String> PROPERTY_NAMES                     = new HashMap<MeshVertexType, String>();
+   private static final Map<String, MeshVertexType> PROPERTIES_BY_NAME                 = new HashMap<String, MeshVertexType>();
    private static final String                      PROPERTY_POSITION_X_NAME           = "x";
    private static final String                      PROPERTY_POSITION_Y_NAME           = "y";
    private static final String                      PROPERTY_POSITION_Z_NAME           = "z";
@@ -105,8 +105,8 @@ public abstract class PlyFormat implements IMeshFormat {
          boolean isVerticesFirst = true;
          boolean isVertexHeader = false;
          boolean isFaceHeader = false;
-         List<MeshVertexType> vertexFormat = new ArrayList<>();
-         List<PlyDataType> vertexDataTypes = new ArrayList<>();
+         List<MeshVertexType> vertexFormat = new ArrayList<MeshVertexType>();
+         List<PlyDataType> vertexDataTypes = new ArrayList<PlyDataType>();
          int numVertices = -1;
          int numFaces = -1;
          PlyDataType faceIndexCountType = null;

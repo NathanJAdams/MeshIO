@@ -58,7 +58,7 @@ public enum PlyDataType {
          pos.writeDouble(real, isBigEndian);
       }
    };
-   private static final Map<String, PlyDataType> BY_REPRESENTATION = new HashMap<>();
+   private static final Map<String, PlyDataType> BY_REPRESENTATION = new HashMap<String, PlyDataType>();
    private final String                          representation;
    private final int                             byteCount;
    private final long                            bitMask;

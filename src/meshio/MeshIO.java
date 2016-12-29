@@ -12,7 +12,7 @@ import meshio.io.IOExt;
 import meshio.mesh.IMesh;
 
 public class MeshIO {
-   private final Map<String, IMeshFormat> extensionFormats = new HashMap<>();
+   private final Map<String, IMeshFormat> extensionFormats = new HashMap<String, IMeshFormat>();
 
    public MeshIO() {
       registerMeshFormat(new PlyFormatAscii_1_0());

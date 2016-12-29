@@ -11,8 +11,8 @@ import java.util.Set;
 import meshio.MeshVertexType;
 
 public class EditableMeshVertices {
-   private final List<EditableVertex>              vertexList            = new ArrayList<>();
-   private final Map<MeshVertexType, Set<Integer>> meshVertexTypeIndexes = new HashMap<>();
+   private final List<EditableVertex>              vertexList            = new ArrayList<EditableVertex>();
+   private final Map<MeshVertexType, Set<Integer>> meshVertexTypeIndexes = new HashMap<MeshVertexType, Set<Integer>>();
    private MeshVertexType[]                        format                = new MeshVertexType[0];
    private float[]                                 vertices              = new float[0];
    private int                                     vertexCount;
@@ -97,7 +97,7 @@ public class EditableMeshVertices {
    private Set<Integer> getValidIndexSet(MeshVertexType meshVertexType) {
       Set<Integer> indexes = meshVertexTypeIndexes.get(meshVertexType);
       if (indexes == null) {
-         indexes = new HashSet<>();
+         indexes = new HashSet<Integer>();
          meshVertexTypeIndexes.put(meshVertexType, indexes);
       }
       return indexes;

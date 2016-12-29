@@ -10,7 +10,7 @@ public class LoadableMesh<T> implements IMesh, IMeshBuilder<LoadableMesh<T>> {
    private final LoadableMeshVertices vertices;
 
    public LoadableMesh(MeshIndexType meshIndexType, IndicesDataType<T> indicesDataType, MeshVertexType... format) {
-      this.indices = new MeshIndices<>(indicesDataType, meshIndexType);
+      this.indices = new MeshIndices<T>(indicesDataType, meshIndexType);
       this.vertices = new LoadableMeshVertices(format);
    }
 

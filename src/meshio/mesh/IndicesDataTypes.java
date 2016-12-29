@@ -84,7 +84,7 @@ public class IndicesDataTypes {
                                                                  return BufferUtil.with(array);
                                                               }
                                                            };
-   private static final List<IndicesDataType<?>> ALL_TYPES = new ArrayList<>();
+   private static final List<IndicesDataType<?>> ALL_TYPES = new ArrayList<IndicesDataType<?>>();
 
    static {
       ALL_TYPES.add(Byte);

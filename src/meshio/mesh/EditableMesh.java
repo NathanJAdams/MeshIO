@@ -9,16 +9,20 @@ import meshio.IMeshSaver;
 import meshio.MeshVertexType;
 
 public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSaver {
-   private final Map<MeshIndexType, Map<IndicesDataType<?>, MeshIndices<?>>> indices         = new HashMap<>();
+   private final Map<MeshIndexType, Map<IndicesDataType<?>, MeshIndices<?>>> indices         = new HashMap<MeshIndexType, Map<IndicesDataType<?>, MeshIndices<?>>>();
    private final EditableMeshVertices                                        vertices        = new EditableMeshVertices();
    private MeshIndexType                                                     meshIndexType   = MeshIndexType.Mesh;
    private IndicesDataType<?>                                                indicesDataType = IndicesDataTypes.Short;
 
-   public EditableMesh() {
+   public <T> EditableMesh() {
       for (MeshIndexType meshIndexType : MeshIndexType.values()) {
-         Map<IndicesDataType<?>, MeshIndices<?>> subMap = new HashMap<>();
-         for (IndicesDataType<?> dataType : IndicesDataTypes.getAllTypes())
-            subMap.put(dataType, new MeshIndices<>(dataType, meshIndexType));
+         Map<IndicesDataType<?>, MeshIndices<?>> subMap = new HashMap<IndicesDataType<?>, MeshIndices<?>>();
+         for (IndicesDataType<?> dataType : IndicesDataTypes.getAllTypes()) {
+            // hack to allow proper typing
+            @SuppressWarnings("unchecked")
+            IndicesDataType<T> typedDataType = (IndicesDataType<T>) dataType;
+            subMap.put(dataType, new MeshIndices<T>(typedDataType, meshIndexType));
+         }
          indices.put(meshIndexType, subMap);
       }
    }

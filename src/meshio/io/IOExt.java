@@ -41,7 +41,7 @@ public class IOExt {
 
    public static List<String> readAllLines(InputStream is) {
       PrimitiveInputStream pis = new PrimitiveInputStream(is);
-      List<String> lines = new ArrayList<>();
+      List<String> lines = new ArrayList<String>();
       String s = null;
       do {
          s = readLine(pis);

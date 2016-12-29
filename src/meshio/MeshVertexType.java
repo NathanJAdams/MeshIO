@@ -22,7 +22,7 @@ public enum MeshVertexType {
    }
 
    public static EnumMap<MeshVertexType, Integer> createTypeIndexes(MeshVertexType[] format) {
-      EnumMap<MeshVertexType, Integer> typeIndexes = new EnumMap<>(MeshVertexType.class);
+      EnumMap<MeshVertexType, Integer> typeIndexes = new EnumMap<MeshVertexType, Integer>(MeshVertexType.class);
       if (format != null)
          for (int i = 0; i < format.length; i++)
             typeIndexes.put(format[i], i);
