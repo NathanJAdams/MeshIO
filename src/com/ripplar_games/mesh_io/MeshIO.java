@@ -1,14 +1,15 @@
 package com.ripplar_games.mesh_io;
 
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.ripplar_games.mesh_io.formats.mbwf.MbwfFormat;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatAscii_1_0;
-import com.ripplar_games.mesh_io.io.IOExt;
 import com.ripplar_games.mesh_io.mesh.IMesh;
 
 public class MeshIO {
@@ -32,7 +33,7 @@ public class MeshIO {
       } catch (FileNotFoundException e) {
          throw new MeshIOException("Cannot read from file at path: " + filePath);
       } finally {
-         IOExt.close(fis);
+         closeQuietly(fis);
       }
    }
 
@@ -45,7 +46,7 @@ public class MeshIO {
       } catch (FileNotFoundException e) {
          throw new MeshIOException("Cannot write to file at path: " + filePath);
       } finally {
-         IOExt.close(fos);
+         closeQuietly(fos);
       }
    }
 
@@ -64,5 +65,15 @@ public class MeshIO {
       if (format == null)
          throw new MeshIOException("Cannot find mesh format from extension: " + extension);
       return format;
+   }
+
+   private void closeQuietly(Closeable closeable) {
+      if (closeable != null) {
+         try {
+            closeable.close();
+         } catch (IOException e) {
+            e.printStackTrace();
+         }
+      }
    }
 }

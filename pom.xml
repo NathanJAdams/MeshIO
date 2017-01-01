@@ -6,7 +6,7 @@
   <version>1.0.0</version>
 
   <properties>
-    <jdk.version>1.6</jdk.version>
+    <version.jdk>1.6</version.jdk>
   </properties>
 
   <build>
@@ -17,8 +17,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.0.2</version>
         <configuration>
-          <source>${jdk.version}</source>
-          <target>${jdk.version}</target>
+          <source>${version.jdk}</source>
+          <target>${version.jdk}</target>
         </configuration>
       </plugin>
       <plugin>
