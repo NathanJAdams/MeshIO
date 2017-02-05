@@ -6,13 +6,23 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class PrimitiveOutputStream extends FilterOutputStream {
+   private static final boolean DEFAULT_IS_BIG_ENDIAN = true;
+
    public PrimitiveOutputStream(OutputStream os) {
       super(new BufferedOutputStream(os));
+   }
+
+   public void writeFloat(float f) throws IOException {
+      writeFloat(f, DEFAULT_IS_BIG_ENDIAN);
    }
 
    public void writeFloat(float f, boolean isBigEndian) throws IOException {
       int i = Float.floatToIntBits(f);
       writeLong(i, isBigEndian, 4);
+   }
+
+   public void writeDouble(double d) throws IOException {
+      writeDouble(d, DEFAULT_IS_BIG_ENDIAN);
    }
 
    public void writeDouble(double d, boolean isBigEndian) throws IOException {
@@ -24,12 +34,24 @@ public class PrimitiveOutputStream extends FilterOutputStream {
       writeLong(b, true, 1);
    }
 
+   public void writeShort(short s) throws IOException {
+      writeShort(s, DEFAULT_IS_BIG_ENDIAN);
+   }
+
    public void writeShort(short s, boolean isBigEndian) throws IOException {
       writeLong(s, isBigEndian, 2);
    }
 
+   public void writeInt(int i) throws IOException {
+      writeInt(i, DEFAULT_IS_BIG_ENDIAN);
+   }
+
    public void writeInt(int i, boolean isBigEndian) throws IOException {
       writeLong(i, isBigEndian, 4);
+   }
+
+   public void writeLong(long l) throws IOException {
+      writeLong(l, DEFAULT_IS_BIG_ENDIAN);
    }
 
    public void writeLong(long l, boolean isBigEndian) throws IOException {

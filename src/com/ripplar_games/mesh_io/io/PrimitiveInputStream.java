@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class PrimitiveInputStream extends FilterInputStream {
-   private int lineNumber = 1;
+   private static final boolean DEFAULT_IS_BIG_ENDIAN = true;
+   private int                  lineNumber            = 1;
 
    public PrimitiveInputStream(InputStream is) {
       super(new BufferedInputStream(is));
@@ -16,8 +17,16 @@ public class PrimitiveInputStream extends FilterInputStream {
       return lineNumber;
    }
 
+   public float readFloat() throws IOException {
+      return readFloat(DEFAULT_IS_BIG_ENDIAN);
+   }
+
    public float readFloat(boolean isBigEndian) throws IOException {
       return Float.intBitsToFloat((int) readLong(isBigEndian, 4));
+   }
+
+   public double readDouble() throws IOException {
+      return readDouble(DEFAULT_IS_BIG_ENDIAN);
    }
 
    public double readDouble(boolean isBigEndian) throws IOException {
@@ -28,12 +37,24 @@ public class PrimitiveInputStream extends FilterInputStream {
       return (byte) read();
    }
 
+   public short readShort() throws IOException {
+      return readShort(DEFAULT_IS_BIG_ENDIAN);
+   }
+
    public short readShort(boolean isBigEndian) throws IOException {
       return (short) readLong(isBigEndian, 2);
    }
 
+   public int readInt() throws IOException {
+      return readInt(DEFAULT_IS_BIG_ENDIAN);
+   }
+
    public int readInt(boolean isBigEndian) throws IOException {
       return (int) readLong(isBigEndian, 4);
+   }
+
+   public long readLong() throws IOException {
+      return readLong(DEFAULT_IS_BIG_ENDIAN);
    }
 
    public long readLong(boolean isBigEndian) throws IOException {
