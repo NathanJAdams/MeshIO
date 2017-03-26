@@ -37,7 +37,7 @@ This method also attempts to read the format from the file extension. If the for
 Format objects can be instantiated and used directly. The format read() and write() methods are similar to the above methods but use an input or output stream instead of a file path. Two examples follow:
 
 
-Reading:
+<h4>Reading:</h4>
 
     PlyFormatAscii_1_0 format = new PlyFormatAscii_1_0();
     try {
@@ -46,7 +46,7 @@ Reading:
         e.printStackTrace();
     }
 
-Writing:
+<h4>Writing:</h4>
 
     PlyFormatAscii_1_0 format = new PlyFormatAscii_1_0();
     try {
