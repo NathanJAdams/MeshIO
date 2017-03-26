@@ -6,7 +6,7 @@ MIT Licence
 
 <h3>Usage</h3>
 
-The purpose of this library is to allow easy saving and loading of polygon meshes with any format and with any type of mesh object. The main way of doing this is to instantiate an object of the class MeshIO. Meshes can then be loaded and saved to and from file via it's read() and write() methods.
+The purpose of this library is to allow easy saving and loading of polygon meshes with any format and with any type of mesh object. The main way of doing this is to instantiate an object of the class [MeshIO](src/com/ripplar_games/mesh_io/MeshIO.java). Meshes can then be loaded and saved to and from file via it's read() and write() methods.
 
 
 <h3>Read</h3>
