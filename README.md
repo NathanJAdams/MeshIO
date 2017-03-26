@@ -33,8 +33,8 @@ Writing an object is done in a similar way. Create a saver object that implement
 This method also attempts to read the format from the file extension. If the format is recognised and the file is valid, data will be requested from the saver object and written to the file.
 
 
-<h3>Formats, InputStreams and OutputStreams</h3>
-Formats can be used directly with input and output streams. The format read() and write() methods are similar to the above methods but use an input or output stream instead of a file path. Two examples follow:
+<h3>Using Formats directly</h3>
+Format objects can be instantiated and used directly. The format read() and write() methods are similar to the above methods but use an input or output stream instead of a file path. Two examples follow:
 
 Reading:
 
