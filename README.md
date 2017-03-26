@@ -1,7 +1,7 @@
 # MeshIO
 <h3>Licence</h3>
 
-MIT Licence
+[MIT Licence](LICENSE)
 
 
 <h3>Usage</h3>
