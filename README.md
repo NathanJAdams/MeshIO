@@ -8,7 +8,7 @@ The purpose of this library is to allow easy saving and loading of 3D meshes wit
 
 
 <h3>Read</h3>
-To read an object create a builder object that implements IMeshBuilder`<YourMeshClass`>. Then call the meshIO.read() method passing in the builder and a file path to read from. If unsuccessful, a MeshIOException is thrown.
+To read an object create a builder object that implements IMeshBuilder&lt;YourMeshClass&gt;. Then call the meshIO.read() method passing in the builder and a file path to read from. If unsuccessful, a MeshIOException is thrown.
 
     MeshIO meshIO = new MeshIO();
     try {
