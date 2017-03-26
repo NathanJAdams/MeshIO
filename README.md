@@ -8,7 +8,7 @@ The purpose of this library is to allow easy saving and loading of polygon meshe
 
 
 <h3>Read</h3>
-To read an object create a builder object that implements [support for further formats will follow](TODO.md) IMeshBuilderYourMeshClass [goo](www.google.com). Then call the meshIO.read() method passing in the builder and a file path to read from. If unsuccessful, a MeshIOException is thrown.
+To read an object create a builder object that implements. Then call the meshIO.read() method passing in the builder and a file path to read from. If unsuccessful, a MeshIOException is thrown.
 
     MeshIO meshIO = new MeshIO();
     try {
