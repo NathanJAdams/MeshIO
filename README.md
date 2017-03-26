@@ -33,12 +33,8 @@ Writing an object is done in a similar way. Create a saver object that implement
 This method also attempts to read the format from the file extension. If the format is recognised and the file is valid, data will be requested from the saver object and written to the file.
 
 
-<h3>Formats</h3>
-Currently the only supported formats are PLY and MBWF, support for further formats will follow. Additional formats can be added by implementing the IMeshFormat interface. A format can be used by registering it via the MeshIO.registerMeshFormat() method.
-
-
-<h4>Use of InputStreams and OutputStreams</h4>
-Formats are used directly with input and output streams. The format read() and write() methods are similar to the above methods but use an input or output stream instead of a file path. Two examples follow:
+<h3>Formats, InputStreams and OutputStreams</h3>
+Formats can be used directly with input and output streams. The format read() and write() methods are similar to the above methods but use an input or output stream instead of a file path. Two examples follow:
 
 Reading:
 
@@ -57,3 +53,5 @@ Writing:
     } catch (MeshIOException e) {
         e.printStackTrace();
     }
+
+Currently the only supported formats are PLY and MBWF, support for further formats will follow. Additional formats can be used by implementing the IMeshFormat interface and registering it via the MeshIO.registerMeshFormat() method.
