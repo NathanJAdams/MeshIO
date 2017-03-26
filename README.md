@@ -17,6 +17,7 @@ To read an object create a builder object that implements [bugs](BUGS.md). Then 
         e.printStackTrace();
     }
 
+[bugs](BUGS.md)
 The method attempts to read the format from the file extension. If the format is recognised and the file is valid, data will be sent from the file to the builder. Once all the data has been sent, the builder's build() method will be called and the result returned to the caller.
 
 
