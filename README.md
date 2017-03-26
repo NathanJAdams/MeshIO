@@ -36,6 +36,7 @@ This method also attempts to read the format from the file extension. If the for
 <h3>Using Formats directly</h3>
 Format objects can be instantiated and used directly. The format read() and write() methods are similar to the above methods but use an input or output stream instead of a file path. Two examples follow:
 
+
 Reading:
 
     PlyFormatAscii_1_0 format = new PlyFormatAscii_1_0();
