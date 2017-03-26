@@ -30,7 +30,7 @@ Writing an object is done in a similar way. Create a saver object that implement
         e.printStackTrace();
     }
 
-This method also attempts to read the format from the file path's extension. If the format is recognised and the file is valid, data will be requested from the saver and written to the file.
+This method also attempts to read the format from the file path's extension. If the format is recognised and the file is valid, data will be requested from the saver object and written to the file.
 
 
 <h3>Formats</h3>
@@ -38,7 +38,7 @@ Currently the only supported formats are PLY and MBWF, support for further forma
 
 
 <h3>Use of InputStreams and OutputStreams</h3>
-Formats can be used directly with input and output streams. The format read() and write() methods are similar to the above methods but use an input or output stream instead of a file path. Two examples follow:
+Formats are used directly with input and output streams. The format read() and write() methods are similar to the above methods but use an input or output stream instead of a file path. Two examples follow:
 
 Reading:
 
