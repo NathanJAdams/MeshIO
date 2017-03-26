@@ -13,7 +13,7 @@ The purpose of this library is to allow easy saving and loading of polygon meshe
 
 To read an object create a builder object that implements [IMeshBuilder&lt;YourMeshClass&gt;](src/com/ripplar_games/mesh_io/IMeshBuilder.java). Then call the meshIO.read() method passing in the builder and a file path to read from. If unsuccessful, a [MeshIOException](src/com/ripplar_games/mesh_io/MeshIOException.java) is thrown.
 
-    [MeshIO](src/com/ripplar_games/mesh_io/MeshIO.java) meshIO = new [MeshIO](src/com/ripplar_games/mesh_io/MeshIO.java)();
+    MeshIO meshIO = new MeshIO();
     try {
         YourMeshClass newMeshObject = meshIO.read(meshBuilder, filePath);
     } catch (MeshIOException e) {
