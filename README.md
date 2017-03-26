@@ -25,7 +25,7 @@ The method attempts to read the format from the file extension. If the format is
 
 <h3>Write</h3>
 
-Writing an object is done in a similar way. Create a saver object that implements IMeshSaver and has access to the mesh data to be saved. Then call the meshIO.write() method passing in the saver and a file path to save to. If unsuccessful, a MeshIOException is thrown.
+Writing an object is done in a similar way. Create a saver object that implements [IMeshSaver](src/com/ripplar_games/mesh_io/IMeshSaver.java) and has access to the mesh data to be saved. Then call the meshIO.write() method passing in the saver and a file path to save to. If unsuccessful, a MeshIOException is thrown.
 
     MeshIO meshIO = new MeshIO();
     try {
