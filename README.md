@@ -10,8 +10,8 @@ The purpose of this library is to allow easy saving and loading of 3D meshes wit
 <h3>Read</h3>
 To read an object create a builder object that implements IMeshBuilder\<YourMeshClass\>. Then call the meshIO.read() method passing in the builder and a file path to read from. If unsuccessful, a MeshIOException is thrown.
 
+    MeshIO meshIO = new MeshIO();
     try {
-        MeshIO meshIO = new MeshIO();
         YourMeshClass newMeshObject = meshIO.read(meshBuilder, filePath);
     } catch (MeshIOException e) {
         e.printStackTrace();
@@ -23,8 +23,8 @@ The method attempts to read the format from the file path's extension. If the fo
 <h3>Write</h3>
 Writing an object is done in a similar way. Create a saver object that implements IMeshSaver and has access to the mesh data to be saved. Then call the meshIO.write() method passing in the saver and a file path to save to. If unsuccessful, a MeshIOException is thrown.
 
+    MeshIO meshIO = new MeshIO();
     try {
-        MeshIO meshIO = new MeshIO();
         meshIO.write(meshSaver, filePath);
     } catch (MeshIOException e) {
         e.printStackTrace();
@@ -42,8 +42,8 @@ Formats can be used directly with input and output streams. The format read() an
 
 Reading:
 
+    PlyFormatAscii_1_0 format = new PlyFormatAscii_1_0();
     try {
-        PlyFormatAscii_1_0 format = new PlyFormatAscii_1_0();
         YourMeshClass newMeshObject = format.read(meshBuilder, inputStream);
     } catch (MeshIOException e) {
         e.printStackTrace();
@@ -51,8 +51,8 @@ Reading:
 
 Writing:
 
+    PlyFormatAscii_1_0 format = new PlyFormatAscii_1_0();
     try {
-        PlyFormatAscii_1_0 format = new PlyFormatAscii_1_0();
         format.write(meshSaver, outputStream);
     } catch (MeshIOException e) {
         e.printStackTrace();
