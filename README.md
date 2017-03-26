@@ -55,4 +55,4 @@ Format objects can be instantiated and used directly. The format read() and writ
         e.printStackTrace();
     }
 
-Currently the only supported formats are PLY and MBWF, support for further formats will follow. Additional formats can be used by implementing the IMeshFormat interface and registering it via the MeshIO.registerMeshFormat() method.
+Currently the only supported formats are PLY and MBWF, [support for further formats will follow](TODO.md). Additional formats can be used by implementing the IMeshFormat interface and registering it via the MeshIO.registerMeshFormat() method.
