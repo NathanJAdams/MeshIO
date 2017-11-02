@@ -2,6 +2,10 @@
 *.classpath
 *.project
 
+# Idea
+.idea/
+*.iml
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
@@ -16,4 +20,7 @@ hs_err_pid*
 
 # eclipse preference files
 *.settings
+
+# Build artifacts
 /target/
+!target/mesh-io-1.0.0.jar
