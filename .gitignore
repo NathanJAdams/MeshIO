@@ -16,4 +16,10 @@ hs_err_pid*
 
 # eclipse preference files
 *.settings
+
+# Idea files
+.idea
+*.iml
+
+# Build artifacts
 /target/
