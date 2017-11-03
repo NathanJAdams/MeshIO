@@ -5,11 +5,9 @@ import java.nio.ByteBuffer;
 import com.ripplar_games.mesh_io.IMeshInfo;
 
 public interface IMesh extends IMeshInfo {
-   void clear();
+    boolean isValid();
 
-   boolean isValid();
+    ByteBuffer getVertices();
 
-   ByteBuffer getVertices();
-
-   ByteBuffer getIndices();
+    ByteBuffer getIndices();
 }

@@ -3,13 +3,13 @@ package com.ripplar_games.mesh_io.mesh;
 import java.nio.ByteBuffer;
 
 public interface IndicesDataType<T> {
-   boolean isValidVertexCount(int vertexCount);
+    boolean isValidVertexCount(int vertexCount);
 
-   T createEmptyArray();
+    T createEmptyArray();
 
-   T createNewArray(T previousArray, int newLength);
+    T createNewArray(T previousArray, int newLength);
 
-   void setValue(T array, int index, int value);
+    void setValue(T array, int index, int value);
 
-   ByteBuffer toByteBuffer(T array);
+    ByteBuffer toByteBuffer(T array);
 }

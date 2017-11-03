@@ -1,9 +1,11 @@
 package com.ripplar_games.mesh_io;
 
+import java.util.List;
+
 public interface IMeshInfo {
-   MeshVertexType[] getVertexFormat();
+    List<MeshVertexType> getVertexFormat();
 
-   int getVertexCount();
+    int getVertexCount();
 
-   int getFaceCount();
+    int getFaceCount();
 }

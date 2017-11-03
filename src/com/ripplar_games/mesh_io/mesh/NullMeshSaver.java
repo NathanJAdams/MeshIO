@@ -1,31 +1,33 @@
 package com.ripplar_games.mesh_io.mesh;
 
+import java.util.List;
+
 import com.ripplar_games.mesh_io.IMeshSaver;
 import com.ripplar_games.mesh_io.MeshVertexType;
 
 public class NullMeshSaver implements IMeshSaver {
-   private static final IMesh MESH = new NullMesh();
+    private static final IMesh MESH = new NullMesh();
 
-   @Override
-   public MeshVertexType[] getVertexFormat() {
-      return MESH.getVertexFormat();
-   }
+    @Override
+    public List<MeshVertexType> getVertexFormat() {
+        return MESH.getVertexFormat();
+    }
 
-   @Override
-   public int getVertexCount() {
-      return MESH.getVertexCount();
-   }
+    @Override
+    public int getVertexCount() {
+        return MESH.getVertexCount();
+    }
 
-   @Override
-   public int getFaceCount() {
-      return MESH.getFaceCount();
-   }
+    @Override
+    public int getFaceCount() {
+        return MESH.getFaceCount();
+    }
 
-   @Override
-   public void getVertexData(int vertexIndex, float[] vertexData) {
-   }
+    @Override
+    public void getVertexData(int vertexIndex, float[] vertexData) {
+    }
 
-   @Override
-   public void getFaceIndices(int faceIndex, int[] faceIndices) {
-   }
+    @Override
+    public void getFaceIndices(int faceIndex, int[] faceIndices) {
+    }
 }
