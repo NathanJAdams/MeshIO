@@ -11,11 +11,11 @@ import java.util.Map;
 import com.ripplar_games.mesh_io.formats.mbmsh.MbMshFormat;
 import com.ripplar_games.mesh_io.formats.obj.ObjFormat;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatAscii_1_0;
+import com.ripplar_games.mesh_io.index.IndicesDataType;
 import com.ripplar_games.mesh_io.mesh.IMesh;
-import com.ripplar_games.mesh_io.mesh.ImmutableMesh;
 import com.ripplar_games.mesh_io.mesh.ImmutableMeshBuilder;
-import com.ripplar_games.mesh_io.mesh.IndicesDataTypes;
-import com.ripplar_games.mesh_io.mesh.MeshIndexType;
+import com.ripplar_games.mesh_io.mesh.MeshType;
+import com.ripplar_games.mesh_io.vertex.VertexFormat;
 
 public class MeshIO {
     private final Map<String, IMeshFormat> extensionFormats = new HashMap<String, IMeshFormat>();
@@ -30,33 +30,8 @@ public class MeshIO {
         extensionFormats.put(meshFormat.getFileExtension(), meshFormat);
     }
 
-    public ImmutableMesh<byte[]> readMeshByteIndices(String filePath, MeshVertexType... format) {
-        ImmutableMeshBuilder<byte[]> builder = new ImmutableMeshBuilder<byte[]>(MeshIndexType.Mesh, IndicesDataTypes.Byte, format);
-        return readQuietly(filePath, builder);
-    }
-
-    public ImmutableMesh<short[]> readMeshShortIndices(String filePath, MeshVertexType... format) {
-        ImmutableMeshBuilder<short[]> builder = new ImmutableMeshBuilder<short[]>(MeshIndexType.Mesh, IndicesDataTypes.Short, format);
-        return readQuietly(filePath, builder);
-    }
-
-    public ImmutableMesh<int[]> readMeshIntIndices(String filePath, MeshVertexType... format) {
-        ImmutableMeshBuilder<int[]> builder = new ImmutableMeshBuilder<int[]>(MeshIndexType.Mesh, IndicesDataTypes.Int, format);
-        return readQuietly(filePath, builder);
-    }
-
-    public ImmutableMesh<byte[]> readOutlineByteIndices(String filePath, MeshVertexType... format) {
-        ImmutableMeshBuilder<byte[]> builder = new ImmutableMeshBuilder<byte[]>(MeshIndexType.Outline, IndicesDataTypes.Byte, format);
-        return readQuietly(filePath, builder);
-    }
-
-    public ImmutableMesh<short[]> readOutlineShortIndices(String filePath, MeshVertexType... format) {
-        ImmutableMeshBuilder<short[]> builder = new ImmutableMeshBuilder<short[]>(MeshIndexType.Outline, IndicesDataTypes.Short, format);
-        return readQuietly(filePath, builder);
-    }
-
-    public ImmutableMesh<int[]> readOutlineIntIndices(String filePath, MeshVertexType... format) {
-        ImmutableMeshBuilder<int[]> builder = new ImmutableMeshBuilder<int[]>(MeshIndexType.Outline, IndicesDataTypes.Int, format);
+    public IMesh readQuietly(String filePath, VertexFormat format, MeshType meshType, IndicesDataType<?> indicesDataType) {
+        ImmutableMeshBuilder builder = new ImmutableMeshBuilder(meshType, indicesDataType, format);
         return readQuietly(filePath, builder);
     }
 

@@ -1,7 +1,9 @@
 package com.ripplar_games.mesh_io;
 
-public interface IMeshSaver extends IMeshInfo {
-    void getVertexData(int vertexIndex, float[] vertexData);
+import com.ripplar_games.mesh_io.vertex.VertexType;
 
-    void getFaceIndices(int faceIndex, int[] faceIndices);
+public interface IMeshSaver extends IMeshInfo {
+    float getVertexDatum(int vertexIndex, VertexType vertexType);
+
+    void fillFaceIndices(int faceIndex, int[] faceIndices);
 }

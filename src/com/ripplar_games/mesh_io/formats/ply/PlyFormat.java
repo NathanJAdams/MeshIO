@@ -7,15 +7,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
 import com.ripplar_games.mesh_io.IMeshSaver;
 import com.ripplar_games.mesh_io.MeshIOException;
-import com.ripplar_games.mesh_io.MeshVertexType;
 import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
 import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
 import com.ripplar_games.mesh_io.mesh.IMesh;
+import com.ripplar_games.mesh_io.vertex.VertexAlignedSubFormat;
+import com.ripplar_games.mesh_io.vertex.VertexFormat;
+import com.ripplar_games.mesh_io.vertex.VertexType;
 
 public abstract class PlyFormat implements IMeshFormat {
     private static final Map<String, PlyFormat> BY_ENCODING_VERSION = new HashMap<String, PlyFormat>();
@@ -29,8 +32,8 @@ public abstract class PlyFormat implements IMeshFormat {
     private static final String LIST = "list";
     private static final String VERTEX_INDEX = "vertex_index";
     private static final String END_HEADER = "end_header";
-    private static final Map<MeshVertexType, String> PROPERTY_NAMES = new HashMap<MeshVertexType, String>();
-    private static final Map<String, MeshVertexType> PROPERTIES_BY_NAME = new HashMap<String, MeshVertexType>();
+    private static final Map<VertexType, String> PROPERTY_NAMES = new HashMap<VertexType, String>();
+    private static final Map<String, VertexType> PROPERTIES_BY_NAME = new HashMap<String, VertexType>();
     private static final String PROPERTY_POSITION_X_NAME = "x";
     private static final String PROPERTY_POSITION_Y_NAME = "y";
     private static final String PROPERTY_POSITION_Z_NAME = "z";
@@ -45,18 +48,18 @@ public abstract class PlyFormat implements IMeshFormat {
     private static final String PROPERTY_TEXTURE_COORDINATE_V_NAME = "v";
 
     static {
-        addPropertyNameMapping(MeshVertexType.Position_X, PROPERTY_POSITION_X_NAME);
-        addPropertyNameMapping(MeshVertexType.Position_Y, PROPERTY_POSITION_Y_NAME);
-        addPropertyNameMapping(MeshVertexType.Position_Z, PROPERTY_POSITION_Z_NAME);
-        addPropertyNameMapping(MeshVertexType.Normal_X, PROPERTY_NORMAL_X_NAME);
-        addPropertyNameMapping(MeshVertexType.Normal_Y, PROPERTY_NORMAL_Y_NAME);
-        addPropertyNameMapping(MeshVertexType.Normal_Z, PROPERTY_NORMAL_Z_NAME);
-        addPropertyNameMapping(MeshVertexType.Color_R, PROPERTY_COLOR_R_NAME);
-        addPropertyNameMapping(MeshVertexType.Color_G, PROPERTY_COLOR_G_NAME);
-        addPropertyNameMapping(MeshVertexType.Color_B, PROPERTY_COLOR_B_NAME);
-        addPropertyNameMapping(MeshVertexType.Color_A, PROPERTY_COLOR_A_NAME);
-        addPropertyNameMapping(MeshVertexType.ImageCoord_X, PROPERTY_TEXTURE_COORDINATE_U_NAME);
-        addPropertyNameMapping(MeshVertexType.ImageCoord_Y, PROPERTY_TEXTURE_COORDINATE_V_NAME);
+        addPropertyNameMapping(VertexType.Position_X, PROPERTY_POSITION_X_NAME);
+        addPropertyNameMapping(VertexType.Position_Y, PROPERTY_POSITION_Y_NAME);
+        addPropertyNameMapping(VertexType.Position_Z, PROPERTY_POSITION_Z_NAME);
+        addPropertyNameMapping(VertexType.Normal_X, PROPERTY_NORMAL_X_NAME);
+        addPropertyNameMapping(VertexType.Normal_Y, PROPERTY_NORMAL_Y_NAME);
+        addPropertyNameMapping(VertexType.Normal_Z, PROPERTY_NORMAL_Z_NAME);
+        addPropertyNameMapping(VertexType.Color_R, PROPERTY_COLOR_R_NAME);
+        addPropertyNameMapping(VertexType.Color_G, PROPERTY_COLOR_G_NAME);
+        addPropertyNameMapping(VertexType.Color_B, PROPERTY_COLOR_B_NAME);
+        addPropertyNameMapping(VertexType.Color_A, PROPERTY_COLOR_A_NAME);
+        addPropertyNameMapping(VertexType.ImageCoord_X, PROPERTY_TEXTURE_COORDINATE_U_NAME);
+        addPropertyNameMapping(VertexType.ImageCoord_Y, PROPERTY_TEXTURE_COORDINATE_V_NAME);
     }
 
     private final String encoding;
@@ -68,18 +71,18 @@ public abstract class PlyFormat implements IMeshFormat {
         BY_ENCODING_VERSION.put(encoding + version, this);
     }
 
-    private static void addPropertyNameMapping(MeshVertexType type, String name) {
+    private static void addPropertyNameMapping(VertexType type, String name) {
         PROPERTIES_BY_NAME.put(name, type);
         PROPERTY_NAMES.put(type, name);
     }
 
-    private static void readVertices(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder<?> builder, List<MeshVertexType> readVertexFormat,
+    private static void readVertices(PlyFormat plyFormat, PrimitiveInputStream pis, IMeshBuilder<?> builder, List<VertexType> readVertexFormat,
                                      List<PlyDataType> vertexDataTypes, int numVertices) throws IOException {
         float[] readVertexData = new float[readVertexFormat.size()];
         for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++) {
             plyFormat.fillVertexData(pis, readVertexData, vertexDataTypes.get(vertexIndex));
             for (int vertexFormatIndex = 0; vertexFormatIndex < readVertexFormat.size(); vertexFormatIndex++) {
-                MeshVertexType readType = readVertexFormat.get(vertexFormatIndex);
+                VertexType readType = readVertexFormat.get(vertexFormatIndex);
                 float vertexDatum = readVertexData[vertexFormatIndex];
                 builder.setVertexDatum(vertexIndex, readType, vertexDatum);
             }
@@ -104,8 +107,8 @@ public abstract class PlyFormat implements IMeshFormat {
         return BY_ENCODING_VERSION.get(encoding + version);
     }
 
-    public static String getPropertyName(MeshVertexType meshVertexType) {
-        return PROPERTY_NAMES.get(meshVertexType);
+    public static String getPropertyName(VertexType vertexType) {
+        return PROPERTY_NAMES.get(vertexType);
     }
 
     public String getEncoding() {
@@ -140,7 +143,7 @@ public abstract class PlyFormat implements IMeshFormat {
             boolean isVerticesFirst = true;
             boolean isVertexHeader = false;
             boolean isFaceHeader = false;
-            List<MeshVertexType> vertexFormat = new ArrayList<MeshVertexType>();
+            List<VertexType> vertexTypes = new ArrayList<VertexType>();
             List<PlyDataType> vertexDataTypes = new ArrayList<PlyDataType>();
             int numVertices = -1;
             int numFaces = -1;
@@ -171,11 +174,11 @@ public abstract class PlyFormat implements IMeshFormat {
                 } else if (lineParts.length == 3 && PROPERTY.equals(lineParts[0])) {
                     if (isVertexHeader) {
                         PlyDataType dataType = PlyDataType.getDataType(lineParts[1]);
-                        MeshVertexType vertexType = PROPERTIES_BY_NAME.get(lineParts[2]);
+                        VertexType vertexType = PROPERTIES_BY_NAME.get(lineParts[2]);
                         if (dataType == null || vertexType == null)
                             throw new MeshIOException("Unrecognised vertex property: " + lineParts[1] + " - " + lineParts[2]);
                         vertexDataTypes.add(dataType);
-                        vertexFormat.add(vertexType);
+                        vertexTypes.add(vertexType);
                     }
                 } else if (lineParts.length == 5 && isFaceHeader && PROPERTY.equals(lineParts[0]) && LIST.equals(lineParts[1])
                         && VERTEX_INDEX.equals(lineParts[4])) {
@@ -190,11 +193,11 @@ public abstract class PlyFormat implements IMeshFormat {
             builder.setVertexCount(numVertices);
             builder.setFaceCount(numFaces);
             if (isVerticesFirst) {
-                readVertices(plyFormat, pis, builder, vertexFormat, vertexDataTypes, numVertices);
+                readVertices(plyFormat, pis, builder, vertexTypes, vertexDataTypes, numVertices);
                 readFaces(plyFormat, pis, builder, faceIndexCountType, faceIndexType, numFaces);
             } else {
                 readFaces(plyFormat, pis, builder, faceIndexCountType, faceIndexType, numFaces);
-                readVertices(plyFormat, pis, builder, vertexFormat, vertexDataTypes, numVertices);
+                readVertices(plyFormat, pis, builder, vertexTypes, vertexDataTypes, numVertices);
             }
             return builder.build();
         } catch (IOException e) {
@@ -213,23 +216,31 @@ public abstract class PlyFormat implements IMeshFormat {
             pos.writeLine(PLY);
             pos.writeLine(FORMAT + ' ' + encoding + ' ' + version);
             pos.writeLine("element vertex " + saver.getVertexCount());
-            List<MeshVertexType> vertexFormat = saver.getVertexFormat();
+            VertexFormat vertexFormat = saver.getVertexFormat();
             if (vertexFormat != null)
-                for (MeshVertexType meshVertexType : vertexFormat)
-                    pos.writeLine("property float " + PROPERTY_NAMES.get(meshVertexType));
+                for (VertexType vertexType : VertexType.getValues())
+                    if (vertexFormat.containsVertexType(vertexType))
+                        pos.writeLine("property float " + PROPERTY_NAMES.get(vertexType));
             pos.writeLine("element face " + saver.getFaceCount());
             pos.writeLine("property list uchar int vertex_index");
             pos.writeLine(END_HEADER);
             if (vertexFormat != null) {
-                float[] vertexData = new float[vertexFormat.size()];
-                for (int i = 0; i < saver.getVertexCount(); i++) {
-                    saver.getVertexData(i, vertexData);
+                Set<VertexType> vertexTypes = vertexFormat.getVertexTypes();
+                int vertexTypeCount = vertexTypes.size();
+                float[] vertexData = new float[vertexTypeCount];
+                for (int vertexIndex = 0; vertexIndex < saver.getVertexCount(); vertexIndex++) {
+                    for (VertexType vertexType : vertexTypes) {
+                        VertexAlignedSubFormat alignedSubFormat = vertexFormat.getAlignedSubFormat(vertexType);
+                        int offset = alignedSubFormat.getOffset();
+                        float vertexDatum = saver.getVertexDatum(vertexIndex, vertexType);
+                        vertexData[offset] = vertexDatum;
+                    }
                     writeVertexData(pos, vertexData, PlyDataType.Float);
                 }
             }
             int[] faceIndices = new int[3];
             for (int i = 0; i < saver.getFaceCount(); i++) {
-                saver.getFaceIndices(i, faceIndices);
+                saver.fillFaceIndices(i, faceIndices);
                 writeFaceIndices(pos, faceIndices, PlyDataType.Uchar, PlyDataType.Int);
             }
         } catch (IOException ioe) {

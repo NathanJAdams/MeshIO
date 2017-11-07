@@ -2,39 +2,39 @@ package com.ripplar_games.mesh_io.mesh;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshSaver;
-import com.ripplar_games.mesh_io.MeshVertexType;
+import com.ripplar_games.mesh_io.index.EditableIndices;
+import com.ripplar_games.mesh_io.index.IndicesDataType;
+import com.ripplar_games.mesh_io.index.IndicesDataTypes;
+import com.ripplar_games.mesh_io.vertex.EditableVertices;
+import com.ripplar_games.mesh_io.vertex.VertexFormat;
+import com.ripplar_games.mesh_io.vertex.VertexType;
 
 public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSaver {
-    private final Map<MeshIndexType, Map<IndicesDataType<?>, MeshIndices<?>>> indices = new HashMap<MeshIndexType, Map<IndicesDataType<?>, MeshIndices<?>>>();
-    private final EditableMeshVertices vertices = new EditableMeshVertices();
-    private MeshIndexType meshIndexType = MeshIndexType.Mesh;
+    private final Map<MeshType, Map<IndicesDataType<?>, EditableIndices<?>>> indices = new HashMap<MeshType, Map<IndicesDataType<?>, EditableIndices<?>>>();
+    private final EditableVertices vertices = new EditableVertices();
+    private MeshType meshType = MeshType.Mesh;
     private IndicesDataType<?> indicesDataType = IndicesDataTypes.Short;
 
     public <T> EditableMesh() {
-        for (MeshIndexType meshIndexType : MeshIndexType.values()) {
-            Map<IndicesDataType<?>, MeshIndices<?>> subMap = new HashMap<IndicesDataType<?>, MeshIndices<?>>();
+        for (MeshType meshType : MeshType.values()) {
+            Map<IndicesDataType<?>, EditableIndices<?>> subMap = new HashMap<IndicesDataType<?>, EditableIndices<?>>();
             for (IndicesDataType<?> dataType : IndicesDataTypes.getAllTypes()) {
                 // hack to allow proper typing
                 @SuppressWarnings("unchecked")
                 IndicesDataType<T> typedDataType = (IndicesDataType<T>) dataType;
-                subMap.put(dataType, new MeshIndices<T>(typedDataType, meshIndexType));
+                subMap.put(dataType, new EditableIndices<T>(typedDataType, meshType));
             }
-            indices.put(meshIndexType, subMap);
+            indices.put(meshType, subMap);
         }
     }
 
-    public float getVertexDatum(int vertexIndex, MeshVertexType meshVertexType) {
-        return vertices.getVertexDatum(vertexIndex, meshVertexType);
-    }
-
     public void setFaceIndicesIndex(int faceIndex, int indicesIndex, int vertexIndex) {
-        for (Map<IndicesDataType<?>, MeshIndices<?>> subMap : indices.values())
-            for (MeshIndices<?> indices : subMap.values())
+        for (Map<IndicesDataType<?>, EditableIndices<?>> subMap : indices.values())
+            for (EditableIndices<?> indices : subMap.values())
                 indices.setFaceIndex(faceIndex, indicesIndex, vertexIndex);
     }
 
@@ -43,17 +43,17 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
             this.indicesDataType = indicesDataType;
     }
 
-    public void setMeshIndexType(MeshIndexType meshIndexType) {
-        if (meshIndexType != null)
-            this.meshIndexType = meshIndexType;
+    public void setMeshType(MeshType meshType) {
+        if (meshType != null)
+            this.meshType = meshType;
     }
 
     @Override
-    public List<MeshVertexType> getVertexFormat() {
+    public VertexFormat getVertexFormat() {
         return vertices.getFormat();
     }
 
-    public void setVertexFormat(MeshVertexType... format) {
+    public void setVertexFormat(VertexFormat format) {
         vertices.setFormat(format);
     }
 
@@ -74,8 +74,8 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
 
     @Override
     public void setFaceCount(int faceCount) {
-        for (Map<IndicesDataType<?>, MeshIndices<?>> subMap : indices.values())
-            for (MeshIndices<?> indices : subMap.values())
+        for (Map<IndicesDataType<?>, EditableIndices<?>> subMap : indices.values())
+            for (EditableIndices<?> indices : subMap.values())
                 indices.setFaceCount(faceCount);
     }
 
@@ -86,7 +86,7 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
 
     @Override
     public ByteBuffer getVertices() {
-        return vertices.toByteBuffer();
+        return vertices.getVerticesBuffer();
     }
 
     @Override
@@ -96,23 +96,23 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
 
     @Override
     public void clear() {
-        for (Map<IndicesDataType<?>, MeshIndices<?>> subMap : indices.values())
-            for (MeshIndices<?> meshIndices : subMap.values())
-                meshIndices.clear();
+        for (Map<IndicesDataType<?>, EditableIndices<?>> subMap : indices.values())
+            for (EditableIndices<?> editableIndices : subMap.values())
+                editableIndices.clear();
         vertices.clear();
-        meshIndexType = MeshIndexType.Mesh;
+        meshType = MeshType.Mesh;
         indicesDataType = IndicesDataTypes.Short;
     }
 
     @Override
-    public void setVertexDatum(int vertexIndex, MeshVertexType meshVertexType, float vertexDatum) {
-        vertices.setVertexDatum(vertexIndex, meshVertexType, vertexDatum);
+    public void setVertexDatum(int vertexIndex, VertexType vertexType, float vertexDatum) {
+        vertices.setVertexDatum(vertexIndex, vertexType, vertexDatum);
     }
 
     @Override
     public void setFaceIndices(int faceIndex, int[] faceIndices) {
-        for (Map<IndicesDataType<?>, MeshIndices<?>> subMap : indices.values())
-            for (MeshIndices<?> indices : subMap.values())
+        for (Map<IndicesDataType<?>, EditableIndices<?>> subMap : indices.values())
+            for (EditableIndices<?> indices : subMap.values())
                 indices.setFaceIndices(faceIndex, faceIndices);
     }
 
@@ -122,16 +122,16 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
     }
 
     @Override
-    public void getVertexData(int vertexIndex, float[] vertexData) {
-        vertices.getVertexData(vertexIndex, vertexData);
+    public float getVertexDatum(int vertexIndex, VertexType vertexType) {
+        return vertices.getVertexDatum(vertexIndex, vertexType);
     }
 
     @Override
-    public void getFaceIndices(int faceIndex, int[] faceIndices) {
-        getMeshIndices().getFaceIndices(faceIndex, faceIndices);
+    public void fillFaceIndices(int faceIndex, int[] faceIndices) {
+        getMeshIndices().fillFaceIndices(faceIndex, faceIndices);
     }
 
-    private MeshIndices<?> getMeshIndices() {
-        return indices.get(meshIndexType).get(indicesDataType);
+    private EditableIndices<?> getMeshIndices() {
+        return indices.get(meshType).get(indicesDataType);
     }
 }

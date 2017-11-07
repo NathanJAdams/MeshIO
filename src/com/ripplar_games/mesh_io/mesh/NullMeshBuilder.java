@@ -1,15 +1,14 @@
 package com.ripplar_games.mesh_io.mesh;
 
-import java.util.List;
-
 import com.ripplar_games.mesh_io.IMeshBuilder;
-import com.ripplar_games.mesh_io.MeshVertexType;
+import com.ripplar_games.mesh_io.vertex.VertexFormat;
+import com.ripplar_games.mesh_io.vertex.VertexType;
 
 public class NullMeshBuilder implements IMeshBuilder<NullMesh> {
     private static final NullMesh MESH = new NullMesh();
 
     @Override
-    public List<MeshVertexType> getVertexFormat() {
+    public VertexFormat getVertexFormat() {
         return MESH.getVertexFormat();
     }
 
@@ -36,7 +35,7 @@ public class NullMeshBuilder implements IMeshBuilder<NullMesh> {
     }
 
     @Override
-    public void setVertexDatum(int vertexIndex, MeshVertexType meshVertexType, float vertexDatum) {
+    public void setVertexDatum(int vertexIndex, VertexType vertexType, float vertexDatum) {
     }
 
     @Override
