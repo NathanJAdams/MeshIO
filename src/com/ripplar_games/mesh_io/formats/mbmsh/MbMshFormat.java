@@ -4,17 +4,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.List;
 
+import com.ripplar_games.mesh_io.DatumEnDecoder;
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
 import com.ripplar_games.mesh_io.IMeshSaver;
 import com.ripplar_games.mesh_io.MeshIOException;
-import com.ripplar_games.mesh_io.MeshVertexType;
 import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
 import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
 import com.ripplar_games.mesh_io.mesh.IMesh;
+import com.ripplar_games.mesh_io.vertex.VertexFormat;
+import com.ripplar_games.mesh_io.vertex.VertexType;
 
 public class MbMshFormat implements IMeshFormat {
     private static final boolean IS_BIG_ENDIAN = true;
@@ -25,6 +25,43 @@ public class MbMshFormat implements IMeshFormat {
     private static final int IS_IMAGE_COORDS_MASK = 1 << 13;
     private static final int IS_COLORS_MASK = 1 << 12;
     private static final int IS_COLOR_ALPHA_MASK = 1 << 11;
+
+    @Override
+    public String getFileExtension() {
+        return "mbmsh";
+    }
+
+    @Override
+    public <T extends IMesh> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
+        builder.clear();
+        PrimitiveInputStream pis;
+        try {
+            pis = new PrimitiveInputStream(is);
+            readMagic(pis);
+            short version = pis.readShort(IS_BIG_ENDIAN);
+            return readWithVersion(builder, pis, version);
+        } catch (IOException ioe) {
+            throw new MeshIOException("Exception when reading from stream", ioe);
+        }
+    }
+
+    @Override
+    public void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
+        if (saver == null)
+            throw new MeshIOException("A mesh saver is required", new NullPointerException());
+        if (os == null)
+            throw new MeshIOException("An output stream is required", new NullPointerException());
+        try {
+            PrimitiveOutputStream pos = new PrimitiveOutputStream(os);
+            VertexFormat format = saver.getVertexFormat();
+            short metadata = createMetadata(format);
+            writeHeader(pos, metadata);
+            writeVertices(saver, pos, metadata);
+            writeFaces(saver, pos);
+        } catch (IOException ioe) {
+            throw new MeshIOException("Exception when writing to stream", ioe);
+        }
+    }
 
     private static void readMagic(PrimitiveInputStream pis) throws IOException, MeshIOException {
         byte[] magicBytes = new byte[MAGIC.length];
@@ -58,35 +95,35 @@ public class MbMshFormat implements IMeshFormat {
         boolean isColors = (metadata & IS_COLORS_MASK) != 0;
         boolean isColorAlpha = (metadata & IS_COLOR_ALPHA_MASK) != 0;
         for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
-            readSignedShorts(builder, vertexIndex, pis, MeshVertexType.Position_X, MeshVertexType.Position_Y);
+            readSignedShorts(builder, vertexIndex, pis, VertexType.Position_X, VertexType.Position_Y);
             if (is3D)
-                readSignedShorts(builder, vertexIndex, pis, MeshVertexType.Position_Z);
+                readSignedShorts(builder, vertexIndex, pis, VertexType.Position_Z);
             if (isNormals) {
-                readSignedShorts(builder, vertexIndex, pis, MeshVertexType.Normal_X, MeshVertexType.Normal_Y);
+                readSignedShorts(builder, vertexIndex, pis, VertexType.Normal_X, VertexType.Normal_Y);
                 if (is3D)
-                    readSignedShorts(builder, vertexIndex, pis, MeshVertexType.Normal_Z);
+                    readSignedShorts(builder, vertexIndex, pis, VertexType.Normal_Z);
             }
             if (isImageCoords) {
-                readUnsignedBytes(builder, vertexIndex, pis, MeshVertexType.ImageCoord_X, MeshVertexType.ImageCoord_Y);
+                readUnsignedBytes(builder, vertexIndex, pis, VertexType.ImageCoord_X, VertexType.ImageCoord_Y);
             }
             if (isColors) {
-                readUnsignedBytes(builder, vertexIndex, pis, MeshVertexType.Color_R, MeshVertexType.Color_G, MeshVertexType.Color_B);
+                readUnsignedBytes(builder, vertexIndex, pis, VertexType.Color_R, VertexType.Color_G, VertexType.Color_B);
                 if (isColorAlpha)
-                    readUnsignedBytes(builder, vertexIndex, pis, MeshVertexType.Color_A);
+                    readUnsignedBytes(builder, vertexIndex, pis, VertexType.Color_A);
             }
         }
     }
 
-    private static void readSignedShorts(IMeshBuilder<?> builder, int vertexIndex, PrimitiveInputStream pis, MeshVertexType... types) throws IOException {
+    private static void readSignedShorts(IMeshBuilder<?> builder, int vertexIndex, PrimitiveInputStream pis, VertexType... types) throws IOException {
         for (int i = 0; i < types.length; i++) {
-            float value = DatumEnDecode.decodeShort(pis.readShort(IS_BIG_ENDIAN), true);
+            float value = DatumEnDecoder.decodeShort(pis.readShort(IS_BIG_ENDIAN), true);
             builder.setVertexDatum(vertexIndex, types[i], value);
         }
     }
 
-    private static void readUnsignedBytes(IMeshBuilder<?> builder, int vertexIndex, PrimitiveInputStream pis, MeshVertexType... types) throws IOException {
+    private static void readUnsignedBytes(IMeshBuilder<?> builder, int vertexIndex, PrimitiveInputStream pis, VertexType... types) throws IOException {
         for (int i = 0; i < types.length; i++) {
-            float value = DatumEnDecode.decodeByte(pis.readByte(), false);
+            float value = DatumEnDecoder.decodeByte(pis.readByte(), false);
             builder.setVertexDatum(vertexIndex, types[i], value);
         }
     }
@@ -103,22 +140,21 @@ public class MbMshFormat implements IMeshFormat {
         }
     }
 
-    private static short createMetadata(EnumMap<MeshVertexType, Integer> typeIndexes) throws MeshIOException {
-        if (!typeIndexes.containsKey(MeshVertexType.Position_X) || !typeIndexes.containsKey(MeshVertexType.Position_Y))
+    private static short createMetadata(VertexFormat format) throws MeshIOException {
+        if (!format.containsVertexType(VertexType.Position_X) || !format.containsVertexType(VertexType.Position_Y))
             throw new MeshIOException("No position data found");
         short metaData = 0;
-        boolean is3D = typeIndexes.containsKey(MeshVertexType.Position_Z);
+        boolean is3D = format.containsVertexType(VertexType.Position_Z);
         if (is3D)
             metaData |= IS_3D_MASK;
-        if (typeIndexes.containsKey(MeshVertexType.Normal_X) && typeIndexes.containsKey(MeshVertexType.Normal_Y)
-                && (!is3D || typeIndexes.containsKey(MeshVertexType.Normal_Z)))
+        if (format.containsVertexType(VertexType.Normal_X) && format.containsVertexType(VertexType.Normal_Y)
+                && (!is3D || format.containsVertexType(VertexType.Normal_Z)))
             metaData |= IS_NORMALS_MASK;
-        if (typeIndexes.containsKey(MeshVertexType.ImageCoord_X) && typeIndexes.containsKey(MeshVertexType.ImageCoord_Y))
+        if (format.containsVertexType(VertexType.ImageCoord_X) && format.containsVertexType(VertexType.ImageCoord_Y))
             metaData |= IS_IMAGE_COORDS_MASK;
-        if (typeIndexes.containsKey(MeshVertexType.Color_R) && typeIndexes.containsKey(MeshVertexType.Color_G)
-                && typeIndexes.containsKey(MeshVertexType.Color_B)) {
+        if (format.containsVertexType(VertexType.Color_R) && format.containsVertexType(VertexType.Color_G) && format.containsVertexType(VertexType.Color_B)) {
             metaData |= IS_COLORS_MASK;
-            if (typeIndexes.containsKey(MeshVertexType.Color_A))
+            if (format.containsVertexType(VertexType.Color_A))
                 metaData |= IS_COLOR_ALPHA_MASK;
         }
         return metaData;
@@ -130,7 +166,7 @@ public class MbMshFormat implements IMeshFormat {
         pos.writeShort(metadata, IS_BIG_ENDIAN);
     }
 
-    private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos, short metadata, EnumMap<MeshVertexType, Integer> typeIndexes)
+    private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos, short metadata)
             throws IOException, MeshIOException {
         int vertexCount = saver.getVertexCount();
         pos.writeInt(vertexCount, IS_BIG_ENDIAN);
@@ -139,33 +175,30 @@ public class MbMshFormat implements IMeshFormat {
         boolean isImages = (metadata & IS_IMAGE_COORDS_MASK) != 0;
         boolean isColors = (metadata & IS_COLORS_MASK) != 0;
         boolean isAlpha = (metadata & IS_COLOR_ALPHA_MASK) != 0;
-        float[] vertexData = new float[typeIndexes.size()];
         for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
-            saver.getVertexData(vertexIndex, vertexData);
-            writeVertexData(pos, vertexData, typeIndexes, MeshVertexType.Position_X, MeshVertexType.Position_Y);
-            if (is3D)
-                writeVertexData(pos, vertexData, typeIndexes, MeshVertexType.Position_Z);
+            writeVertexData(saver, vertexIndex, pos, VertexType.Position_X, VertexType.Position_Y);
+            if (is3D) {
+                writeVertexData(saver, vertexIndex, pos, VertexType.Position_Z);
+            }
             if (isNormals) {
-                writeVertexData(pos, vertexData, typeIndexes, MeshVertexType.Normal_X, MeshVertexType.Normal_Y);
+                writeVertexData(saver, vertexIndex, pos, VertexType.Normal_X, VertexType.Normal_Y);
                 if (is3D)
-                    writeVertexData(pos, vertexData, typeIndexes, MeshVertexType.Normal_Z);
+                    writeVertexData(saver, vertexIndex, pos, VertexType.Normal_Z);
             }
             if (isImages)
-                writeVertexData(pos, vertexData, typeIndexes, MeshVertexType.ImageCoord_X, MeshVertexType.ImageCoord_Y);
+                writeVertexData(saver, vertexIndex, pos, VertexType.ImageCoord_X, VertexType.ImageCoord_Y);
             if (isColors) {
-                writeVertexData(pos, vertexData, typeIndexes, MeshVertexType.Color_R, MeshVertexType.Color_G, MeshVertexType.Color_B);
+                writeVertexData(saver, vertexIndex, pos, VertexType.Color_R, VertexType.Color_G, VertexType.Color_B);
                 if (isAlpha)
-                    writeVertexData(pos, vertexData, typeIndexes, MeshVertexType.ImageCoord_X, MeshVertexType.Color_A);
+                    writeVertexData(saver, vertexIndex, pos, VertexType.Color_A);
             }
         }
     }
 
-    private static void writeVertexData(PrimitiveOutputStream pos, float[] vertexData, EnumMap<MeshVertexType, Integer> typeIndexes,
-                                        MeshVertexType... types) throws IOException, MeshIOException {
-        for (int i = 0; i < types.length; i++) {
-            MeshVertexType type = types[i];
-            int index = typeIndexes.get(type);
-            float value = vertexData[index];
+
+    private static void writeVertexData(IMeshSaver saver, int vertexIndex, PrimitiveOutputStream pos, VertexType... types) throws IOException, MeshIOException {
+        for (VertexType type : types) {
+            float datum = saver.getVertexDatum(vertexIndex, type);
             switch (type) {
                 case Position_X:
                 case Position_Y:
@@ -173,7 +206,7 @@ public class MbMshFormat implements IMeshFormat {
                 case Normal_X:
                 case Normal_Y:
                 case Normal_Z:
-                    pos.writeShort(DatumEnDecode.encodeAsShort(value, true), IS_BIG_ENDIAN);
+                    pos.writeShort(DatumEnDecoder.encodeAsShort(datum, true), IS_BIG_ENDIAN);
                     break;
                 case Color_R:
                 case Color_G:
@@ -181,7 +214,7 @@ public class MbMshFormat implements IMeshFormat {
                 case Color_A:
                 case ImageCoord_X:
                 case ImageCoord_Y:
-                    pos.writeByte(DatumEnDecode.encodeAsByte(value, false));
+                    pos.writeByte(DatumEnDecoder.encodeAsByte(datum, false));
                     break;
                 default:
                     throw new MeshIOException("Unknown vertex type: " + type.name());
@@ -195,7 +228,7 @@ public class MbMshFormat implements IMeshFormat {
         int numBytes = calculateNumBytes(faceCount);
         int[] faceIndices = new int[3];
         for (int faceIndex = 0; faceIndex < faceCount; faceIndex++) {
-            saver.getFaceIndices(faceIndex, faceIndices);
+            saver.fillFaceIndices(faceIndex, faceIndices);
             for (int vertexIndex = 0; vertexIndex < faceIndices.length; vertexIndex++)
                 pos.writeLong(faceIndices[vertexIndex], IS_BIG_ENDIAN, numBytes);
         }
@@ -210,43 +243,5 @@ public class MbMshFormat implements IMeshFormat {
             return 3;
         else
             return 4;
-    }
-
-    @Override
-    public String getFileExtension() {
-        return "mbmsh";
-    }
-
-    @Override
-    public <T extends IMesh> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
-        builder.clear();
-        PrimitiveInputStream pis;
-        try {
-            pis = new PrimitiveInputStream(is);
-            readMagic(pis);
-            short version = pis.readShort(IS_BIG_ENDIAN);
-            return readWithVersion(builder, pis, version);
-        } catch (IOException ioe) {
-            throw new MeshIOException("Exception when reading from stream", ioe);
-        }
-    }
-
-    @Override
-    public void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
-        if (saver == null)
-            throw new MeshIOException("A mesh saver is required", new NullPointerException());
-        if (os == null)
-            throw new MeshIOException("An output stream is required", new NullPointerException());
-        try {
-            PrimitiveOutputStream pos = new PrimitiveOutputStream(os);
-            List<MeshVertexType> format = saver.getVertexFormat();
-            EnumMap<MeshVertexType, Integer> typeIndexes = MeshVertexType.createTypeIndexes(format);
-            short metadata = createMetadata(typeIndexes);
-            writeHeader(pos, metadata);
-            writeVertices(saver, pos, metadata, typeIndexes);
-            writeFaces(saver, pos);
-        } catch (IOException ioe) {
-            throw new MeshIOException("Exception when writing to stream", ioe);
-        }
     }
 }

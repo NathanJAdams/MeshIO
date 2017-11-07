@@ -1,26 +1,23 @@
 package com.ripplar_games.mesh_io.mesh;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.ripplar_games.mesh_io.IMeshBuilder;
-import com.ripplar_games.mesh_io.MeshVertexType;
+import com.ripplar_games.mesh_io.index.EditableIndices;
+import com.ripplar_games.mesh_io.index.IndicesDataType;
+import com.ripplar_games.mesh_io.vertex.LoadableVertices;
+import com.ripplar_games.mesh_io.vertex.VertexFormat;
+import com.ripplar_games.mesh_io.vertex.VertexType;
 
-public class ImmutableMeshBuilder<T> implements IMeshBuilder<ImmutableMesh<T>> {
-    private final MeshIndices<T> indices;
-    private final LoadableMeshVertices vertices;
+public class ImmutableMeshBuilder implements IMeshBuilder<ImmutableMesh> {
+    private final EditableIndices<?> indices;
+    private final LoadableVertices vertices;
 
-    public ImmutableMeshBuilder(MeshIndexType meshIndexType, IndicesDataType<T> indicesDataType, MeshVertexType... format) {
-        this(meshIndexType, indicesDataType, Arrays.asList(format));
-    }
-
-    public ImmutableMeshBuilder(MeshIndexType meshIndexType, IndicesDataType<T> indicesDataType, List<MeshVertexType> format) {
-        this.indices = new MeshIndices<T>(indicesDataType, meshIndexType);
-        this.vertices = new LoadableMeshVertices(format);
+    public <T> ImmutableMeshBuilder(MeshType meshType, IndicesDataType<T> indicesDataType, VertexFormat format) {
+        this.indices = new EditableIndices<T>(indicesDataType, meshType);
+        this.vertices = new LoadableVertices(format);
     }
 
     @Override
-    public List<MeshVertexType> getVertexFormat() {
+    public VertexFormat getVertexFormat() {
         return vertices.getFormat();
     }
 
@@ -51,8 +48,8 @@ public class ImmutableMeshBuilder<T> implements IMeshBuilder<ImmutableMesh<T>> {
     }
 
     @Override
-    public void setVertexDatum(int vertexIndex, MeshVertexType meshVertexType, float vertexDatum) {
-        vertices.setVertexDatum(vertexIndex, meshVertexType, vertexDatum);
+    public void setVertexDatum(int vertexIndex, VertexType vertexType, float vertexDatum) {
+        vertices.setVertexDatum(vertexIndex, vertexType, vertexDatum);
     }
 
     @Override
@@ -61,7 +58,7 @@ public class ImmutableMeshBuilder<T> implements IMeshBuilder<ImmutableMesh<T>> {
     }
 
     @Override
-    public ImmutableMesh<T> build() {
-        return new ImmutableMesh<T>(indices, vertices);
+    public ImmutableMesh build() {
+        return new ImmutableMesh(getVertexFormat(), getVertexCount(), getFaceCount(), indices.getIndicesBuffer(), vertices.getVerticesBuffer());
     }
 }

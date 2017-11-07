@@ -1,46 +1,53 @@
 package com.ripplar_games.mesh_io.mesh;
 
 import java.nio.ByteBuffer;
-import java.util.List;
 
-import com.ripplar_games.mesh_io.MeshVertexType;
+import com.ripplar_games.mesh_io.vertex.VertexFormat;
 
-public class ImmutableMesh<T> implements IMesh {
-    private final MeshIndices<T> indices;
-    private final LoadableMeshVertices vertices;
+public class ImmutableMesh implements IMesh {
+    private final VertexFormat format;
+    private final int vertexCount;
+    private final int faceCount;
+    private final ByteBuffer vertices;
+    private final ByteBuffer indices;
+    private final boolean isValid;
 
-    public ImmutableMesh(MeshIndices<T> indices, LoadableMeshVertices vertices) {
-        this.indices = indices;
+    public ImmutableMesh(VertexFormat format, int vertexCount, int faceCount, ByteBuffer vertices, ByteBuffer indices) {
+        this.format = format;
+        this.vertexCount = vertexCount;
+        this.faceCount = faceCount;
         this.vertices = vertices;
+        this.indices = indices;
+        this.isValid = (!format.isEmpty()) && (vertexCount >= 3) && (faceCount > 0) && (indices != null) && (vertices != null);
     }
 
     @Override
     public boolean isValid() {
-        return (indices != null) && (vertices != null);
+        return isValid;
     }
 
     @Override
     public ByteBuffer getVertices() {
-        return vertices.toByteBuffer();
+        return vertices;
     }
 
     @Override
     public ByteBuffer getIndices() {
-        return indices.getIndicesBuffer();
+        return indices;
     }
 
     @Override
-    public List<MeshVertexType> getVertexFormat() {
-        return vertices.getFormat();
+    public VertexFormat getVertexFormat() {
+        return format;
     }
 
     @Override
     public int getVertexCount() {
-        return vertices.getVertexCount();
+        return vertexCount;
     }
 
     @Override
     public int getFaceCount() {
-        return indices.getFaceCount();
+        return faceCount;
     }
 }

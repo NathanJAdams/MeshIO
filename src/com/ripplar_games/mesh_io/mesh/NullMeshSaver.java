@@ -1,15 +1,14 @@
 package com.ripplar_games.mesh_io.mesh;
 
-import java.util.List;
-
 import com.ripplar_games.mesh_io.IMeshSaver;
-import com.ripplar_games.mesh_io.MeshVertexType;
+import com.ripplar_games.mesh_io.vertex.VertexFormat;
+import com.ripplar_games.mesh_io.vertex.VertexType;
 
 public class NullMeshSaver implements IMeshSaver {
     private static final IMesh MESH = new NullMesh();
 
     @Override
-    public List<MeshVertexType> getVertexFormat() {
+    public VertexFormat getVertexFormat() {
         return MESH.getVertexFormat();
     }
 
@@ -24,10 +23,11 @@ public class NullMeshSaver implements IMeshSaver {
     }
 
     @Override
-    public void getVertexData(int vertexIndex, float[] vertexData) {
+    public float getVertexDatum(int vertexIndex, VertexType vertexType) {
+        return 0;
     }
 
     @Override
-    public void getFaceIndices(int faceIndex, int[] faceIndices) {
+    public void fillFaceIndices(int faceIndex, int[] faceIndices) {
     }
 }

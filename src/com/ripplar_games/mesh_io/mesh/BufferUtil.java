@@ -38,6 +38,16 @@ public class BufferUtil {
         return bb;
     }
 
+    public static ByteBuffer copy(ByteBuffer source, int byteCount) {
+        ByteBuffer duplicate = source.duplicate();
+        duplicate.position(0);
+        byteCount = Math.min(duplicate.capacity(), byteCount);
+        duplicate.limit(byteCount);
+        ByteBuffer copy = createByteBuffer(byteCount);
+        copy.put(duplicate);
+        return copy;
+    }
+
     public static ByteBuffer createByteBuffer(int byteCount) {
         return ByteBuffer.allocateDirect(byteCount).order(NATIVE_BYTE_ORDER);
     }
