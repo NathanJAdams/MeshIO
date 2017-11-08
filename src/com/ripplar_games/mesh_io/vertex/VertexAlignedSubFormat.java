@@ -2,9 +2,9 @@ package com.ripplar_games.mesh_io.vertex;
 
 public class VertexAlignedSubFormat {
     private final int offset;
-    private final VertexDatumDataType dataType;
+    private final VertexDataType dataType;
 
-    public VertexAlignedSubFormat(int offset, VertexDatumDataType dataType) {
+    public VertexAlignedSubFormat(int offset, VertexDataType dataType) {
         this.offset = offset;
         this.dataType = dataType;
     }
@@ -13,7 +13,7 @@ public class VertexAlignedSubFormat {
         return offset;
     }
 
-    public VertexDatumDataType getDataType() {
+    public VertexDataType getDataType() {
         return dataType;
     }
 }
