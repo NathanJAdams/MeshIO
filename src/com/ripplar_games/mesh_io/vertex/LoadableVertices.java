@@ -37,7 +37,7 @@ public class LoadableVertices {
         VertexAlignedSubFormat alignedSubFormat = format.getAlignedSubFormat(vertexType);
         if (alignedSubFormat != null) {
             int offset = alignedSubFormat.getOffset();
-            VertexDatumDataType dataType = alignedSubFormat.getDataType();
+            VertexDataType dataType = alignedSubFormat.getDataType();
             int index = (vertexIndex * format.getByteCount()) + offset;
             dataType.appendDatum(vertices, index, vertexDatum);
         }

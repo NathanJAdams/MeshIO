@@ -78,7 +78,7 @@ public class EditableVertices {
         if (alignedSubFormat != null) {
             int offset = alignedSubFormat.getOffset();
             int index = (vertexIndex * format.getByteCount()) + offset;
-            VertexDatumDataType dataType = alignedSubFormat.getDataType();
+            VertexDataType dataType = alignedSubFormat.getDataType();
             dataType.appendDatum(vertices, index, datum);
         }
     }

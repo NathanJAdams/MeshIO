@@ -65,7 +65,7 @@ public class VertexFormat {
         for (int i = 0; i < formatEntries.size(); i++) {
             VertexSubFormat entry = formatEntries.get(i);
             VertexType vertexType = entry.getVertexType();
-            VertexDatumDataType dataType = entry.getDataType();
+            VertexDataType dataType = entry.getDataType();
             VertexAlignedSubFormat alignedSubFormat = new VertexAlignedSubFormat(offset, dataType);
             typeIndexes.put(vertexType, alignedSubFormat);
             offset += dataType.getByteCount();

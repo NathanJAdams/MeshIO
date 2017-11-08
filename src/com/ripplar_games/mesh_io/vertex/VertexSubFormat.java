@@ -2,9 +2,9 @@ package com.ripplar_games.mesh_io.vertex;
 
 public class VertexSubFormat {
     private final VertexType vertexType;
-    private final VertexDatumDataType dataType;
+    private final VertexDataType dataType;
 
-    public VertexSubFormat(VertexType vertexType, VertexDatumDataType dataType) {
+    public VertexSubFormat(VertexType vertexType, VertexDataType dataType) {
         this.vertexType = vertexType;
         this.dataType = dataType;
     }
@@ -13,7 +13,7 @@ public class VertexSubFormat {
         return vertexType;
     }
 
-    public VertexDatumDataType getDataType() {
+    public VertexDataType getDataType() {
         return dataType;
     }
 }
