@@ -1,10 +1,5 @@
 package com.ripplar_games.mesh_io.formats.mbmsh;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-
 import com.ripplar_games.mesh_io.DatumEnDecoder;
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
@@ -15,6 +10,11 @@ import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
 import com.ripplar_games.mesh_io.mesh.IMesh;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
 
 public class MbMshFormat implements IMeshFormat {
     private static final boolean IS_BIG_ENDIAN = true;
@@ -226,9 +226,8 @@ public class MbMshFormat implements IMeshFormat {
         int faceCount = saver.getFaceCount();
         pos.writeInt(faceCount, IS_BIG_ENDIAN);
         int numBytes = calculateNumBytes(faceCount);
-        int[] faceIndices = new int[3];
         for (int faceIndex = 0; faceIndex < faceCount; faceIndex++) {
-            saver.fillFaceIndices(faceIndex, faceIndices);
+            int[] faceIndices = saver.getFaceIndices(faceIndex);
             for (int vertexIndex = 0; vertexIndex < faceIndices.length; vertexIndex++)
                 pos.writeLong(faceIndices[vertexIndex], IS_BIG_ENDIAN, numBytes);
         }

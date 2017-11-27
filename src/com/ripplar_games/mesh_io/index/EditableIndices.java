@@ -1,9 +1,9 @@
 package com.ripplar_games.mesh_io.index;
 
+import com.ripplar_games.mesh_io.mesh.MeshType;
+
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
-
-import com.ripplar_games.mesh_io.mesh.MeshType;
 
 public class EditableIndices<T> {
     private final IndicesDataType<T> indicesDataType;
@@ -40,8 +40,8 @@ public class EditableIndices<T> {
         meshType.setFaceIndex(indicesDataType, indices, faceIndex, faceCornerIndex, vertexIndex);
     }
 
-    public void fillFaceIndices(int faceIndex, int[] faceIndices) {
-        meshType.getFaceIndices(indicesDataType, indices, faceIndex, faceIndices);
+    public int[] getFaceIndices(int faceIndex) {
+        return meshType.getFaceIndices(indicesDataType, indices, faceIndex);
     }
 
     public void setFaceIndices(int faceIndex, int[] faceIndices) {

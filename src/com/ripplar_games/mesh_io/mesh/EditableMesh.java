@@ -127,8 +127,8 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
     }
 
     @Override
-    public void fillFaceIndices(int faceIndex, int[] faceIndices) {
-        getMeshIndices().fillFaceIndices(faceIndex, faceIndices);
+    public int[] getFaceIndices(int faceIndex) {
+        return getMeshIndices().getFaceIndices(faceIndex);
     }
 
     private EditableIndices<?> getMeshIndices() {

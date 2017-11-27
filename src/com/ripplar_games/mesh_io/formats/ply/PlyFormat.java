@@ -1,14 +1,5 @@
 package com.ripplar_games.mesh_io.formats.ply;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
 import com.ripplar_games.mesh_io.IMeshSaver;
@@ -19,6 +10,15 @@ import com.ripplar_games.mesh_io.mesh.IMesh;
 import com.ripplar_games.mesh_io.vertex.VertexAlignedSubFormat;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class PlyFormat implements IMeshFormat {
     private static final Map<String, PlyFormat> BY_ENCODING_VERSION = new HashMap<String, PlyFormat>();
@@ -238,9 +238,8 @@ public abstract class PlyFormat implements IMeshFormat {
                     writeVertexData(pos, vertexData, PlyDataType.Float);
                 }
             }
-            int[] faceIndices = new int[3];
             for (int i = 0; i < saver.getFaceCount(); i++) {
-                saver.fillFaceIndices(i, faceIndices);
+                int[] faceIndices = saver.getFaceIndices(i);
                 writeFaceIndices(pos, faceIndices, PlyDataType.Uchar, PlyDataType.Int);
             }
         } catch (IOException ioe) {
