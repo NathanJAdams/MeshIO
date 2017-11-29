@@ -4,7 +4,7 @@
 [MIT Licence](LICENSE)
 
 
-<h3>Status</h3>
+<h3>CircleCI Status</h3>
 
 [![CircleCI](https://circleci.com/gh/NathanJAdams/MeshIO/tree/master.svg?style=svg)](https://circleci.com/gh/NathanJAdams/MeshIO/tree/master)
 
