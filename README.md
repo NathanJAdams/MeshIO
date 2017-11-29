@@ -4,6 +4,11 @@
 [MIT Licence](LICENSE)
 
 
+<h3>Status</h3>
+
+https://circleci.com/gh/:NathanJAdams/:MeshIO.png?circle-token=:f8:3b:ba:d7:13:bb:58:fe:54:6e:8a:6a:63:55:9b:cd
+
+
 <h3>Usage</h3>
 
 The purpose of this library is to allow easy saving and loading of polygon meshes with any format and with any type of mesh object. The main way of doing this is to instantiate an object of the class [MeshIO](src/com/ripplar_games/mesh_io/MeshIO.java). Meshes can then be loaded and saved to and from file via it's read() and write() methods.
