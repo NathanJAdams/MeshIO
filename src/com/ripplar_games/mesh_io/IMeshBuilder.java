@@ -1,15 +1,18 @@
 package com.ripplar_games.mesh_io;
 
 import com.ripplar_games.mesh_io.mesh.IMesh;
+import com.ripplar_games.mesh_io.vertex.VertexType;
 
 public interface IMeshBuilder<T extends IMesh> extends IMeshInfo {
-   void setVertexCount(int vertexCount);
+    void clear();
 
-   void setFaceCount(int faceCount);
+    void setVertexCount(int vertexCount);
 
-   void setVertexData(int vertexIndex, float[] vertexData);
+    void setFaceCount(int faceCount);
 
-   void setFaceIndices(int faceIndex, int[] faceIndices);
+    void setVertexDatum(int vertexIndex, VertexType vertexType, float vertexDatum);
 
-   T build();
+    void setFaceIndices(int faceIndex, int[] faceIndices);
+
+    T build();
 }

@@ -1,2 +1,0 @@
-Priority | Description
--------- | -----------

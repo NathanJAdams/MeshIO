@@ -1,9 +1,11 @@
 package com.ripplar_games.mesh_io;
 
+import com.ripplar_games.mesh_io.vertex.VertexFormat;
+
 public interface IMeshInfo {
-   MeshVertexType[] getVertexFormat();
+    VertexFormat getVertexFormat();
 
-   int getVertexCount();
+    int getVertexCount();
 
-   int getFaceCount();
+    int getFaceCount();
 }
