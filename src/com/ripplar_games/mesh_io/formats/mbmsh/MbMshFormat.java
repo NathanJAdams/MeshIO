@@ -116,14 +116,14 @@ public class MbMshFormat implements IMeshFormat {
 
     private static void readSignedShorts(IMeshBuilder<?> builder, int vertexIndex, PrimitiveInputStream pis, VertexType... types) throws IOException {
         for (int i = 0; i < types.length; i++) {
-            float value = DatumEnDecoder.decodeShort(pis.readShort(IS_BIG_ENDIAN), true);
+            float value = (float)DatumEnDecoder.decodeShort(pis.readShort(IS_BIG_ENDIAN), true);
             builder.setVertexDatum(vertexIndex, types[i], value);
         }
     }
 
     private static void readUnsignedBytes(IMeshBuilder<?> builder, int vertexIndex, PrimitiveInputStream pis, VertexType... types) throws IOException {
         for (int i = 0; i < types.length; i++) {
-            float value = DatumEnDecoder.decodeByte(pis.readByte(), false);
+            float value = (float)DatumEnDecoder.decodeByte(pis.readByte(), false);
             builder.setVertexDatum(vertexIndex, types[i], value);
         }
     }
