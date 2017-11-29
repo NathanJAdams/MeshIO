@@ -6,7 +6,7 @@
 
 <h3>Status</h3>
 
-https://circleci.com/gh/:NathanJAdams/:MeshIO.png?circle-token=:f8:3b:ba:d7:13:bb:58:fe:54:6e:8a:6a:63:55:9b:cd
+[![CircleCI](https://circleci.com/gh/NathanJAdams/MeshIO/tree/master.svg?style=svg)](https://circleci.com/gh/NathanJAdams/MeshIO/tree/master)
 
 
 <h3>Usage</h3>
