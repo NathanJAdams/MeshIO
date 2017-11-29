@@ -1,5 +1,7 @@
 package com.ripplar_games.mesh_io.mesh;
 
+import java.util.Set;
+
 import com.ripplar_games.mesh_io.IMeshSaver;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
@@ -8,8 +10,8 @@ public class NullMeshSaver implements IMeshSaver {
     private static final IMesh MESH = new NullMesh();
 
     @Override
-    public VertexFormat getVertexFormat() {
-        return MESH.getVertexFormat();
+    public Set<VertexFormat> getVertexFormats() {
+        return MESH.getVertexFormats();
     }
 
     @Override

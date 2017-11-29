@@ -1,6 +1,8 @@
 package com.ripplar_games.mesh_io.mesh;
 
 import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.Set;
 
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 
@@ -9,8 +11,8 @@ public class NullMesh implements IMesh {
     private static final ByteBuffer VERTICES_BUFFER = BufferUtil.with(new float[0]);
 
     @Override
-    public VertexFormat getVertexFormat() {
-        return VertexFormat.EMPTY;
+    public Set<VertexFormat> getVertexFormats() {
+        return Collections.emptySet();
     }
 
     @Override
@@ -29,7 +31,7 @@ public class NullMesh implements IMesh {
     }
 
     @Override
-    public ByteBuffer getVertices() {
+    public ByteBuffer getVertices(VertexFormat vertexFormat) {
         return VERTICES_BUFFER;
     }
 

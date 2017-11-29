@@ -3,6 +3,7 @@ package com.ripplar_games.mesh_io.mesh;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshSaver;
@@ -48,13 +49,13 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
             this.meshType = meshType;
     }
 
-    @Override
-    public VertexFormat getVertexFormat() {
-        return vertices.getFormat();
+    public void addVertexFormat(VertexFormat format) {
+        vertices.addFormat(format);
     }
 
-    public void setVertexFormat(VertexFormat format) {
-        vertices.setFormat(format);
+    @Override
+    public Set<VertexFormat> getVertexFormats() {
+        return vertices.getFormats();
     }
 
     @Override
@@ -85,8 +86,8 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
     }
 
     @Override
-    public ByteBuffer getVertices() {
-        return vertices.getVerticesBuffer();
+    public ByteBuffer getVertices(VertexFormat format) {
+        return vertices.getVerticesBuffer(format);
     }
 
     @Override

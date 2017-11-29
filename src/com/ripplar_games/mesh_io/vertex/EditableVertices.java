@@ -2,39 +2,47 @@ package com.ripplar_games.mesh_io.vertex;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.ripplar_games.mesh_io.mesh.BufferUtil;
 
 public class EditableVertices {
     private final List<EditableVertex> vertexList = new ArrayList<EditableVertex>();
-    private VertexFormat format = VertexFormat.EMPTY;
+    private final Map<VertexFormat, ByteBuffer> formatVertices = new HashMap<VertexFormat, ByteBuffer>();
     private int vertexCount;
-    private ByteBuffer vertices;
 
     public void clear() {
         this.vertexList.clear();
-        this.format = VertexFormat.EMPTY;
         this.vertexCount = 0;
-        this.vertices = BufferUtil.createByteBuffer(0);
+        this.formatVertices.clear();
     }
 
-    public ByteBuffer getVerticesBuffer() {
-        return vertices;
+    public ByteBuffer getVerticesBuffer(VertexFormat format) {
+        return formatVertices.get(format);
     }
 
-    public VertexFormat getFormat() {
-        return format;
+    public Set<VertexFormat> getFormats() {
+        return formatVertices.keySet();
     }
 
-    public void setFormat(VertexFormat format) {
-        if (!this.format.equals(format)) {
-            this.format = format;
+    public void addFormat(VertexFormat format) {
+        if (!this.formatVertices.containsKey(format)) {
+            ByteBuffer vertices = BufferUtil.createByteBuffer(0);
+            this.formatVertices.put(format, vertices);
             for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
                 EditableVertex vertex = vertexList.get(vertexIndex);
                 for (VertexType vertexType : format.getVertexTypes()) {
                     float datum = vertex.getDatum(vertexType);
-                    setDatumOnBuffer(vertexIndex, vertexType, datum);
+                    VertexAlignedSubFormat alignedSubFormat = format.getAlignedSubFormat(vertexType);
+                    if (alignedSubFormat != null) {
+                        int offset = alignedSubFormat.getOffset();
+                        int index = (vertexIndex * format.getByteCount()) + offset;
+                        VertexDataType dataType = alignedSubFormat.getDataType();
+                        dataType.appendDatum(vertices, index, datum);
+                    }
                 }
             }
         }
@@ -55,11 +63,16 @@ public class EditableVertices {
                 vertexList.add(new EditableVertex());
         }
         if (previousVertexCount != vertexCount) {
-            int newLength = vertexCount * format.getByteCount();
-            if (vertices.capacity() >= newLength) {
-                vertices.limit(newLength);
-            } else {
-                vertices = BufferUtil.copy(vertices, newLength);
+            for (Map.Entry<VertexFormat, ByteBuffer> entry : formatVertices.entrySet()) {
+                VertexFormat format = entry.getKey();
+                ByteBuffer vertices = entry.getValue();
+                int newLength = vertexCount * format.getByteCount();
+                if (vertices.capacity() >= newLength) {
+                    vertices.limit(newLength);
+                } else {
+                    vertices = BufferUtil.copy(vertices, newLength);
+                    entry.setValue(vertices);
+                }
             }
         }
     }
@@ -70,16 +83,16 @@ public class EditableVertices {
 
     public void setVertexDatum(int vertexIndex, VertexType vertexType, float datum) {
         vertexList.get(vertexIndex).setDatum(vertexType, datum);
-        setDatumOnBuffer(vertexIndex, vertexType, datum);
-    }
-
-    private void setDatumOnBuffer(int vertexIndex, VertexType vertexType, float datum) {
-        VertexAlignedSubFormat alignedSubFormat = format.getAlignedSubFormat(vertexType);
-        if (alignedSubFormat != null) {
-            int offset = alignedSubFormat.getOffset();
-            int index = (vertexIndex * format.getByteCount()) + offset;
-            VertexDataType dataType = alignedSubFormat.getDataType();
-            dataType.appendDatum(vertices, index, datum);
+        for (Map.Entry<VertexFormat, ByteBuffer> entry : formatVertices.entrySet()) {
+            VertexFormat format = entry.getKey();
+            ByteBuffer vertices = entry.getValue();
+            VertexAlignedSubFormat alignedSubFormat = format.getAlignedSubFormat(vertexType);
+            if (alignedSubFormat != null) {
+                int offset = alignedSubFormat.getOffset();
+                int index = (vertexIndex * format.getByteCount()) + offset;
+                VertexDataType dataType = alignedSubFormat.getDataType();
+                dataType.appendDatum(vertices, index, datum);
+            }
         }
     }
 }
