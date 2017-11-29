@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Set;
 
 import com.ripplar_games.mesh_io.DatumEnDecoder;
 import com.ripplar_games.mesh_io.IMeshBuilder;
@@ -53,8 +54,8 @@ public class MbMshFormat implements IMeshFormat {
             throw new MeshIOException("An output stream is required", new NullPointerException());
         try {
             PrimitiveOutputStream pos = new PrimitiveOutputStream(os);
-            VertexFormat format = saver.getVertexFormat();
-            short metadata = createMetadata(format);
+            Set<VertexFormat> formats = saver.getVertexFormats();
+            short metadata = createMetadata(formats);
             writeHeader(pos, metadata);
             writeVertices(saver, pos, metadata);
             writeFaces(saver, pos);
@@ -140,24 +141,33 @@ public class MbMshFormat implements IMeshFormat {
         }
     }
 
-    private static short createMetadata(VertexFormat format) throws MeshIOException {
-        if (!format.containsVertexType(VertexType.Position_X) || !format.containsVertexType(VertexType.Position_Y))
+    private static short createMetadata(Set<VertexFormat> formats) throws MeshIOException {
+        if (!containsVertexType(formats, VertexType.Position_X) || !containsVertexType(formats, VertexType.Position_Y))
             throw new MeshIOException("No position data found");
         short metaData = 0;
-        boolean is3D = format.containsVertexType(VertexType.Position_Z);
+        boolean is3D = containsVertexType(formats, VertexType.Position_Z);
         if (is3D)
             metaData |= IS_3D_MASK;
-        if (format.containsVertexType(VertexType.Normal_X) && format.containsVertexType(VertexType.Normal_Y)
-                && (!is3D || format.containsVertexType(VertexType.Normal_Z)))
+        if (containsVertexType(formats, VertexType.Normal_X) && containsVertexType(formats, VertexType.Normal_Y)
+                && (!is3D || containsVertexType(formats, VertexType.Normal_Z)))
             metaData |= IS_NORMALS_MASK;
-        if (format.containsVertexType(VertexType.ImageCoord_X) && format.containsVertexType(VertexType.ImageCoord_Y))
+        if (containsVertexType(formats, VertexType.ImageCoord_X) && containsVertexType(formats, VertexType.ImageCoord_Y))
             metaData |= IS_IMAGE_COORDS_MASK;
-        if (format.containsVertexType(VertexType.Color_R) && format.containsVertexType(VertexType.Color_G) && format.containsVertexType(VertexType.Color_B)) {
+        if (containsVertexType(formats, VertexType.Color_R) && containsVertexType(formats, VertexType.Color_G) && containsVertexType(formats, VertexType.Color_B)) {
             metaData |= IS_COLORS_MASK;
-            if (format.containsVertexType(VertexType.Color_A))
+            if (containsVertexType(formats, VertexType.Color_A))
                 metaData |= IS_COLOR_ALPHA_MASK;
         }
         return metaData;
+    }
+
+    private static boolean containsVertexType(Set<VertexFormat> formats, VertexType vertexType) {
+        for (VertexFormat format : formats) {
+            if (format.containsVertexType(vertexType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void writeHeader(PrimitiveOutputStream pos, short metadata) throws IOException {

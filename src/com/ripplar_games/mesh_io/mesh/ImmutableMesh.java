@@ -1,24 +1,24 @@
 package com.ripplar_games.mesh_io.mesh;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.Set;
 
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 
 public class ImmutableMesh implements IMesh {
-    private final VertexFormat format;
     private final int vertexCount;
     private final int faceCount;
-    private final ByteBuffer vertices;
+    private final Map<VertexFormat, ByteBuffer> formatVertices;
     private final ByteBuffer indices;
     private final boolean isValid;
 
-    public ImmutableMesh(VertexFormat format, int vertexCount, int faceCount, ByteBuffer vertices, ByteBuffer indices) {
-        this.format = format;
+    public ImmutableMesh(int vertexCount, int faceCount, Map<VertexFormat, ByteBuffer> formatVertices, ByteBuffer indices) {
         this.vertexCount = vertexCount;
         this.faceCount = faceCount;
-        this.vertices = vertices;
+        this.formatVertices = formatVertices;
         this.indices = indices;
-        this.isValid = (!format.isEmpty()) && (vertexCount >= 3) && (faceCount > 0) && (indices != null) && (vertices != null);
+        this.isValid = (!formatVertices.isEmpty()) && (vertexCount >= 3) && (faceCount > 0) && (indices != null);
     }
 
     @Override
@@ -27,8 +27,8 @@ public class ImmutableMesh implements IMesh {
     }
 
     @Override
-    public ByteBuffer getVertices() {
-        return vertices;
+    public ByteBuffer getVertices(VertexFormat format) {
+        return formatVertices.get(format);
     }
 
     @Override
@@ -37,8 +37,8 @@ public class ImmutableMesh implements IMesh {
     }
 
     @Override
-    public VertexFormat getVertexFormat() {
-        return format;
+    public Set<VertexFormat> getVertexFormats() {
+        return formatVertices.keySet();
     }
 
     @Override

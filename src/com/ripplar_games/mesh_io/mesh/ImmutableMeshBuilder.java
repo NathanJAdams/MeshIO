@@ -1,5 +1,7 @@
 package com.ripplar_games.mesh_io.mesh;
 
+import java.util.Set;
+
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.index.EditableIndices;
 import com.ripplar_games.mesh_io.index.IndicesDataType;
@@ -11,14 +13,14 @@ public class ImmutableMeshBuilder implements IMeshBuilder<ImmutableMesh> {
     private final EditableIndices<?> indices;
     private final LoadableVertices vertices;
 
-    public <T> ImmutableMeshBuilder(MeshType meshType, IndicesDataType<T> indicesDataType, VertexFormat format) {
+    public <T> ImmutableMeshBuilder(MeshType meshType, IndicesDataType<T> indicesDataType, Set<VertexFormat> formats) {
         this.indices = new EditableIndices<T>(indicesDataType, meshType);
-        this.vertices = new LoadableVertices(format);
+        this.vertices = new LoadableVertices(formats);
     }
 
     @Override
-    public VertexFormat getVertexFormat() {
-        return vertices.getFormat();
+    public Set<VertexFormat> getVertexFormats() {
+        return vertices.getFormatVertices().keySet();
     }
 
     @Override
@@ -59,6 +61,6 @@ public class ImmutableMeshBuilder implements IMeshBuilder<ImmutableMesh> {
 
     @Override
     public ImmutableMesh build() {
-        return new ImmutableMesh(getVertexFormat(), getVertexCount(), getFaceCount(), indices.getIndicesBuffer(), vertices.getVerticesBuffer());
+        return new ImmutableMesh(getVertexCount(), getFaceCount(), vertices.getFormatVertices(), indices.getIndicesBuffer());
     }
 }

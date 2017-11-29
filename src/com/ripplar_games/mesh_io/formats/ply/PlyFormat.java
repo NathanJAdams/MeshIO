@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
@@ -16,7 +15,6 @@ import com.ripplar_games.mesh_io.MeshIOException;
 import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
 import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
 import com.ripplar_games.mesh_io.mesh.IMesh;
-import com.ripplar_games.mesh_io.vertex.VertexAlignedSubFormat;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 
@@ -216,27 +214,21 @@ public abstract class PlyFormat implements IMeshFormat {
             pos.writeLine(PLY);
             pos.writeLine(FORMAT + ' ' + encoding + ' ' + version);
             pos.writeLine("element vertex " + saver.getVertexCount());
-            VertexFormat vertexFormat = saver.getVertexFormat();
-            if (vertexFormat != null)
-                for (VertexType vertexType : VertexType.getValues())
-                    if (vertexFormat.containsVertexType(vertexType))
-                        pos.writeLine("property float " + PROPERTY_NAMES.get(vertexType));
+            List<VertexType> vertexTypes = getVertexTypes(saver);
+            for (VertexType vertexType : vertexTypes)
+                pos.writeLine("property float " + PROPERTY_NAMES.get(vertexType));
             pos.writeLine("element face " + saver.getFaceCount());
             pos.writeLine("property list uchar int vertex_index");
             pos.writeLine(END_HEADER);
-            if (vertexFormat != null) {
-                Set<VertexType> vertexTypes = vertexFormat.getVertexTypes();
-                int vertexTypeCount = vertexTypes.size();
-                float[] vertexData = new float[vertexTypeCount];
-                for (int vertexIndex = 0; vertexIndex < saver.getVertexCount(); vertexIndex++) {
-                    for (VertexType vertexType : vertexTypes) {
-                        VertexAlignedSubFormat alignedSubFormat = vertexFormat.getAlignedSubFormat(vertexType);
-                        int offset = alignedSubFormat.getOffset();
-                        float vertexDatum = saver.getVertexDatum(vertexIndex, vertexType);
-                        vertexData[offset] = vertexDatum;
-                    }
-                    writeVertexData(pos, vertexData, PlyDataType.Float);
+            int vertexTypeCount = vertexTypes.size();
+            float[] vertexData = new float[vertexTypeCount];
+            for (int vertexIndex = 0; vertexIndex < saver.getVertexCount(); vertexIndex++) {
+                for (int vertexTypeIndex = 0; vertexTypeIndex < vertexTypes.size(); vertexTypeIndex++) {
+                    VertexType vertexType = vertexTypes.get(vertexTypeIndex);
+                    float datum = saver.getVertexDatum(vertexIndex, vertexType);
+                    vertexData[vertexTypeIndex] = datum;
                 }
+                writeVertexData(pos, vertexData, PlyDataType.Float);
             }
             int[] faceIndices = new int[3];
             for (int i = 0; i < saver.getFaceCount(); i++) {
@@ -246,6 +238,14 @@ public abstract class PlyFormat implements IMeshFormat {
         } catch (IOException ioe) {
             throw new MeshIOException("Exception when writing to stream", ioe);
         }
+    }
+
+    private List<VertexType> getVertexTypes(IMeshSaver saver) {
+        List<VertexType> vertexTypes = new ArrayList<VertexType>();
+        for (VertexFormat format : saver.getVertexFormats()) {
+            vertexTypes.addAll(format.getVertexTypes());
+        }
+        return vertexTypes;
     }
 
     public abstract void fillVertexData(PrimitiveInputStream pis, float[] vertexData, PlyDataType vertexType) throws IOException;
