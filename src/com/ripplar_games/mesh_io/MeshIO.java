@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.ripplar_games.mesh_io.formats.mbmsh.MbMshFormat;
 import com.ripplar_games.mesh_io.formats.obj.ObjFormat;
@@ -30,8 +31,8 @@ public class MeshIO {
         extensionFormats.put(meshFormat.getFileExtension(), meshFormat);
     }
 
-    public IMesh readQuietly(String filePath, VertexFormat format, MeshType meshType, IndicesDataType<?> indicesDataType) {
-        ImmutableMeshBuilder builder = new ImmutableMeshBuilder(meshType, indicesDataType, format);
+    public IMesh readQuietly(String filePath, MeshType meshType, IndicesDataType<?> indicesDataType, Set<VertexFormat> formats) {
+        ImmutableMeshBuilder builder = new ImmutableMeshBuilder(meshType, indicesDataType, formats);
         return readQuietly(filePath, builder);
     }
 
