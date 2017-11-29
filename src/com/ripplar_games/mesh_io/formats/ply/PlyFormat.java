@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
@@ -230,9 +231,8 @@ public abstract class PlyFormat implements IMeshFormat {
                 }
                 writeVertexData(pos, vertexData, PlyDataType.Float);
             }
-            int[] faceIndices = new int[3];
             for (int i = 0; i < saver.getFaceCount(); i++) {
-                saver.fillFaceIndices(i, faceIndices);
+                int[] faceIndices = saver.getFaceIndices(i);
                 writeFaceIndices(pos, faceIndices, PlyDataType.Uchar, PlyDataType.Int);
             }
         } catch (IOException ioe) {

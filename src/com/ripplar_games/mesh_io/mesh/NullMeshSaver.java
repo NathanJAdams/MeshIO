@@ -30,6 +30,7 @@ public class NullMeshSaver implements IMeshSaver {
     }
 
     @Override
-    public void fillFaceIndices(int faceIndex, int[] faceIndices) {
+    public int[] getFaceIndices(int faceIndex) {
+        return new int[]{0, 1, 2};
     }
 }

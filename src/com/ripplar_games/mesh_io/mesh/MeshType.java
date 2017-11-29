@@ -24,10 +24,12 @@ public enum MeshType {
         }
     }
 
-    public <T> void getFaceIndices(IndicesDataType<T> indicesDataType, T array, int faceIndex, int[] faceIndices) {
+    public <T> int[] getFaceIndices(IndicesDataType<T> indicesDataType, T array, int faceIndex) {
+        int[] faceIndices = new int[offsets.length];
         int offset = faceIndex * offsets.length;
         for (int i = 0; i < offsets.length; i++)
             faceIndices[i] = indicesDataType.getValue(array, offset + i);
+        return faceIndices;
     }
 
     public <T> void setFaceIndices(IndicesDataType<T> indicesDataType, T array, int faceIndex, int[] faceIndices) {
