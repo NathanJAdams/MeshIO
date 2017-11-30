@@ -20,6 +20,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -49,16 +50,7 @@ public class FormatTest {
     }
 
     private List<VertexType> createVertexTypes() {
-        List<VertexType> vertexTypes = new ArrayList<VertexType>();
-        for (VertexType vertexType : VertexType.getValues()) {
-            if (RANDOM.nextBoolean()) {
-                vertexTypes.add(vertexType);
-            }
-        }
-        if (vertexTypes.isEmpty()) {
-            vertexTypes.add(VertexType.Color_A);
-        }
-        return vertexTypes;
+        return Arrays.asList(VertexType.getValues());
     }
 
     private List<VertexFormat> createFormats(List<VertexType> vertexTypes) {

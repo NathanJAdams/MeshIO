@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
@@ -210,8 +209,8 @@ public abstract class PlyFormat implements IMeshFormat {
             throw new MeshIOException("A mesh saver is required", new NullPointerException());
         if (os == null)
             throw new MeshIOException("An output stream is required", new NullPointerException());
+        PrimitiveOutputStream pos = new PrimitiveOutputStream(os);
         try {
-            PrimitiveOutputStream pos = new PrimitiveOutputStream(os);
             pos.writeLine(PLY);
             pos.writeLine(FORMAT + ' ' + encoding + ' ' + version);
             pos.writeLine("element vertex " + saver.getVertexCount());
@@ -237,6 +236,12 @@ public abstract class PlyFormat implements IMeshFormat {
             }
         } catch (IOException ioe) {
             throw new MeshIOException("Exception when writing to stream", ioe);
+        } finally {
+            try {
+                pos.flush();
+            } catch (IOException e) {
+                // ignore error
+            }
         }
     }
 

@@ -52,8 +52,8 @@ public class MbMshFormat implements IMeshFormat {
             throw new MeshIOException("A mesh saver is required", new NullPointerException());
         if (os == null)
             throw new MeshIOException("An output stream is required", new NullPointerException());
+        PrimitiveOutputStream pos = new PrimitiveOutputStream(os);
         try {
-            PrimitiveOutputStream pos = new PrimitiveOutputStream(os);
             Set<VertexFormat> formats = saver.getVertexFormats();
             short metadata = createMetadata(formats);
             writeHeader(pos, metadata);
@@ -61,6 +61,12 @@ public class MbMshFormat implements IMeshFormat {
             writeFaces(saver, pos);
         } catch (IOException ioe) {
             throw new MeshIOException("Exception when writing to stream", ioe);
+        } finally {
+            try {
+                pos.flush();
+            } catch (IOException e) {
+                //ignore error
+            }
         }
     }
 
@@ -117,14 +123,14 @@ public class MbMshFormat implements IMeshFormat {
 
     private static void readSignedShorts(IMeshBuilder<?> builder, int vertexIndex, PrimitiveInputStream pis, VertexType... types) throws IOException {
         for (int i = 0; i < types.length; i++) {
-            float value = (float)DatumEnDecoder.decodeShort(pis.readShort(IS_BIG_ENDIAN), true);
+            float value = (float) DatumEnDecoder.decodeShort(pis.readShort(IS_BIG_ENDIAN), true);
             builder.setVertexDatum(vertexIndex, types[i], value);
         }
     }
 
     private static void readUnsignedBytes(IMeshBuilder<?> builder, int vertexIndex, PrimitiveInputStream pis, VertexType... types) throws IOException {
         for (int i = 0; i < types.length; i++) {
-            float value = (float)DatumEnDecoder.decodeByte(pis.readByte(), false);
+            float value = (float) DatumEnDecoder.decodeByte(pis.readByte(), false);
             builder.setVertexDatum(vertexIndex, types[i], value);
         }
     }
