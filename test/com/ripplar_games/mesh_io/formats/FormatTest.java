@@ -30,60 +30,44 @@ public class FormatTest {
     @Ignore
     @Test
     public void testFormats() throws MeshIOException {
-        testFormat(new PlyFormatAscii_1_0());
-        testFormat(new PlyFormatBinaryBigEndian_1_0());
-        testFormat(new PlyFormatBinaryLittleEndian_1_0());
-        testFormat(new ObjFormat());
+//        testFormat(new PlyFormatAscii_1_0());
+//        testFormat(new PlyFormatBinaryBigEndian_1_0());
+//        testFormat(new PlyFormatBinaryLittleEndian_1_0());
+//        testFormat(new ObjFormat());
         testFormat(new MbMshFormat());
     }
 
-    private void testFormat(IMeshFormat format) throws MeshIOException {
+    private void testFormat(IMeshFormat meshFormat) throws MeshIOException {
         List<VertexType> vertexTypes = createVertexTypes();
-        List<VertexFormat> formats = createFormats(vertexTypes);
-        EditableMesh mesh = createRandomMesh(vertexTypes, formats);
+        VertexFormat format = createFormat(vertexTypes);
+        EditableMesh mesh = createRandomMesh(vertexTypes, format);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        format.write(mesh, baos);
+        meshFormat.write(mesh, baos);
         byte[] buffer = baos.toByteArray();
         ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
-        IMesh translatedMesh = format.read(new EditableMesh(), bais);
-        checkMeshes(mesh, translatedMesh, vertexTypes, formats);
+        IMesh translatedMesh = meshFormat.read(new EditableMesh(), bais);
+        checkMeshes(mesh, translatedMesh, format);
     }
 
     private List<VertexType> createVertexTypes() {
         return Arrays.asList(VertexType.getValues());
     }
 
-    private List<VertexFormat> createFormats(List<VertexType> vertexTypes) {
-        List<VertexFormat> formats = new ArrayList<VertexFormat>();
-        int formatCount = RANDOM.nextInt(vertexTypes.size());
-        for (int i = 0; i < formatCount; i++) {
-            List<VertexType> formatTypes = new ArrayList<VertexType>();
-            for (VertexType vertexType : vertexTypes) {
-                if (RANDOM.nextBoolean()) {
-                    formatTypes.add(vertexType);
-                }
-            }
-            if (formatTypes.isEmpty()) {
-                formatTypes.add(vertexTypes.get(0));
-            }
-            List<VertexSubFormat> subFormats = new ArrayList<VertexSubFormat>();
-            for (VertexType vertexType : formatTypes) {
-                subFormats.add(new VertexSubFormat(vertexType, VertexDataType.Float));
-            }
-            formats.add(new VertexFormat(subFormats));
+    private VertexFormat createFormat(List<VertexType> vertexTypes) {
+        List<VertexSubFormat> subFormats = new ArrayList<VertexSubFormat>();
+        for (VertexType vertexType : vertexTypes) {
+            subFormats.add(new VertexSubFormat(vertexType, VertexDataType.Float));
         }
-        return formats;
+        return new VertexFormat(subFormats);
     }
 
-    private EditableMesh createRandomMesh(List<VertexType> vertexTypes, List<VertexFormat> formats) {
+    private EditableMesh createRandomMesh(List<VertexType> vertexTypes, VertexFormat format) {
         EditableMesh mesh = new EditableMesh();
         int faces = 5 + RANDOM.nextInt(5);
         int vertices = 5 + RANDOM.nextInt(5);
         mesh.setFaceCount(faces);
         mesh.setVertexCount(vertices);
-        for (VertexFormat format : formats) {
-            mesh.addVertexFormat(format);
-        }
+        mesh.addVertexFormat(format);
         for (int i = 0; i < faces; i++) {
             for (int j = 0; j < 3; j++) {
                 mesh.setFaceIndicesIndex(i, j, RANDOM.nextInt(vertices));
@@ -96,12 +80,10 @@ public class FormatTest {
         return mesh;
     }
 
-    private void checkMeshes(IMesh mesh, IMesh translatedMesh, List<VertexType> vertexTypes, List<VertexFormat> formats) {
+    private void checkMeshes(IMesh mesh, IMesh translatedMesh, VertexFormat format) {
         Assert.assertTrue(mesh.isValid());
         Assert.assertTrue(translatedMesh.isValid());
         Assert.assertEquals(mesh.getIndices(), translatedMesh.getIndices());
-        for (VertexFormat format : formats) {
-            Assert.assertEquals(mesh.getVertices(format), translatedMesh.getVertices(format));
-        }
+        Assert.assertEquals(mesh.getVertices(format), translatedMesh.getVertices(format));
     }
 }

@@ -25,7 +25,7 @@ public class EditableMeshTest {
     @Test
     public void testRandom() {
         EditableMesh mesh = new EditableMesh();
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 25000; i++) {
             int testIndex = RANDOM.nextInt(6);
             switch (testIndex) {
                 case 0:
@@ -80,7 +80,8 @@ public class EditableMeshTest {
         mesh.addVertexFormat(format);
         ByteBuffer vertices = mesh.getVertices(format);
         int expectedByteCount = mesh.getVertexCount() * format.getByteCount();
-        Assert.assertEquals(expectedByteCount, vertices.capacity());
+        int actualByteCount = vertices.limit() - vertices.position();
+        Assert.assertEquals(expectedByteCount, actualByteCount);
     }
 
     private void testFaceIndices(EditableMesh mesh) {
