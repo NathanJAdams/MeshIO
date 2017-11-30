@@ -53,6 +53,10 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
         vertices.addFormat(format);
     }
 
+    public void removeVertexFormat(VertexFormat format) {
+        vertices.removeFormat(format);
+    }
+
     @Override
     public Set<VertexFormat> getVertexFormats() {
         return vertices.getFormats();

@@ -1,11 +1,12 @@
 package com.ripplar_games.mesh_io.index;
 
+import com.ripplar_games.mesh_io.mesh.BufferUtil;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
-import com.ripplar_games.mesh_io.mesh.BufferUtil;
 
 public class IndicesDataTypes {
     public static final IndicesDataType<byte[]> Byte = new IndicesDataType<byte[]>() {
@@ -38,6 +39,11 @@ public class IndicesDataTypes {
         public ByteBuffer toByteBuffer(byte[] array) {
             return BufferUtil.with(array);
         }
+
+        @Override
+        public int bytesPerDatum() {
+            return 1;
+        }
     };
     public static final IndicesDataType<short[]> Short = new IndicesDataType<short[]>() {
         @Override
@@ -68,6 +74,11 @@ public class IndicesDataTypes {
         @Override
         public ByteBuffer toByteBuffer(short[] array) {
             return BufferUtil.with(array);
+        }
+
+        @Override
+        public int bytesPerDatum() {
+            return 2;
         }
     };
     public static final IndicesDataType<int[]> Int = new IndicesDataType<int[]>() {
@@ -100,16 +111,23 @@ public class IndicesDataTypes {
         public ByteBuffer toByteBuffer(int[] array) {
             return BufferUtil.with(array);
         }
+
+        @Override
+        public int bytesPerDatum() {
+            return 4;
+        }
     };
-    private static final List<IndicesDataType<?>> ALL_TYPES = new ArrayList<IndicesDataType<?>>();
+    private static final List<IndicesDataType<?>> ALL_TYPES;
 
     static {
-        ALL_TYPES.add(Byte);
-        ALL_TYPES.add(Short);
-        ALL_TYPES.add(Int);
+        List<IndicesDataType<?>> mutableTypes = new ArrayList<IndicesDataType<?>>();
+        mutableTypes.add(Byte);
+        mutableTypes.add(Short);
+        mutableTypes.add(Int);
+        ALL_TYPES = Collections.unmodifiableList(mutableTypes);
     }
 
-    public static Iterable<IndicesDataType<?>> getAllTypes() {
+    public static List<IndicesDataType<?>> getAllTypes() {
         return ALL_TYPES;
     }
 }

@@ -41,10 +41,11 @@ public class BufferUtil {
     public static ByteBuffer copy(ByteBuffer source, int byteCount) {
         ByteBuffer duplicate = source.duplicate();
         duplicate.position(0);
-        byteCount = Math.min(duplicate.capacity(), byteCount);
-        duplicate.limit(byteCount);
+        int copyLimit = Math.min(duplicate.capacity(), byteCount);
+        duplicate.limit(copyLimit);
         ByteBuffer copy = createByteBuffer(byteCount);
         copy.put(duplicate);
+        copy.position(0);
         return copy;
     }
 

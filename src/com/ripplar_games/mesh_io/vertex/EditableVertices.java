@@ -1,13 +1,13 @@
 package com.ripplar_games.mesh_io.vertex;
 
+import com.ripplar_games.mesh_io.mesh.BufferUtil;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.ripplar_games.mesh_io.mesh.BufferUtil;
 
 public class EditableVertices {
     private final List<EditableVertex> vertexList = new ArrayList<EditableVertex>();
@@ -30,7 +30,8 @@ public class EditableVertices {
 
     public void addFormat(VertexFormat format) {
         if (!this.formatVertices.containsKey(format)) {
-            ByteBuffer vertices = BufferUtil.createByteBuffer(0);
+            int byteCount = vertexCount * format.getByteCount();
+            ByteBuffer vertices = BufferUtil.createByteBuffer(byteCount);
             this.formatVertices.put(format, vertices);
             for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
                 EditableVertex vertex = vertexList.get(vertexIndex);
@@ -46,6 +47,10 @@ public class EditableVertices {
                 }
             }
         }
+    }
+
+    public void removeFormat(VertexFormat format) {
+        formatVertices.remove(format);
     }
 
     public int getVertexCount() {

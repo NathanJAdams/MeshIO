@@ -14,4 +14,6 @@ public interface IndicesDataType<T> {
     void setValue(T array, int index, int value);
 
     ByteBuffer toByteBuffer(T array);
+
+    int bytesPerDatum();
 }
