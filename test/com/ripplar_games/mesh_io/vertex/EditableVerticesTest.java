@@ -21,10 +21,11 @@ public class EditableVerticesTest {
         vertices.addFormat(format);
         vertices.setVertexCount(2);
         vertices.setVertexDatum(0, VertexType.Position_X, 1);
+        vertices.setVertexDatum(1, VertexType.Position_X, 11);
         ByteBuffer bb = vertices.getVerticesBuffer(format);
         FloatBuffer fb = bb.asFloatBuffer();
-        float datum = fb.get(0);
-        Assert.assertEquals(1, datum, DELTA);
+        Assert.assertEquals(1, fb.get(0), DELTA);
+        Assert.assertEquals(11, fb.get(1), DELTA);
     }
 
     @Ignore
