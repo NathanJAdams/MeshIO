@@ -2,6 +2,7 @@ package com.ripplar_games.mesh_io.mesh;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import com.ripplar_games.mesh_io.vertex.VertexType;
 public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSaver {
     private final Map<MeshType, Map<IndicesDataType<?>, EditableIndices<?>>> indices = new HashMap<MeshType, Map<IndicesDataType<?>, EditableIndices<?>>>();
     private final EditableVertices vertices = new EditableVertices();
+    private final Set<VertexFormat> formats = new HashSet<VertexFormat>();
     private MeshType meshType = MeshType.Mesh;
     private IndicesDataType<?> indicesDataType = IndicesDataTypes.Short;
 
@@ -50,16 +52,16 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
     }
 
     public void addVertexFormat(VertexFormat format) {
-        vertices.addFormat(format);
+        formats.add(format);
     }
 
     public void removeVertexFormat(VertexFormat format) {
-        vertices.removeFormat(format);
+        formats.remove(format);
     }
 
     @Override
     public Set<VertexFormat> getVertexFormats() {
-        return vertices.getFormats();
+        return formats;
     }
 
     @Override

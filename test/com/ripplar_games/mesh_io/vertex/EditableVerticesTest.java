@@ -18,7 +18,6 @@ public class EditableVerticesTest {
         EditableVertices vertices = new EditableVertices();
         VertexFormat format = new VertexFormat(new VertexSubFormat(VertexType.Position_X, VertexDataType.Float));
         vertices.setVertexCount(1);
-        vertices.addFormat(format);
         vertices.setVertexCount(2);
         vertices.setVertexDatum(0, VertexType.Position_X, 1);
         vertices.setVertexDatum(1, VertexType.Position_X, 11);
@@ -33,7 +32,6 @@ public class EditableVerticesTest {
     public void testVertices() {
         EditableVertices vertices = new EditableVertices();
         VertexFormat format = TestUtil.randomVertexFormat();
-        vertices.addFormat(format);
         for (int i = 0; i < 1; i++) {
             testVertices(vertices, format);
         }
