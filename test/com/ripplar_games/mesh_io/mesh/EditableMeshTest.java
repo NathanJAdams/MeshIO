@@ -1,26 +1,18 @@
 package com.ripplar_games.mesh_io.mesh;
 
+import java.nio.ByteBuffer;
+import java.util.Random;
+
+import com.ripplar_games.mesh_io.TestUtil;
 import com.ripplar_games.mesh_io.index.IndicesDataType;
-import com.ripplar_games.mesh_io.index.IndicesDataTypes;
-import com.ripplar_games.mesh_io.vertex.VertexDataType;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
-import com.ripplar_games.mesh_io.vertex.VertexSubFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 public class EditableMeshTest {
     private static final float DELTA = 1E-9f;
     private static final Random RANDOM = new Random();
-    private static final MeshType[] MESH_TYPES = MeshType.values();
-    private static final VertexType[] VERTEX_TYPES = VertexType.getValues();
-    private static final List<IndicesDataType<?>> INDICES_DATA_TYPES = IndicesDataTypes.getAllTypes();
-    private static final VertexDataType[] VERTEX_DATA_TYPES = VertexDataType.values();
 
     @Test
     public void testRandom() {
@@ -65,8 +57,8 @@ public class EditableMeshTest {
     }
 
     private void testMeshAndIndicesTypes(EditableMesh mesh) {
-        MeshType meshType = randomMeshType();
-        IndicesDataType<?> indicesDataType = randomIndicesDataType();
+        MeshType meshType = TestUtil.randomMeshType();
+        IndicesDataType<?> indicesDataType = TestUtil.randomIndicesDataType();
         mesh.setMeshType(meshType);
         mesh.setIndicesDataType(indicesDataType);
         ByteBuffer indices = mesh.getIndices();
@@ -76,7 +68,7 @@ public class EditableMeshTest {
     }
 
     private void testVertexFormat(EditableMesh mesh) {
-        VertexFormat format = randomVertexFormat();
+        VertexFormat format = TestUtil.randomVertexFormat();
         mesh.addVertexFormat(format);
         ByteBuffer vertices = mesh.getVertices(format);
         int expectedByteCount = mesh.getVertexCount() * format.getByteCount();
@@ -98,42 +90,11 @@ public class EditableMeshTest {
     private void testVertexData(EditableMesh mesh) {
         if (mesh.getVertexCount() > 0 && mesh.getVertexCount() > 0) {
             int vertexIndex = RANDOM.nextInt(mesh.getVertexCount());
-            VertexType vertexType = randomVertexType();
+            VertexType vertexType = TestUtil.randomVertexType();
             float vertexDatum = RANDOM.nextFloat();
             mesh.setVertexDatum(vertexIndex, vertexType, vertexDatum);
             float actualVertexDatum = mesh.getVertexDatum(vertexIndex, vertexType);
             Assert.assertEquals(vertexDatum, actualVertexDatum, DELTA);
         }
-    }
-
-    private VertexFormat randomVertexFormat() {
-        int numSubFormats = RANDOM.nextInt(5);
-        List<VertexSubFormat> subFormats = new ArrayList<VertexSubFormat>();
-        for (int i = 0; i < numSubFormats; i++) {
-            subFormats.add(randomVertexSubFormat());
-        }
-        return new VertexFormat(subFormats);
-    }
-
-    private VertexSubFormat randomVertexSubFormat() {
-        VertexType vertexType = randomVertexType();
-        VertexDataType vertexDataType = randomVertexDataType();
-        return new VertexSubFormat(vertexType, vertexDataType);
-    }
-
-    private MeshType randomMeshType() {
-        return MESH_TYPES[RANDOM.nextInt(MESH_TYPES.length)];
-    }
-
-    private VertexType randomVertexType() {
-        return VERTEX_TYPES[RANDOM.nextInt(VERTEX_TYPES.length)];
-    }
-
-    private IndicesDataType<?> randomIndicesDataType() {
-        return INDICES_DATA_TYPES.get(RANDOM.nextInt(INDICES_DATA_TYPES.size()));
-    }
-
-    private VertexDataType randomVertexDataType() {
-        return VERTEX_DATA_TYPES[RANDOM.nextInt(VERTEX_DATA_TYPES.length)];
     }
 }
