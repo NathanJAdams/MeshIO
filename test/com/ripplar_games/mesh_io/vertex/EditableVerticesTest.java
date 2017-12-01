@@ -30,19 +30,22 @@ public class EditableVerticesTest {
     @Ignore
     @Test
     public void testVertices() {
-        EditableVertices vertices = new EditableVertices();
-        VertexFormat format = TestUtil.randomVertexFormat();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 100; i++) {
+            EditableVertices vertices = new EditableVertices();
+            VertexFormat format = TestUtil.randomVertexFormat();
             testVertices(vertices, format);
         }
     }
 
     private void testVertices(EditableVertices vertices, VertexFormat format) {
-        int vertexCount = 5 + RANDOM.nextInt(5);
+        int vertexCount = 2 + RANDOM.nextInt(2);
         vertices.setVertexCount(vertexCount);
-        float datum = 0;
+        Assert.assertEquals(vertexCount, vertices.getVertexCount());
+        int startDatum = RANDOM.nextInt(100);
+        float datum = startDatum;
         for (int i = 0; i < vertexCount; i++) {
             for (VertexType vertexType : VertexType.getValues()) {
+                System.out.println("VertexIndex: " + i + ", VertexType: " + vertexType + ", Datum: " + datum);
                 vertices.setVertexDatum(i, vertexType, datum);
                 datum++;
             }
@@ -50,17 +53,22 @@ public class EditableVerticesTest {
         ByteBuffer bb = vertices.getVerticesBuffer(format);
         Assert.assertEquals(vertexCount * format.getByteCount(), bb.limit());
         System.out.println("NumVertexTypes:" + format.getVertexTypeCount());
-        float expected = 0;
+        float expected = startDatum;
         for (int i = 0; i < vertexCount; i++) {
-            for (VertexType vertexType : format.getVertexTypes()) {
+            for (VertexType vertexType : VertexType.getValues()) {
                 VertexAlignedSubFormat subFormat = format.getAlignedSubFormat(vertexType);
-                int offset = subFormat.getOffset();
-                System.out.println("Offset: " + offset);
-                int index = i * format.getVertexTypeCount() + offset;
-                float actual = subFormat.getDataType().getDatum(bb, index);
-                System.out.println(expected);
-                System.out.println(actual);
-                Assert.assertEquals(expected, actual, DELTA);
+                if (subFormat != null) {
+                    System.out.println("VertexType: " + vertexType);
+                    System.out.println("SubFormat: Offset: " + subFormat.getOffset() + ", DataType: " + subFormat.getDataType());
+                    int offset = subFormat.getOffset();
+                    System.out.println("Offset: " + offset);
+                    int index = (i * format.getByteCount()) + offset;
+                    float actual = subFormat.getDataType().getDatum(bb, index);
+                    System.out.println("Index: " + index + ", Datum: " + actual);
+                    System.out.println("Expected: " + expected);
+                    System.out.println("Actual: " + actual);
+                    Assert.assertEquals(expected, actual, DELTA);
+                }
                 expected++;
             }
         }

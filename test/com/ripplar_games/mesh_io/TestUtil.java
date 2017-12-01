@@ -20,7 +20,7 @@ public class TestUtil {
     private static final VertexDataType[] VERTEX_DATA_TYPES = VertexDataType.values();
 
     public static VertexFormat randomVertexFormat() {
-        int numSubFormats = RANDOM.nextInt(5);
+        int numSubFormats = 2 + RANDOM.nextInt(2);
         List<VertexSubFormat> subFormats = new ArrayList<VertexSubFormat>();
         for (int i = 0; i < numSubFormats; i++) {
             subFormats.add(randomVertexSubFormat());
