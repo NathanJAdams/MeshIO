@@ -7,48 +7,89 @@ import com.ripplar_games.mesh_io.DatumEnDecoder;
 public enum VertexDataType {
     Float(4) {
         @Override
-        public void appendDatum(ByteBuffer buffer, int index, float datum) {
+        public float getDatum(ByteBuffer buffer, int index) {
+            return buffer.getFloat(index);
+        }
+
+        @Override
+        public void setDatum(ByteBuffer buffer, int index, float datum) {
             buffer.putFloat(index, datum);
         }
     },
     NormalisedSignedByte(1) {
         @Override
-        public void appendDatum(ByteBuffer buffer, int index, float datum) {
+        public float getDatum(ByteBuffer buffer, int index) {
+            byte encoded = buffer.get(index);
+            return (float) DatumEnDecoder.decodeByte(encoded, true);
+        }
+
+        @Override
+        public void setDatum(ByteBuffer buffer, int index, float datum) {
             byte encoded = DatumEnDecoder.encodeAsByte(datum, true);
             buffer.put(index, encoded);
         }
     },
     NormalisedSignedShort(2) {
         @Override
-        public void appendDatum(ByteBuffer buffer, int index, float datum) {
+        public float getDatum(ByteBuffer buffer, int index) {
+            short encoded = buffer.getShort(index);
+            return (float) DatumEnDecoder.decodeShort(encoded, true);
+        }
+
+        @Override
+        public void setDatum(ByteBuffer buffer, int index, float datum) {
             short encoded = DatumEnDecoder.encodeAsShort(datum, true);
             buffer.putShort(index, encoded);
         }
     },
     NormalisedSignedInt(4) {
         @Override
-        public void appendDatum(ByteBuffer buffer, int index, float datum) {
+        public float getDatum(ByteBuffer buffer, int index) {
+            int encoded = buffer.getInt(index);
+            return (float) DatumEnDecoder.decodeInt(encoded, true);
+        }
+
+        @Override
+        public void setDatum(ByteBuffer buffer, int index, float datum) {
             int encoded = DatumEnDecoder.encodeAsInt(datum, true);
             buffer.putInt(index, encoded);
         }
     },
     NormalisedUnsignedByte(1) {
         @Override
-        public void appendDatum(ByteBuffer buffer, int index, float datum) {
+        public float getDatum(ByteBuffer buffer, int index) {
+            byte encoded = buffer.get(index);
+            return (float) DatumEnDecoder.decodeByte(encoded, false);
+        }
+
+        @Override
+        public void setDatum(ByteBuffer buffer, int index, float datum) {
             byte encoded = DatumEnDecoder.encodeAsByte(datum, false);
             buffer.put(index, encoded);
         }
     },
     NormalisedUnsignedShort(2) {
         @Override
-        public void appendDatum(ByteBuffer buffer, int index, float datum) {
+        public float getDatum(ByteBuffer buffer, int index) {
+            short encoded = buffer.getShort(index);
+            return (float) DatumEnDecoder.decodeShort(encoded, false);
+        }
+
+        @Override
+        public void setDatum(ByteBuffer buffer, int index, float datum) {
             short encoded = DatumEnDecoder.encodeAsShort(datum, false);
             buffer.putShort(index, encoded);
         }
     },
     NormalisedUnsignedInt(4) {
         @Override
-        public void appendDatum(ByteBuffer buffer, int index, float datum) {
+        public float getDatum(ByteBuffer buffer, int index) {
+            int encoded = buffer.getInt(index);
+            return (float) DatumEnDecoder.decodeInt(encoded, false);
+        }
+
+        @Override
+        public void setDatum(ByteBuffer buffer, int index, float datum) {
             int encoded = DatumEnDecoder.encodeAsInt(datum, false);
             buffer.putInt(index, encoded);
         }
@@ -63,5 +104,7 @@ public enum VertexDataType {
         return byteCount;
     }
 
-    public abstract void appendDatum(ByteBuffer buffer, int index, float datum);
+    public abstract float getDatum(ByteBuffer buffer, int index);
+
+    public abstract void setDatum(ByteBuffer buffer, int index, float datum);
 }

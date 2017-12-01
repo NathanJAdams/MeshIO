@@ -13,7 +13,6 @@ import com.ripplar_games.mesh_io.vertex.VertexSubFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 
 public class TestUtil {
-    private static final float DELTA = 1E-9f;
     private static final Random RANDOM = new Random();
     private static final MeshType[] MESH_TYPES = MeshType.values();
     private static final VertexType[] VERTEX_TYPES = VertexType.getValues();

@@ -42,7 +42,7 @@ public class EditableVertices {
                         int offset = alignedSubFormat.getOffset();
                         int index = (vertexIndex * format.getByteCount()) + offset;
                         VertexDataType dataType = alignedSubFormat.getDataType();
-                        dataType.appendDatum(vertices, index, datum);
+                        dataType.setDatum(vertices, index, datum);
                     }
                 }
             }
@@ -96,7 +96,7 @@ public class EditableVertices {
                 int offset = alignedSubFormat.getOffset();
                 int index = (vertexIndex * format.getByteCount()) + offset;
                 VertexDataType dataType = alignedSubFormat.getDataType();
-                dataType.appendDatum(vertices, index, datum);
+                dataType.setDatum(vertices, index, datum);
             }
         }
     }
