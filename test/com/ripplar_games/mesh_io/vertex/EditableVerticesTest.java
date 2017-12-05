@@ -4,15 +4,17 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Random;
 
+import com.ripplar_games.mesh_io.DatumEnDecoder;
 import com.ripplar_games.mesh_io.TestUtil;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class EditableVerticesTest {
-    private static final float DELTA = 1E-9f;
+    private static final float DELTA = 0;
     private static final Random RANDOM = new Random();
 
+    @Ignore
     @Test
     public void testFloatPositionX() {
         EditableVertices vertices = new EditableVertices();
@@ -27,7 +29,7 @@ public class EditableVerticesTest {
         Assert.assertEquals(11, fb.get(1), DELTA);
     }
 
-    @Ignore
+    //    @Ignore
     @Test
     public void testVertices() {
         for (int i = 0; i < 100; i++) {
@@ -41,24 +43,22 @@ public class EditableVerticesTest {
         int vertexCount = 2 + RANDOM.nextInt(2);
         vertices.setVertexCount(vertexCount);
         Assert.assertEquals(vertexCount, vertices.getVertexCount());
-        int startDatum = RANDOM.nextInt(100);
-        float datum = startDatum;
+        int datumCounter = 0;
         for (int i = 0; i < vertexCount; i++) {
             for (VertexType vertexType : VertexType.getValues()) {
-                System.out.println("VertexIndex: " + i + ", VertexType: " + vertexType + ", Datum: " + datum);
+                float datum = (datumCounter % 3) / 2.0f;
                 vertices.setVertexDatum(i, vertexType, datum);
-                datum++;
+                datumCounter++;
             }
         }
         ByteBuffer bb = vertices.getVerticesBuffer(format);
         Assert.assertEquals(vertexCount * format.getByteCount(), bb.limit());
-        System.out.println("NumVertexTypes:" + format.getVertexTypeCount());
-        float expected = startDatum;
+        datumCounter = 0;
         for (int i = 0; i < vertexCount; i++) {
             for (VertexType vertexType : VertexType.getValues()) {
+                float expected = (datumCounter % 3) / 2.0f;
                 VertexAlignedSubFormat subFormat = format.getAlignedSubFormat(vertexType);
                 if (subFormat != null) {
-                    System.out.println("VertexType: " + vertexType);
                     System.out.println("SubFormat: Offset: " + subFormat.getOffset() + ", DataType: " + subFormat.getDataType());
                     int offset = subFormat.getOffset();
                     System.out.println("Offset: " + offset);
@@ -69,7 +69,7 @@ public class EditableVerticesTest {
                     System.out.println("Actual: " + actual);
                     Assert.assertEquals(expected, actual, DELTA);
                 }
-                expected++;
+                datumCounter++;
             }
         }
     }

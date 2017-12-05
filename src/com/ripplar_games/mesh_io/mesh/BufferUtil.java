@@ -50,6 +50,6 @@ public class BufferUtil {
     }
 
     public static ByteBuffer createByteBuffer(int byteCount) {
-        return ByteBuffer.allocateDirect(byteCount).order(NATIVE_BYTE_ORDER);
+        return ByteBuffer.allocate(byteCount).order(NATIVE_BYTE_ORDER);
     }
 }

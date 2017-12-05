@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class DatumEnDecoderTest {
-    private static final double DELTA = 1E-9;
+    private static final double DELTA = 0;
 
     @Test
     public void testEncodeAsByte() {

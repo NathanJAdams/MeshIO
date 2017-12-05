@@ -16,9 +16,6 @@ public class EditableVertices {
     }
 
     public ByteBuffer getVerticesBuffer(VertexFormat format) {
-        System.out.println();
-        System.out.println("Creating buffer");
-        System.out.println();
         int formatByteCount = format.getByteCount();
         int byteCount = vertexCount * formatByteCount;
         ByteBuffer bb = BufferUtil.createByteBuffer(byteCount);
@@ -36,7 +33,6 @@ public class EditableVertices {
             }
         }
         bb.position(0); // TODO is this needed?
-        System.out.println();
         return bb;
     }
 
