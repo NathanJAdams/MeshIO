@@ -27,7 +27,7 @@ public class EditableVerticesTest {
 
     @Test
     public void testVertices() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             EditableVertices vertices = new EditableVertices();
             VertexFormat format = TestUtil.randomVertexFormat();
             testVertices(vertices, format);
