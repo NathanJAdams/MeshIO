@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class EditableMeshTest {
-    private static final float DELTA = 1E-9f;
     private static final Random RANDOM = new Random();
 
     @Test
@@ -94,7 +93,7 @@ public class EditableMeshTest {
             float vertexDatum = RANDOM.nextFloat();
             mesh.setVertexDatum(vertexIndex, vertexType, vertexDatum);
             float actualVertexDatum = mesh.getVertexDatum(vertexIndex, vertexType);
-            Assert.assertEquals(vertexDatum, actualVertexDatum, DELTA);
+            Assert.assertEquals(vertexDatum, actualVertexDatum, 0);
         }
     }
 }
