@@ -1,16 +1,16 @@
 package com.ripplar_games.mesh_io.formats.obj;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.regex.Pattern;
+
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
 import com.ripplar_games.mesh_io.IMeshSaver;
 import com.ripplar_games.mesh_io.MeshIOException;
 import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
 import com.ripplar_games.mesh_io.mesh.IMesh;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.regex.Pattern;
 
 // TODO in progress
 public class ObjFormat implements IMeshFormat {

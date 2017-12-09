@@ -2,39 +2,48 @@ package com.ripplar_games.mesh_io.vertex;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import com.ripplar_games.mesh_io.TestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class EditableVerticesTest {
+public class LoadableVerticesTest {
     private static final Random RANDOM = new Random();
 
     @Test
     public void testFloatPositionX() {
-        EditableVertices vertices = new EditableVertices();
         VertexFormat format = new VertexFormat(new VertexSubFormat(VertexType.Position_X, VertexDataType.Float));
+        Set<VertexFormat> formats = new HashSet<VertexFormat>();
+        formats.add(format);
+        LoadableVertices vertices = new LoadableVertices(formats);
         vertices.setVertexCount(1);
         vertices.setVertexCount(2);
-        vertices.setVertexDatum(0, VertexType.Position_X, 1);
-        vertices.setVertexDatum(1, VertexType.Position_X, 11);
-        ByteBuffer bb = vertices.getVerticesBuffer(format);
+        vertices.setVertexCount(3);
+        vertices.setVertexDatum(0, VertexType.Position_X, 0.0f);
+        vertices.setVertexDatum(1, VertexType.Position_X, 0.5f);
+        vertices.setVertexDatum(2, VertexType.Position_X, 1.0f);
+        ByteBuffer bb = vertices.getFormatVertices().get(format);
         FloatBuffer fb = bb.asFloatBuffer();
-        Assert.assertEquals(1, fb.get(0), 0);
-        Assert.assertEquals(11, fb.get(1), 0);
+        Assert.assertEquals(0.0f, fb.get(0), 0);
+        Assert.assertEquals(0.5f, fb.get(1), 0);
+        Assert.assertEquals(1.0f, fb.get(2), 0);
     }
 
     @Test
     public void testVertices() {
         for (int i = 0; i < 1000; i++) {
-            EditableVertices vertices = new EditableVertices();
             VertexFormat format = TestUtil.randomVertexFormat();
+            Set<VertexFormat> formats = new HashSet<VertexFormat>();
+            formats.add(format);
+            LoadableVertices vertices = new LoadableVertices(formats);
             testVertices(vertices, format);
         }
     }
 
-    private void testVertices(EditableVertices vertices, VertexFormat format) {
+    private void testVertices(LoadableVertices vertices, VertexFormat format) {
         int vertexCount = 2 + RANDOM.nextInt(2);
         vertices.setVertexCount(vertexCount);
         Assert.assertEquals(vertexCount, vertices.getVertexCount());
@@ -49,7 +58,7 @@ public class EditableVerticesTest {
                 }
             }
         }
-        ByteBuffer bb = vertices.getVerticesBuffer(format);
+        ByteBuffer bb = vertices.getFormatVertices().get(format);
         Assert.assertEquals(vertexCount * format.getByteCount(), bb.limit());
         float expected = startDatum;
         for (int i = 0; i < vertexCount; i++) {

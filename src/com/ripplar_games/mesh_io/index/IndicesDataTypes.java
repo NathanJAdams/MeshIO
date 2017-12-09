@@ -1,12 +1,12 @@
 package com.ripplar_games.mesh_io.index;
 
-import com.ripplar_games.mesh_io.mesh.BufferUtil;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import com.ripplar_games.mesh_io.mesh.BufferUtil;
 
 public class IndicesDataTypes {
     public static final IndicesDataType<byte[]> Byte = new IndicesDataType<byte[]>() {
@@ -44,6 +44,11 @@ public class IndicesDataTypes {
         public int bytesPerDatum() {
             return 1;
         }
+
+        @Override
+        public String toString() {
+            return "Byte";
+        }
     };
     public static final IndicesDataType<short[]> Short = new IndicesDataType<short[]>() {
         @Override
@@ -80,6 +85,11 @@ public class IndicesDataTypes {
         public int bytesPerDatum() {
             return 2;
         }
+
+        @Override
+        public String toString() {
+            return "Short";
+        }
     };
     public static final IndicesDataType<int[]> Int = new IndicesDataType<int[]>() {
         @Override
@@ -115,6 +125,11 @@ public class IndicesDataTypes {
         @Override
         public int bytesPerDatum() {
             return 4;
+        }
+
+        @Override
+        public String toString() {
+            return "Int";
         }
     };
     private static final List<IndicesDataType<?>> ALL_TYPES;

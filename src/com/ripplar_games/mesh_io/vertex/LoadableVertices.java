@@ -39,7 +39,7 @@ public class LoadableVertices {
             if (buffer.capacity() >= totalByteCount) {
                 buffer.limit(totalByteCount);
             } else {
-                buffer = ByteBuffer.allocate(totalByteCount);
+                buffer = BufferUtil.createByteBuffer(totalByteCount);
                 entry.setValue(buffer);
             }
         }

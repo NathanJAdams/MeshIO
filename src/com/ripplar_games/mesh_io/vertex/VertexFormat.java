@@ -22,6 +22,28 @@ public class VertexFormat {
         this.byteCount = calculateByteCount(subFormats);
     }
 
+    private static Map<VertexType, VertexAlignedSubFormat> createAlignedSubFormats(List<VertexSubFormat> formatEntries) {
+        Map<VertexType, VertexAlignedSubFormat> typeIndexes = new EnumMap<VertexType, VertexAlignedSubFormat>(VertexType.class);
+        int offset = 0;
+        for (int i = 0; i < formatEntries.size(); i++) {
+            VertexSubFormat entry = formatEntries.get(i);
+            VertexType vertexType = entry.getVertexType();
+            VertexDataType dataType = entry.getDataType();
+            VertexAlignedSubFormat alignedSubFormat = new VertexAlignedSubFormat(offset, dataType);
+            typeIndexes.put(vertexType, alignedSubFormat);
+            offset += dataType.getByteCount();
+        }
+        return Collections.unmodifiableMap(typeIndexes);
+    }
+
+    private static int calculateByteCount(List<VertexSubFormat> formatEntries) {
+        int byteCount = 0;
+        for (VertexSubFormat entry : formatEntries) {
+            byteCount += entry.getDataType().getByteCount();
+        }
+        return byteCount;
+    }
+
     public boolean isEmpty() {
         return (byteCount == 0);
     }
@@ -36,6 +58,12 @@ public class VertexFormat {
 
     public boolean containsVertexType(VertexType vertexType) {
         return alignedSubFormats.containsKey(vertexType);
+    }
+
+    public int getVertexDatumIndex(int vertexIndex, VertexType vertexType) {
+        VertexAlignedSubFormat subFormat = alignedSubFormats.get(vertexType);
+        int offset = subFormat.getOffset();
+        return vertexIndex * byteCount + offset;
     }
 
     public VertexAlignedSubFormat getAlignedSubFormat(VertexType vertexType) {
@@ -57,27 +85,5 @@ public class VertexFormat {
     @Override
     public int hashCode() {
         return alignedSubFormats.hashCode();
-    }
-
-    private static Map<VertexType, VertexAlignedSubFormat> createAlignedSubFormats(List<VertexSubFormat> formatEntries) {
-        Map<VertexType, VertexAlignedSubFormat> typeIndexes = new EnumMap<VertexType, VertexAlignedSubFormat>(VertexType.class);
-        int offset = 0;
-        for (int i = 0; i < formatEntries.size(); i++) {
-            VertexSubFormat entry = formatEntries.get(i);
-            VertexType vertexType = entry.getVertexType();
-            VertexDataType dataType = entry.getDataType();
-            VertexAlignedSubFormat alignedSubFormat = new VertexAlignedSubFormat(offset, dataType);
-            typeIndexes.put(vertexType, alignedSubFormat);
-            offset += dataType.getByteCount();
-        }
-        return Collections.unmodifiableMap(typeIndexes);
-    }
-
-    private static int calculateByteCount(List<VertexSubFormat> formatEntries) {
-        int byteCount = 0;
-        for (VertexSubFormat entry : formatEntries) {
-            byteCount += entry.getDataType().getByteCount();
-        }
-        return byteCount;
     }
 }

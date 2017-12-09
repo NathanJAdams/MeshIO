@@ -16,27 +16,18 @@ public class EditableVertices {
     }
 
     public ByteBuffer getVerticesBuffer(VertexFormat format) {
-        System.out.println();
-        System.out.println("Creating buffer");
-        System.out.println();
-        int formatByteCount = format.getByteCount();
-        int byteCount = vertexCount * formatByteCount;
+        int byteCount = vertexCount * format.getByteCount();
         ByteBuffer bb = BufferUtil.createByteBuffer(byteCount);
         for (int i = 0; i < vertexCount; i++) {
             EditableVertex vertex = vertexList.get(i);
-            int vertexBaseIndex = i * formatByteCount;
             for (VertexType vertexType : format.getVertexTypes()) {
-                float datum = vertex.getDatum(vertexType);
                 VertexAlignedSubFormat subFormat = format.getAlignedSubFormat(vertexType);
-                int offset = subFormat.getOffset();
-                int index = vertexBaseIndex + offset;
                 VertexDataType dataType = subFormat.getDataType();
-                System.out.println("VertexType: " + vertexType + ", DataType: " + dataType + ", Index: " + index + ", Datum: " + datum);
+                int index = format.getVertexDatumIndex(i, vertexType);
+                float datum = vertex.getDatum(vertexType);
                 dataType.setDatum(bb, index, datum);
             }
         }
-        bb.position(0); // TODO is this needed?
-        System.out.println();
         return bb;
     }
 

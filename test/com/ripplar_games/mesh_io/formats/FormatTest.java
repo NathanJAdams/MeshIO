@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -14,6 +13,7 @@ import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
 import com.ripplar_games.mesh_io.MeshIOException;
 import com.ripplar_games.mesh_io.formats.mbmsh.MbMshFormat;
+import com.ripplar_games.mesh_io.formats.obj.ObjFormat;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatAscii_1_0;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatBinaryBigEndian_1_0;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatBinaryLittleEndian_1_0;
@@ -36,48 +36,45 @@ public class FormatTest {
 
     @Test
     public void testFormats() throws MeshIOException {
-        testFormat(new PlyFormatAscii_1_0(), false);
-        testFormat(new PlyFormatBinaryBigEndian_1_0(), false);
-        testFormat(new PlyFormatBinaryLittleEndian_1_0(), false);
-//        testFormat(new ObjFormat(),false);
-        testFormat(new MbMshFormat(), false);
+        testFormat(new PlyFormatAscii_1_0());
+        testFormat(new PlyFormatBinaryBigEndian_1_0());
+        testFormat(new PlyFormatBinaryLittleEndian_1_0());
+        testFormat(new MbMshFormat());
+        testFormat(new ObjFormat());
     }
 
-    private void testFormat(IMeshFormat meshFormat, boolean checkVertices) throws MeshIOException {
+    private void testFormat(IMeshFormat meshFormat) throws MeshIOException {
+        List<VertexSubFormat> subFormats = new ArrayList<VertexSubFormat>();
+        VertexDataType[] vertexDataTypes = VertexDataType.values();
+        for (VertexType vertexType : VertexType.getValues()) {
+            VertexDataType vertexDataType = vertexDataTypes[RANDOM.nextInt(vertexDataTypes.length)];
+            subFormats.add(new VertexSubFormat(vertexType, vertexDataType));
+        }
+        VertexFormat format = new VertexFormat(subFormats);
         for (MeshType meshType : MeshType.values()) {
             for (IndicesDataType<?> indicesDataType : IndicesDataTypes.getAllTypes()) {
-                List<VertexType> vertexTypes = createVertexTypes();
-                VertexFormat format = createFormat(vertexTypes);
-                EditableMesh mesh = createRandomMesh(meshType, indicesDataType, vertexTypes, format);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                meshFormat.write(mesh, baos);
-                byte[] buffer = baos.toByteArray();
-                ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
-                Set<VertexFormat> formats = new HashSet<VertexFormat>();
-                formats.add(format);
-                IMeshBuilder<ImmutableMesh> meshBuilder = new ImmutableMeshBuilder(meshType, indicesDataType, formats);
-                ImmutableMesh translatedMesh = meshFormat.read(meshBuilder, bais);
-                checkMeshes(mesh, translatedMesh, format, checkVertices);
+                testFormatWithMeshIndicesTypes(meshFormat, meshType, indicesDataType, format);
             }
         }
     }
 
-    private List<VertexType> createVertexTypes() {
-        return Arrays.asList(VertexType.getValues());
+    private void testFormatWithMeshIndicesTypes(IMeshFormat meshFormat, MeshType meshType, IndicesDataType<?> indicesDataType, VertexFormat format) throws MeshIOException {
+        EditableMesh mesh = createRandomMesh(meshType, indicesDataType, format);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        meshFormat.write(mesh, baos);
+        byte[] buffer = baos.toByteArray();
+        ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+        Set<VertexFormat> formats = new HashSet<VertexFormat>();
+        formats.add(format);
+        IMeshBuilder<ImmutableMesh> meshBuilder = new ImmutableMeshBuilder(meshType, indicesDataType, formats);
+        ImmutableMesh translatedMesh = meshFormat.read(meshBuilder, bais);
+        checkMeshes(mesh, translatedMesh, format);
     }
 
-    private VertexFormat createFormat(List<VertexType> vertexTypes) {
-        List<VertexSubFormat> subFormats = new ArrayList<VertexSubFormat>();
-        for (VertexType vertexType : vertexTypes) {
-            subFormats.add(new VertexSubFormat(vertexType, VertexDataType.Float));
-        }
-        return new VertexFormat(subFormats);
-    }
-
-    private EditableMesh createRandomMesh(MeshType meshType, IndicesDataType<?> indicesDataType, List<VertexType> vertexTypes, VertexFormat format) {
+    private EditableMesh createRandomMesh(MeshType meshType, IndicesDataType<?> indicesDataType, VertexFormat format) {
         EditableMesh mesh = new EditableMesh();
-        int faces = 5 + RANDOM.nextInt(5);
-        int vertices = 5 + RANDOM.nextInt(5);
+        int faces = 3;
+        int vertices = 3;
         mesh.setFaceCount(faces);
         mesh.setVertexCount(vertices);
         mesh.setMeshType(meshType);
@@ -91,13 +88,17 @@ public class FormatTest {
             mesh.setFaceIndices(i, faceIndices);
         }
         for (int i = 0; i < vertices; i++) {
-            VertexType vertexType = vertexTypes.get(RANDOM.nextInt(vertexTypes.size()));
-            mesh.setVertexDatum(i, vertexType, RANDOM.nextFloat());
+            for (VertexType vertexType : format.getVertexTypes()) {
+                float set = RANDOM.nextInt(3) / 2.0f;
+                mesh.setVertexDatum(i, vertexType, set);
+                float get = mesh.getVertexDatum(i, vertexType);
+                Assert.assertEquals(set, get, 0);
+            }
         }
         return mesh;
     }
 
-    private void checkMeshes(IMesh mesh, IMesh translatedMesh, VertexFormat format, boolean checkVertices) {
+    private void checkMeshes(IMesh mesh, IMesh translatedMesh, VertexFormat format) {
         Assert.assertTrue(mesh.isValid());
         Assert.assertTrue(translatedMesh.isValid());
         Assert.assertEquals(mesh.getIndices(), translatedMesh.getIndices());
@@ -106,8 +107,10 @@ public class FormatTest {
         Assert.assertEquals(expectedVertices.position(), actualVertices.position());
         Assert.assertEquals(expectedVertices.limit(), actualVertices.limit());
         Assert.assertEquals(expectedVertices.capacity(), actualVertices.capacity());
-        if (checkVertices) {
-            Assert.assertEquals(expectedVertices, actualVertices);
+        for (int i = 0; i < expectedVertices.capacity(); i++) {
+            byte expected = expectedVertices.get(i);
+            byte actual = actualVertices.get(i);
+            Assert.assertEquals("Byte position: " + i, expected, actual);
         }
     }
 }

@@ -27,49 +27,6 @@ public class MbMshFormat implements IMeshFormat {
     private static final int IS_COLORS_MASK = 1 << 12;
     private static final int IS_COLOR_ALPHA_MASK = 1 << 11;
 
-    @Override
-    public String getFileExtension() {
-        return "mbmsh";
-    }
-
-    @Override
-    public <T extends IMesh> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
-        builder.clear();
-        PrimitiveInputStream pis;
-        try {
-            pis = new PrimitiveInputStream(is);
-            readMagic(pis);
-            short version = pis.readShort(IS_BIG_ENDIAN);
-            return readWithVersion(builder, pis, version);
-        } catch (IOException ioe) {
-            throw new MeshIOException("Exception when reading from stream", ioe);
-        }
-    }
-
-    @Override
-    public void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
-        if (saver == null)
-            throw new MeshIOException("A mesh saver is required", new NullPointerException());
-        if (os == null)
-            throw new MeshIOException("An output stream is required", new NullPointerException());
-        PrimitiveOutputStream pos = new PrimitiveOutputStream(os);
-        try {
-            Set<VertexFormat> formats = saver.getVertexFormats();
-            short metadata = createMetadata(formats);
-            writeHeader(pos, metadata);
-            writeVertices(saver, pos, metadata);
-            writeFaces(saver, pos);
-        } catch (IOException ioe) {
-            throw new MeshIOException("Exception when writing to stream", ioe);
-        } finally {
-            try {
-                pos.flush();
-            } catch (IOException e) {
-                //ignore error
-            }
-        }
-    }
-
     private static void readMagic(PrimitiveInputStream pis) throws IOException, MeshIOException {
         byte[] magicBytes = new byte[MAGIC.length];
         pis.read(magicBytes);
@@ -211,7 +168,6 @@ public class MbMshFormat implements IMeshFormat {
         }
     }
 
-
     private static void writeVertexData(IMeshSaver saver, int vertexIndex, PrimitiveOutputStream pos, VertexType... types) throws IOException, MeshIOException {
         for (VertexType type : types) {
             float datum = saver.getVertexDatum(vertexIndex, type);
@@ -258,5 +214,48 @@ public class MbMshFormat implements IMeshFormat {
             return 3;
         else
             return 4;
+    }
+
+    @Override
+    public String getFileExtension() {
+        return "mbmsh";
+    }
+
+    @Override
+    public <T extends IMesh> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
+        builder.clear();
+        PrimitiveInputStream pis;
+        try {
+            pis = new PrimitiveInputStream(is);
+            readMagic(pis);
+            short version = pis.readShort(IS_BIG_ENDIAN);
+            return readWithVersion(builder, pis, version);
+        } catch (IOException ioe) {
+            throw new MeshIOException("Exception when reading from stream", ioe);
+        }
+    }
+
+    @Override
+    public void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
+        if (saver == null)
+            throw new MeshIOException("A mesh saver is required", new NullPointerException());
+        if (os == null)
+            throw new MeshIOException("An output stream is required", new NullPointerException());
+        PrimitiveOutputStream pos = new PrimitiveOutputStream(os);
+        try {
+            Set<VertexFormat> formats = saver.getVertexFormats();
+            short metadata = createMetadata(formats);
+            writeHeader(pos, metadata);
+            writeVertices(saver, pos, metadata);
+            writeFaces(saver, pos);
+        } catch (IOException ioe) {
+            throw new MeshIOException("Exception when writing to stream", ioe);
+        } finally {
+            try {
+                pos.flush();
+            } catch (IOException e) {
+                //ignore error
+            }
+        }
     }
 }

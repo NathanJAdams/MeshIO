@@ -1,9 +1,9 @@
 package com.ripplar_games.mesh_io.index;
 
-import com.ripplar_games.mesh_io.mesh.MeshType;
-
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
+
+import com.ripplar_games.mesh_io.mesh.MeshType;
 
 public class EditableIndices<T> {
     private final IndicesDataType<T> indicesDataType;
