@@ -35,14 +35,16 @@ public class FormatTest {
 
     @Test
     public void testFormats() throws MeshIOException {
-        testFormat(new PlyFormatAscii_1_0());
-        testFormat(new PlyFormatBinaryBigEndian_1_0());
-        testFormat(new PlyFormatBinaryLittleEndian_1_0());
-        testFormat(new MbMshFormat());
-//        testFormat(new ObjFormat());
+        List<IMeshFormat> formats = new ArrayList<IMeshFormat>();
+        formats.add(new PlyFormatAscii_1_0());
+        formats.add(new PlyFormatBinaryBigEndian_1_0());
+        formats.add(new PlyFormatBinaryLittleEndian_1_0());
+        formats.add(new MbMshFormat());
+//        formats.add(new ObjFormat());
+        testFormats(formats);
     }
 
-    private void testFormat(IMeshFormat meshFormat) throws MeshIOException {
+    private void testFormats(List<IMeshFormat> formats) throws MeshIOException {
         for (int i = 0; i < 100; i++) {
             List<VertexSubFormat> subFormats = new ArrayList<VertexSubFormat>();
             VertexDataType[] vertexDataTypes = VertexDataType.values();
@@ -53,14 +55,16 @@ public class FormatTest {
             VertexFormat format = new VertexFormat(subFormats);
             for (MeshType meshType : MeshType.values()) {
                 for (IndicesDataType<?> indicesDataType : IndicesDataTypes.getAllTypes()) {
-                    testFormatWithMeshIndicesTypes(meshFormat, meshType, indicesDataType, format);
+                    EditableMesh mesh = createRandomMesh(meshType, indicesDataType, format);
+                    for (IMeshFormat meshFormat : formats) {
+                        testFormatWithMesh(meshFormat, mesh, meshType, indicesDataType, format);
+                    }
                 }
             }
         }
     }
 
-    private void testFormatWithMeshIndicesTypes(IMeshFormat meshFormat, MeshType meshType, IndicesDataType<?> indicesDataType, VertexFormat format) throws MeshIOException {
-        EditableMesh mesh = createRandomMesh(meshType, indicesDataType, format);
+    private void testFormatWithMesh(IMeshFormat meshFormat, EditableMesh mesh, MeshType meshType, IndicesDataType<?> indicesDataType, VertexFormat format) throws MeshIOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         meshFormat.write(mesh, baos);
         byte[] buffer = baos.toByteArray();
