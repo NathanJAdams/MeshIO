@@ -2,6 +2,7 @@ package com.ripplar_games.mesh_io.vertex;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.ripplar_games.mesh_io.DatumEnDecoder;
@@ -97,7 +98,7 @@ public enum VertexDataType {
         }
     };
     private final int byteCount;
-    private static final List<VertexDataType> VALUES = Arrays.asList(values());
+    private static final List<VertexDataType> VALUES = Collections.unmodifiableList(Arrays.asList(values()));
 
     public static List<VertexDataType> valuesList() {
         return VALUES;

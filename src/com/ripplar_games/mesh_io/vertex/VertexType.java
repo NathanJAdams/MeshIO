@@ -1,6 +1,7 @@
 package com.ripplar_games.mesh_io.vertex;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public enum VertexType {
@@ -16,7 +17,7 @@ public enum VertexType {
     Color_A(false),
     ImageCoord_X(false),
     ImageCoord_Y(false);
-    private static final List<VertexType> VALUES = Arrays.asList(values());
+    private static final List<VertexType> VALUES = Collections.unmodifiableList(Arrays.asList(values()));
 
     private final boolean isSignedData;
 

@@ -1,6 +1,7 @@
 package com.ripplar_games.mesh_io.mesh;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.ripplar_games.mesh_io.index.IndicesDataType;
@@ -8,7 +9,7 @@ import com.ripplar_games.mesh_io.index.IndicesDataType;
 public enum MeshType {
     Mesh(new int[]{0, 1, 2}),
     Outline(new int[]{0, 1, 1, 2, 2, 0});
-    private static final List<MeshType> VALUES = Arrays.asList(values());
+    private static final List<MeshType> VALUES = Collections.unmodifiableList(Arrays.asList(values()));
     private final int[] offsets;
 
     public static List<MeshType> valuesList() {
