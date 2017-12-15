@@ -12,7 +12,7 @@ public class IndicesDataTypes {
     public static final IndicesDataType<byte[]> Byte = new IndicesDataType<byte[]>() {
         @Override
         public boolean isValidVertexCount(int vertexCount) {
-            return vertexCount <= 0x7f;
+            return (vertexCount >= 3) && (vertexCount <= 0x7f);
         }
 
         @Override
@@ -53,7 +53,7 @@ public class IndicesDataTypes {
     public static final IndicesDataType<short[]> Short = new IndicesDataType<short[]>() {
         @Override
         public boolean isValidVertexCount(int vertexCount) {
-            return vertexCount <= 0x7fff;
+            return (vertexCount >= 3) && (vertexCount <= 0x7fff);
         }
 
         @Override
@@ -94,7 +94,7 @@ public class IndicesDataTypes {
     public static final IndicesDataType<int[]> Int = new IndicesDataType<int[]>() {
         @Override
         public boolean isValidVertexCount(int vertexCount) {
-            return vertexCount <= 0x7fffffff;
+            return (vertexCount >= 3);// && (vertexCount <= 0x7fffffff); always true
         }
 
         @Override

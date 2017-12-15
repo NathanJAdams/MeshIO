@@ -43,14 +43,7 @@ public class MbMshFormat implements IMeshFormat {
         }
     }
 
-    private static <T extends IMesh> T readWithVersion(IMeshBuilder<T> builder, PrimitiveInputStream pis, short version) throws IOException {
-        short metadata = pis.readShort(IS_BIG_ENDIAN);
-        readVertices(builder, pis, metadata);
-        readFaces(builder, pis, metadata);
-        return builder.build();
-    }
-
-    private static void readVertices(IMeshBuilder<?> builder, PrimitiveInputStream pis, short metadata) throws IOException {
+    private static void readVertices(IMeshBuilder<?> builder, PrimitiveInputStream pis, short version, short metadata) throws IOException {
         int vertexCount = pis.readInt(IS_BIG_ENDIAN);
         builder.setVertexCount(vertexCount);
         boolean is3D = (metadata & IS_3D_MASK) != 0;
@@ -92,7 +85,7 @@ public class MbMshFormat implements IMeshFormat {
         }
     }
 
-    private static void readFaces(IMeshBuilder<?> builder, PrimitiveInputStream pis, int metadata) throws IOException {
+    private static void readFaces(IMeshBuilder<?> builder, PrimitiveInputStream pis, short version, int metadata) throws IOException {
         int faceCount = pis.readInt(IS_BIG_ENDIAN);
         builder.setFaceCount(faceCount);
         int numBytes = calculateNumBytes(faceCount);
@@ -194,7 +187,7 @@ public class MbMshFormat implements IMeshFormat {
         }
     }
 
-    private static void writeFaces(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException, MeshIOException {
+    private static void writeFaces(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException {
         int faceCount = saver.getFaceCount();
         pos.writeInt(faceCount, IS_BIG_ENDIAN);
         int numBytes = calculateNumBytes(faceCount);
@@ -229,7 +222,10 @@ public class MbMshFormat implements IMeshFormat {
             pis = new PrimitiveInputStream(is);
             readMagic(pis);
             short version = pis.readShort(IS_BIG_ENDIAN);
-            return readWithVersion(builder, pis, version);
+            short metadata = pis.readShort(IS_BIG_ENDIAN);
+            readVertices(builder, pis, version, metadata);
+            readFaces(builder, pis, version, metadata);
+            return builder.build();
         } catch (IOException ioe) {
             throw new MeshIOException("Exception when reading from stream", ioe);
         }

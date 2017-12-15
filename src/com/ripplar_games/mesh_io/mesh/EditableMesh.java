@@ -88,7 +88,7 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
 
     @Override
     public boolean isValid() {
-        return indicesDataType.isValidVertexCount(getVertexCount());
+        return (getFaceCount() > 0) && indicesDataType.isValidVertexCount(getVertexCount());
     }
 
     @Override
