@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class VertexFormat {
-    public static final VertexFormat EMPTY = new VertexFormat();
-
     private final Map<VertexType, VertexAlignedSubFormat> alignedSubFormats;
     private final int byteCount;
 
