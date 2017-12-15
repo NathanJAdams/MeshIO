@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.ripplar_games.mesh_io.DatumEnDecoder;
 import com.ripplar_games.mesh_io.IMeshBuilder;
@@ -18,6 +20,7 @@ import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 
 public class MbMshFormat implements IMeshFormat {
+    private static final Logger LOGGER = Logger.getLogger("MbMshFormat");
     private static final boolean IS_BIG_ENDIAN = true;
     private static final byte[] MAGIC = {'M', 'B', 'M', 'S', 'H'};
     private static final short MAX_VERSION = 1;
@@ -250,7 +253,7 @@ public class MbMshFormat implements IMeshFormat {
             try {
                 pos.flush();
             } catch (IOException e) {
-                //ignore error
+                LOGGER.log(Level.SEVERE, "Failed to properly write data");
             }
         }
     }

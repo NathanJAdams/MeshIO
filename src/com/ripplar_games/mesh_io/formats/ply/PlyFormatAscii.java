@@ -19,7 +19,7 @@ public class PlyFormatAscii extends PlyFormat {
             for (int i = 0; i < minSize; i++)
                 vertexData[i] = Float.parseFloat(parts[i]);
         } catch (NumberFormatException e) {
-            throw new IOException();
+            throw new IOException("Failed to read number");
         }
     }
 
@@ -46,7 +46,7 @@ public class PlyFormatAscii extends PlyFormat {
                 faceIndices[i] = Integer.parseInt(parts[1 + i]);
             return faceIndices;
         } catch (NumberFormatException e) {
-            throw new IOException();
+            throw new IOException("Failed to read number");
         }
     }
 

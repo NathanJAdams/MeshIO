@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
@@ -19,6 +21,7 @@ import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 
 public abstract class PlyFormat implements IMeshFormat {
+    private static final Logger LOGGER = Logger.getLogger("PlyFormat");
     private static final Map<String, PlyFormat> BY_ENCODING_VERSION = new HashMap<String, PlyFormat>();
     private static final String PLY = "ply";
     private static final String FORMAT = "format";
@@ -240,7 +243,7 @@ public abstract class PlyFormat implements IMeshFormat {
             try {
                 pos.flush();
             } catch (IOException e) {
-                // ignore error
+                LOGGER.log(Level.SEVERE, "Failed to properly write data");
             }
         }
     }

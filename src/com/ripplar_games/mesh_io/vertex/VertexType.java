@@ -1,32 +1,31 @@
 package com.ripplar_games.mesh_io.vertex;
 
-import java.util.EnumMap;
-import java.util.List;
-
 public enum VertexType {
-    Position_X,
-    Position_Y,
-    Position_Z,
-    Normal_X,
-    Normal_Y,
-    Normal_Z,
-    Color_R,
-    Color_G,
-    Color_B,
-    Color_A,
-    ImageCoord_X,
-    ImageCoord_Y;
+    Position_X(true),
+    Position_Y(true),
+    Position_Z(true),
+    Normal_X(true),
+    Normal_Y(true),
+    Normal_Z(true),
+    Color_R(false),
+    Color_G(false),
+    Color_B(false),
+    Color_A(false),
+    ImageCoord_X(false),
+    ImageCoord_Y(false);
     private static final VertexType[] VALUES = values();
+
+    private final boolean isSignedData;
 
     public static VertexType[] getValues() {
         return VALUES;
     }
 
-    public static EnumMap<VertexType, Integer> createTypeIndexes(List<VertexType> format) {
-        EnumMap<VertexType, Integer> typeIndexes = new EnumMap<VertexType, Integer>(VertexType.class);
-        if (format != null)
-            for (int i = 0; i < format.size(); i++)
-                typeIndexes.put(format.get(i), i);
-        return typeIndexes;
+    VertexType(boolean isSignedData) {
+        this.isSignedData = isSignedData;
+    }
+
+    public boolean isSignedData() {
+        return isSignedData;
     }
 }

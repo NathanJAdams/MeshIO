@@ -43,16 +43,18 @@ public class FormatTest {
     }
 
     private void testFormat(IMeshFormat meshFormat) throws MeshIOException {
-        List<VertexSubFormat> subFormats = new ArrayList<VertexSubFormat>();
-        VertexDataType[] vertexDataTypes = VertexDataType.values();
-        for (VertexType vertexType : VertexType.getValues()) {
-            VertexDataType vertexDataType = vertexDataTypes[RANDOM.nextInt(vertexDataTypes.length)];
-            subFormats.add(new VertexSubFormat(vertexType, vertexDataType));
-        }
-        VertexFormat format = new VertexFormat(subFormats);
-        for (MeshType meshType : MeshType.values()) {
-            for (IndicesDataType<?> indicesDataType : IndicesDataTypes.getAllTypes()) {
-                testFormatWithMeshIndicesTypes(meshFormat, meshType, indicesDataType, format);
+        for (int i = 0; i < 100; i++) {
+            List<VertexSubFormat> subFormats = new ArrayList<VertexSubFormat>();
+            VertexDataType[] vertexDataTypes = VertexDataType.values();
+            for (VertexType vertexType : VertexType.getValues()) {
+                VertexDataType vertexDataType = vertexDataTypes[RANDOM.nextInt(vertexDataTypes.length)];
+                subFormats.add(new VertexSubFormat(vertexType, vertexDataType));
+            }
+            VertexFormat format = new VertexFormat(subFormats);
+            for (MeshType meshType : MeshType.values()) {
+                for (IndicesDataType<?> indicesDataType : IndicesDataTypes.getAllTypes()) {
+                    testFormatWithMeshIndicesTypes(meshFormat, meshType, indicesDataType, format);
+                }
             }
         }
     }
@@ -88,10 +90,13 @@ public class FormatTest {
         }
         for (int i = 0; i < vertices; i++) {
             for (VertexType vertexType : format.getVertexTypes()) {
-                // random numbers are either 0 or 1
-                // negative numbers aren't supported for all vertex types
-                // fractional parts aren't exactly represented by some formats
-                float set = RANDOM.nextInt(2);
+                float set;
+                // no fractional parts as they aren't exactly represented by some formats
+                if (vertexType.isSignedData()) {
+                    set = RANDOM.nextInt(3) - 1; // -1, 0, 1
+                } else {
+                    set = RANDOM.nextInt(2); // 0, 1
+                }
                 mesh.setVertexDatum(i, vertexType, set);
                 float get = mesh.getVertexDatum(i, vertexType);
                 Assert.assertEquals(set, get, 0);

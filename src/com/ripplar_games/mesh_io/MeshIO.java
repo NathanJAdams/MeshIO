@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.ripplar_games.mesh_io.formats.mbmsh.MbMshFormat;
 import com.ripplar_games.mesh_io.formats.obj.ObjFormat;
@@ -19,6 +21,8 @@ import com.ripplar_games.mesh_io.mesh.MeshType;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 
 public class MeshIO {
+    private static final Logger LOGGER = Logger.getLogger("PrimitiveInputStream");
+
     private final Map<String, IMeshFormat> extensionFormats = new HashMap<String, IMeshFormat>();
 
     public MeshIO() {
@@ -41,7 +45,7 @@ public class MeshIO {
             read(filePath, builder);
             return builder.build();
         } catch (MeshIOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Failed to read mesh");
             return null;
         }
     }
@@ -94,7 +98,7 @@ public class MeshIO {
             try {
                 closeable.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "Failed to close file stream");
             }
         }
     }

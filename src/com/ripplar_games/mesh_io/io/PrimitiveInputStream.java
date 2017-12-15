@@ -99,6 +99,7 @@ public class PrimitiveInputStream extends FilterInputStream {
             for (int b = peek(); isCarriageReturnOrLineFeed(b); b = peek())
                 skip(1);
         } catch (IOException e) {
+            // skip errors can be ignored
         }
         return sb.toString();
     }
