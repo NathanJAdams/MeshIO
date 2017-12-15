@@ -8,36 +8,36 @@ import java.util.Map;
 import java.util.Set;
 
 public class VertexFormat {
-    private final Map<VertexType, VertexAlignedSubFormat> alignedSubFormats;
+    private final Map<VertexType, AlignedVertexFormatPart> alignedFormatParts;
     private final int byteCount;
 
-    public VertexFormat(VertexSubFormat... subFormats) {
-        this(Arrays.asList(subFormats));
+    public VertexFormat(VertexFormatPart... formatParts) {
+        this(Arrays.asList(formatParts));
     }
 
-    public VertexFormat(List<VertexSubFormat> subFormats) {
-        this.alignedSubFormats = createAlignedSubFormats(subFormats);
-        this.byteCount = calculateByteCount(subFormats);
+    public VertexFormat(List<VertexFormatPart> formatParts) {
+        this.alignedFormatParts = createAlignedFormatParts(formatParts);
+        this.byteCount = calculateByteCount(formatParts);
     }
 
-    private static Map<VertexType, VertexAlignedSubFormat> createAlignedSubFormats(List<VertexSubFormat> formatEntries) {
-        Map<VertexType, VertexAlignedSubFormat> typeIndexes = new EnumMap<VertexType, VertexAlignedSubFormat>(VertexType.class);
+    private static Map<VertexType, AlignedVertexFormatPart> createAlignedFormatParts(List<VertexFormatPart> formatEntries) {
+        Map<VertexType, AlignedVertexFormatPart> alignedFormatParts = new EnumMap<VertexType, AlignedVertexFormatPart>(VertexType.class);
         int offset = 0;
         for (int i = 0; i < formatEntries.size(); i++) {
-            VertexSubFormat entry = formatEntries.get(i);
+            VertexFormatPart entry = formatEntries.get(i);
             VertexType vertexType = entry.getVertexType();
             VertexDataType dataType = entry.getDataType();
-            VertexAlignedSubFormat alignedSubFormat = new VertexAlignedSubFormat(offset, dataType);
-            typeIndexes.put(vertexType, alignedSubFormat);
+            AlignedVertexFormatPart alignedFormatPart = new AlignedVertexFormatPart(offset, dataType);
+            alignedFormatParts.put(vertexType, alignedFormatPart);
             offset += dataType.getByteCount();
         }
-        return Collections.unmodifiableMap(typeIndexes);
+        return Collections.unmodifiableMap(alignedFormatParts);
     }
 
-    private static int calculateByteCount(List<VertexSubFormat> formatEntries) {
+    private static int calculateByteCount(List<VertexFormatPart> formatParts) {
         int byteCount = 0;
-        for (VertexSubFormat entry : formatEntries) {
-            byteCount += entry.getDataType().getByteCount();
+        for (VertexFormatPart formatPart : formatParts) {
+            byteCount += formatPart.getDataType().getByteCount();
         }
         return byteCount;
     }
@@ -47,25 +47,25 @@ public class VertexFormat {
     }
 
     public int getVertexTypeCount() {
-        return alignedSubFormats.size();
+        return alignedFormatParts.size();
     }
 
     public Set<VertexType> getVertexTypes() {
-        return alignedSubFormats.keySet();
+        return alignedFormatParts.keySet();
     }
 
     public boolean containsVertexType(VertexType vertexType) {
-        return alignedSubFormats.containsKey(vertexType);
+        return alignedFormatParts.containsKey(vertexType);
     }
 
     public int getVertexDatumIndex(int vertexIndex, VertexType vertexType) {
-        VertexAlignedSubFormat subFormat = alignedSubFormats.get(vertexType);
-        int offset = subFormat.getOffset();
+        AlignedVertexFormatPart alignedFormatPart = alignedFormatParts.get(vertexType);
+        int offset = alignedFormatPart.getOffset();
         return vertexIndex * byteCount + offset;
     }
 
-    public VertexAlignedSubFormat getAlignedSubFormat(VertexType vertexType) {
-        return alignedSubFormats.get(vertexType);
+    public AlignedVertexFormatPart getAlignedFormatPart(VertexType vertexType) {
+        return alignedFormatParts.get(vertexType);
     }
 
     public int getByteCount() {
@@ -77,11 +77,11 @@ public class VertexFormat {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         VertexFormat other = (VertexFormat) obj;
-        return alignedSubFormats.equals(other.alignedSubFormats);
+        return alignedFormatParts.equals(other.alignedFormatParts);
     }
 
     @Override
     public int hashCode() {
-        return alignedSubFormats.hashCode();
+        return alignedFormatParts.hashCode();
     }
 }

@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.ripplar_games.mesh_io.TestUtil;
 import com.ripplar_games.mesh_io.index.IndicesDataType;
+import com.ripplar_games.mesh_io.index.IndicesDataTypes;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 import org.junit.Assert;
@@ -56,8 +57,8 @@ public class EditableMeshTest {
     }
 
     private void testMeshAndIndicesTypes(EditableMesh mesh) {
-        MeshType meshType = TestUtil.randomMeshType();
-        IndicesDataType<?> indicesDataType = TestUtil.randomIndicesDataType();
+        MeshType meshType = TestUtil.randomValue(MeshType.valuesList());
+        IndicesDataType<?> indicesDataType = TestUtil.randomValue(IndicesDataTypes.valuesList());
         mesh.setMeshType(meshType);
         mesh.setIndicesDataType(indicesDataType);
         ByteBuffer indices = mesh.getIndices();
@@ -89,7 +90,7 @@ public class EditableMeshTest {
     private void testVertexData(EditableMesh mesh) {
         if (mesh.getVertexCount() > 0 && mesh.getVertexCount() > 0) {
             int vertexIndex = RANDOM.nextInt(mesh.getVertexCount());
-            VertexType vertexType = TestUtil.randomVertexType();
+            VertexType vertexType = TestUtil.randomValue(VertexType.valuesList());
             float vertexDatum = RANDOM.nextFloat();
             mesh.setVertexDatum(vertexIndex, vertexType, vertexDatum);
             float actualVertexDatum = mesh.getVertexDatum(vertexIndex, vertexType);

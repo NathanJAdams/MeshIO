@@ -25,7 +25,7 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
     public <T> EditableMesh() {
         for (MeshType meshType : MeshType.values()) {
             Map<IndicesDataType<?>, EditableIndices<?>> subMap = new HashMap<IndicesDataType<?>, EditableIndices<?>>();
-            for (IndicesDataType<?> dataType : IndicesDataTypes.getAllTypes()) {
+            for (IndicesDataType<?> dataType : IndicesDataTypes.valuesList()) {
                 // hack to allow proper typing
                 @SuppressWarnings("unchecked")
                 IndicesDataType<T> typedDataType = (IndicesDataType<T>) dataType;

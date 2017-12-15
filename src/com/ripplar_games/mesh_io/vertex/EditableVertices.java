@@ -21,8 +21,8 @@ public class EditableVertices {
         for (int i = 0; i < vertexCount; i++) {
             EditableVertex vertex = vertexList.get(i);
             for (VertexType vertexType : format.getVertexTypes()) {
-                VertexAlignedSubFormat subFormat = format.getAlignedSubFormat(vertexType);
-                VertexDataType dataType = subFormat.getDataType();
+                AlignedVertexFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
+                VertexDataType dataType = alignedFormatPart.getDataType();
                 int index = format.getVertexDatumIndex(i, vertexType);
                 float datum = vertex.getDatum(vertexType);
                 dataType.setDatum(bb, index, datum);

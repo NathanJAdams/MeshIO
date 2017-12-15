@@ -1,10 +1,13 @@
 package com.ripplar_games.mesh_io.vertex;
 
-public class VertexAlignedSubFormat {
+public class AlignedVertexFormatPart {
     private final int offset;
     private final VertexDataType dataType;
 
-    public VertexAlignedSubFormat(int offset, VertexDataType dataType) {
+    public AlignedVertexFormatPart(int offset, VertexDataType dataType) {
+        if (offset < 0) {
+            throw new IllegalArgumentException("Offset must be zero or greater");
+        }
         this.offset = offset;
         if (dataType == null) {
             throw new NullPointerException("Data Type must not be null");
@@ -24,7 +27,7 @@ public class VertexAlignedSubFormat {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        VertexAlignedSubFormat other = (VertexAlignedSubFormat) obj;
+        AlignedVertexFormatPart other = (AlignedVertexFormatPart) obj;
         return (offset == other.offset)
                 && (dataType == other.dataType);
     }

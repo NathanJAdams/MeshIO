@@ -25,7 +25,7 @@ import com.ripplar_games.mesh_io.mesh.ImmutableMeshBuilder;
 import com.ripplar_games.mesh_io.mesh.MeshType;
 import com.ripplar_games.mesh_io.vertex.VertexDataType;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
-import com.ripplar_games.mesh_io.vertex.VertexSubFormat;
+import com.ripplar_games.mesh_io.vertex.VertexFormatPart;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,15 +46,15 @@ public class FormatTest {
 
     private void testFormats(List<IMeshFormat> formats) throws MeshIOException {
         for (int i = 0; i < 100; i++) {
-            List<VertexSubFormat> subFormats = new ArrayList<VertexSubFormat>();
+            List<VertexFormatPart> formatParts = new ArrayList<VertexFormatPart>();
             VertexDataType[] vertexDataTypes = VertexDataType.values();
-            for (VertexType vertexType : VertexType.getValues()) {
+            for (VertexType vertexType : VertexType.valuesList()) {
                 VertexDataType vertexDataType = vertexDataTypes[RANDOM.nextInt(vertexDataTypes.length)];
-                subFormats.add(new VertexSubFormat(vertexType, vertexDataType));
+                formatParts.add(new VertexFormatPart(vertexType, vertexDataType));
             }
-            VertexFormat format = new VertexFormat(subFormats);
+            VertexFormat format = new VertexFormat(formatParts);
             for (MeshType meshType : MeshType.values()) {
-                for (IndicesDataType<?> indicesDataType : IndicesDataTypes.getAllTypes()) {
+                for (IndicesDataType<?> indicesDataType : IndicesDataTypes.valuesList()) {
                     EditableMesh mesh = createRandomMesh(meshType, indicesDataType, format);
                     for (IMeshFormat meshFormat : formats) {
                         testFormatWithMesh(meshFormat, mesh, meshType, indicesDataType, format);

@@ -1,10 +1,10 @@
 package com.ripplar_games.mesh_io.vertex;
 
-public class VertexSubFormat {
+public class VertexFormatPart {
     private final VertexType vertexType;
     private final VertexDataType dataType;
 
-    public VertexSubFormat(VertexType vertexType, VertexDataType dataType) {
+    public VertexFormatPart(VertexType vertexType, VertexDataType dataType) {
         this.vertexType = vertexType;
         this.dataType = dataType;
     }

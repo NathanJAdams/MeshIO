@@ -14,7 +14,7 @@ public class EditableVerticesTest {
     @Test
     public void testFloatPositionX() {
         EditableVertices vertices = new EditableVertices();
-        VertexFormat format = new VertexFormat(new VertexSubFormat(VertexType.Position_X, VertexDataType.Float));
+        VertexFormat format = new VertexFormat(new VertexFormatPart(VertexType.Position_X, VertexDataType.Float));
         vertices.setVertexCount(1);
         vertices.setVertexCount(2);
         vertices.setVertexDatum(0, VertexType.Position_X, 1);
@@ -41,7 +41,7 @@ public class EditableVerticesTest {
         float startDatum = RANDOM.nextInt(128) / 128.0f;
         float datum = startDatum;
         for (int i = 0; i < vertexCount; i++) {
-            for (VertexType vertexType : VertexType.getValues()) {
+            for (VertexType vertexType : VertexType.valuesList()) {
                 vertices.setVertexDatum(i, vertexType, datum);
                 datum += (1.0f / 128.0f);
                 if (datum > 1) {
@@ -53,13 +53,13 @@ public class EditableVerticesTest {
         Assert.assertEquals(vertexCount * format.getByteCount(), bb.limit());
         float expected = startDatum;
         for (int i = 0; i < vertexCount; i++) {
-            for (VertexType vertexType : VertexType.getValues()) {
-                VertexAlignedSubFormat subFormat = format.getAlignedSubFormat(vertexType);
-                if (subFormat != null) {
+            for (VertexType vertexType : VertexType.valuesList()) {
+                AlignedVertexFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
+                if (alignedFormatPart != null) {
                     int index = format.getVertexDatumIndex(i, vertexType);
-                    float actual = subFormat.getDataType().getDatum(bb, index);
+                    float actual = alignedFormatPart.getDataType().getDatum(bb, index);
                     float delta;
-                    switch (subFormat.getDataType()) {
+                    switch (alignedFormatPart.getDataType()) {
                         case Float:
                             delta = 0;
                             break;

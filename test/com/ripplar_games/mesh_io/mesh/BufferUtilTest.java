@@ -1,9 +1,9 @@
 package com.ripplar_games.mesh_io.mesh;
 
+import java.nio.ByteBuffer;
+
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.nio.ByteBuffer;
 
 public class BufferUtilTest {
     @Test

@@ -1,7 +1,7 @@
 package com.ripplar_games.mesh_io.vertex;
 
 public class EditableVertex {
-    private final float[] data = new float[VertexType.getValues().length];
+    private final float[] data = new float[VertexType.valuesList().size()];
 
     public void clear() {
         for (int i = 0; i < data.length; i++)

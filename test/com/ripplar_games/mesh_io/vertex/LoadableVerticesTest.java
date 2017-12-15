@@ -15,7 +15,7 @@ public class LoadableVerticesTest {
 
     @Test
     public void testFloatPositionX() {
-        VertexFormat format = new VertexFormat(new VertexSubFormat(VertexType.Position_X, VertexDataType.Float));
+        VertexFormat format = new VertexFormat(new VertexFormatPart(VertexType.Position_X, VertexDataType.Float));
         Set<VertexFormat> formats = new HashSet<VertexFormat>();
         formats.add(format);
         LoadableVertices vertices = new LoadableVertices(formats);
@@ -50,7 +50,7 @@ public class LoadableVerticesTest {
         float startDatum = RANDOM.nextInt(128) / 128.0f;
         float datum = startDatum;
         for (int i = 0; i < vertexCount; i++) {
-            for (VertexType vertexType : VertexType.getValues()) {
+            for (VertexType vertexType : VertexType.valuesList()) {
                 vertices.setVertexDatum(i, vertexType, datum);
                 datum += (1.0f / 128.0f);
                 if (datum > 1) {
@@ -62,13 +62,13 @@ public class LoadableVerticesTest {
         Assert.assertEquals(vertexCount * format.getByteCount(), bb.limit());
         float expected = startDatum;
         for (int i = 0; i < vertexCount; i++) {
-            for (VertexType vertexType : VertexType.getValues()) {
-                VertexAlignedSubFormat subFormat = format.getAlignedSubFormat(vertexType);
-                if (subFormat != null) {
+            for (VertexType vertexType : VertexType.valuesList()) {
+                AlignedVertexFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
+                if (alignedFormatPart != null) {
                     int index = format.getVertexDatumIndex(i, vertexType);
-                    float actual = subFormat.getDataType().getDatum(bb, index);
+                    float actual = alignedFormatPart.getDataType().getDatum(bb, index);
                     float delta;
-                    switch (subFormat.getDataType()) {
+                    switch (alignedFormatPart.getDataType()) {
                         case Float:
                             delta = 0;
                             break;

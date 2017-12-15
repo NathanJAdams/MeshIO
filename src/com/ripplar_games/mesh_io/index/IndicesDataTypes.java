@@ -132,17 +132,17 @@ public class IndicesDataTypes {
             return "Int";
         }
     };
-    private static final List<IndicesDataType<?>> ALL_TYPES;
+    private static final List<IndicesDataType<?>> VALUES;
 
     static {
-        List<IndicesDataType<?>> mutableTypes = new ArrayList<IndicesDataType<?>>();
-        mutableTypes.add(Byte);
-        mutableTypes.add(Short);
-        mutableTypes.add(Int);
-        ALL_TYPES = Collections.unmodifiableList(mutableTypes);
+        List<IndicesDataType<?>> mutableList = new ArrayList<IndicesDataType<?>>();
+        mutableList.add(Byte);
+        mutableList.add(Short);
+        mutableList.add(Int);
+        VALUES = Collections.unmodifiableList(mutableList);
     }
 
-    public static List<IndicesDataType<?>> getAllTypes() {
-        return ALL_TYPES;
+    public static List<IndicesDataType<?>> valuesList() {
+        return VALUES;
     }
 }

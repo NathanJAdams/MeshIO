@@ -49,10 +49,10 @@ public class LoadableVertices {
         for (Map.Entry<VertexFormat, ByteBuffer> entry : formatVertices.entrySet()) {
             VertexFormat format = entry.getKey();
             ByteBuffer vertices = entry.getValue();
-            VertexAlignedSubFormat alignedSubFormat = format.getAlignedSubFormat(vertexType);
-            if (alignedSubFormat != null) {
-                int offset = alignedSubFormat.getOffset();
-                VertexDataType dataType = alignedSubFormat.getDataType();
+            AlignedVertexFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
+            if (alignedFormatPart != null) {
+                int offset = alignedFormatPart.getOffset();
+                VertexDataType dataType = alignedFormatPart.getDataType();
                 int index = (vertexIndex * format.getByteCount()) + offset;
                 dataType.setDatum(vertices, index, vertexDatum);
             }
