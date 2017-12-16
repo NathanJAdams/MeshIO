@@ -40,8 +40,7 @@ public class MeshIO {
 
     public IMesh readAs(String filePath, MeshType meshType, IndicesDataType<?> indicesDataType, Set<VertexFormat> formats) throws MeshIOException {
         ImmutableMeshBuilder builder = new ImmutableMeshBuilder(meshType, indicesDataType, formats);
-        read(filePath, builder);
-        return builder.build();
+        return read(filePath, builder);
     }
 
     public <T extends IMesh> T read(String filePath, IMeshBuilder<T> builder) throws MeshIOException {
