@@ -38,19 +38,10 @@ public class MeshIO {
         extensionFormats.put(meshFormat.getFileExtension(), meshFormat);
     }
 
-    public IMesh readQuietly(String filePath, MeshType meshType, IndicesDataType<?> indicesDataType, Set<VertexFormat> formats) {
+    public IMesh readAs(String filePath, MeshType meshType, IndicesDataType<?> indicesDataType, Set<VertexFormat> formats) throws MeshIOException {
         ImmutableMeshBuilder builder = new ImmutableMeshBuilder(meshType, indicesDataType, formats);
-        return readQuietly(filePath, builder);
-    }
-
-    public <T extends IMesh> T readQuietly(String filePath, IMeshBuilder<T> builder) {
-        try {
-            read(filePath, builder);
-            return builder.build();
-        } catch (MeshIOException e) {
-            LOGGER.log(Level.SEVERE, "Failed to read mesh");
-            return null;
-        }
+        read(filePath, builder);
+        return builder.build();
     }
 
     public <T extends IMesh> T read(String filePath, IMeshBuilder<T> builder) throws MeshIOException {
