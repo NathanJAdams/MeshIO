@@ -1,8 +1,6 @@
 package com.ripplar_games.mesh_io.formats.mbmsh;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
@@ -15,12 +13,11 @@ import com.ripplar_games.mesh_io.IMeshSaver;
 import com.ripplar_games.mesh_io.MeshIOException;
 import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
 import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
-import com.ripplar_games.mesh_io.mesh.IMesh;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 
 public class MbMshFormat implements IMeshFormat {
-    private static final Logger LOGGER = Logger.getLogger("MbMshFormat");
+    private static final Logger LOGGER = Logger.getLogger(MbMshFormat.class.getName());
     private static final boolean IS_BIG_ENDIAN = true;
     private static final byte[] MAGIC = {'M', 'B', 'M', 'S', 'H'};
     private static final short MAX_VERSION = 1;
@@ -218,29 +215,20 @@ public class MbMshFormat implements IMeshFormat {
     }
 
     @Override
-    public <T extends IMesh> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
-        builder.clear();
-        PrimitiveInputStream pis;
+    public void read(IMeshBuilder<?> builder, PrimitiveInputStream pis) throws MeshIOException {
         try {
-            pis = new PrimitiveInputStream(is);
             readMagic(pis);
             short version = pis.readShort(IS_BIG_ENDIAN);
             short metadata = pis.readShort(IS_BIG_ENDIAN);
             readVertices(builder, pis, version, metadata);
             readFaces(builder, pis, version, metadata);
-            return builder.build();
         } catch (IOException ioe) {
             throw new MeshIOException("Exception when reading from stream", ioe);
         }
     }
 
     @Override
-    public void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
-        if (saver == null)
-            throw new MeshIOException("A mesh saver is required", new NullPointerException());
-        if (os == null)
-            throw new MeshIOException("An output stream is required", new NullPointerException());
-        PrimitiveOutputStream pos = new PrimitiveOutputStream(os);
+    public void write(IMeshSaver saver, PrimitiveOutputStream pos) throws MeshIOException {
         try {
             Set<VertexFormat> formats = saver.getVertexFormats();
             short metadata = createMetadata(formats);

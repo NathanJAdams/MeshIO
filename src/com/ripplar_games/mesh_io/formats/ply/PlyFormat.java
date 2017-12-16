@@ -1,8 +1,6 @@
 package com.ripplar_games.mesh_io.formats.ply;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +14,11 @@ import com.ripplar_games.mesh_io.IMeshSaver;
 import com.ripplar_games.mesh_io.MeshIOException;
 import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
 import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
-import com.ripplar_games.mesh_io.mesh.IMesh;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 
 public abstract class PlyFormat implements IMeshFormat {
-    private static final Logger LOGGER = Logger.getLogger("PlyFormat");
+    private static final Logger LOGGER = Logger.getLogger(PlyFormat.class.getName());
     private static final Map<String, PlyFormat> BY_ENCODING_VERSION = new HashMap<String, PlyFormat>();
     private static final String PLY = "ply";
     private static final String FORMAT = "format";
@@ -126,10 +123,8 @@ public abstract class PlyFormat implements IMeshFormat {
     }
 
     @Override
-    public <T extends IMesh> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
-        builder.clear();
+    public void read(IMeshBuilder<?> builder, PrimitiveInputStream pis) throws MeshIOException {
         try {
-            PrimitiveInputStream pis = new PrimitiveInputStream(is);
             String line;
             line = readNonCommentLine(pis);
             if (!PLY.equals(line))
@@ -200,19 +195,13 @@ public abstract class PlyFormat implements IMeshFormat {
                 readFaces(plyFormat, pis, builder, faceIndexCountType, faceIndexType, numFaces);
                 readVertices(plyFormat, pis, builder, vertexTypes, vertexDataTypes, numVertices);
             }
-            return builder.build();
         } catch (IOException e) {
             throw new MeshIOException("Exception when reading from stream", e);
         }
     }
 
     @Override
-    public void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
-        if (saver == null)
-            throw new MeshIOException("A mesh saver is required", new NullPointerException());
-        if (os == null)
-            throw new MeshIOException("An output stream is required", new NullPointerException());
-        PrimitiveOutputStream pos = new PrimitiveOutputStream(os);
+    public void write(IMeshSaver saver, PrimitiveOutputStream pos) throws MeshIOException {
         try {
             pos.writeLine(PLY);
             pos.writeLine(FORMAT + ' ' + encoding + ' ' + version);

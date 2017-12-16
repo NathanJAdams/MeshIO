@@ -18,6 +18,8 @@ import com.ripplar_games.mesh_io.formats.ply.PlyFormatBinaryBigEndian_1_0;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatBinaryLittleEndian_1_0;
 import com.ripplar_games.mesh_io.index.IndicesDataType;
 import com.ripplar_games.mesh_io.index.IndicesDataTypes;
+import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
+import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
 import com.ripplar_games.mesh_io.mesh.EditableMesh;
 import com.ripplar_games.mesh_io.mesh.IMesh;
 import com.ripplar_games.mesh_io.mesh.ImmutableMesh;
@@ -66,13 +68,16 @@ public class FormatTest {
 
     private void testFormatWithMesh(IMeshFormat meshFormat, EditableMesh mesh, MeshType meshType, IndicesDataType<?> indicesDataType, VertexFormat format) throws MeshIOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        meshFormat.write(mesh, baos);
+        PrimitiveOutputStream pos = new PrimitiveOutputStream(baos);
+        meshFormat.write(mesh, pos);
         byte[] buffer = baos.toByteArray();
         ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+        PrimitiveInputStream pis = new PrimitiveInputStream(bais);
         Set<VertexFormat> formats = new HashSet<VertexFormat>();
         formats.add(format);
         IMeshBuilder<ImmutableMesh> meshBuilder = new ImmutableMeshBuilder(meshType, indicesDataType, formats);
-        ImmutableMesh translatedMesh = meshFormat.read(meshBuilder, bais);
+        meshFormat.read(meshBuilder, pis);
+        ImmutableMesh translatedMesh = meshBuilder.build();
         checkMeshes(mesh, translatedMesh, format);
     }
 

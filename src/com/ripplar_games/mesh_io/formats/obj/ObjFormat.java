@@ -1,8 +1,6 @@
 package com.ripplar_games.mesh_io.formats.obj;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.regex.Pattern;
 
 import com.ripplar_games.mesh_io.IMeshBuilder;
@@ -10,12 +8,12 @@ import com.ripplar_games.mesh_io.IMeshFormat;
 import com.ripplar_games.mesh_io.IMeshSaver;
 import com.ripplar_games.mesh_io.MeshIOException;
 import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
+import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
 import com.ripplar_games.mesh_io.mesh.IMesh;
 
 // TODO in progress
 public class ObjFormat implements IMeshFormat {
     private static final Pattern SPLITTER_PATTERN = Pattern.compile(" ");
-
 
     @Override
     public String getFileExtension() {
@@ -23,10 +21,8 @@ public class ObjFormat implements IMeshFormat {
     }
 
     @Override
-    public <T extends IMesh> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException {
-        builder.clear();
+    public void read(IMeshBuilder<?> builder, PrimitiveInputStream pis) throws MeshIOException {
         try {
-            PrimitiveInputStream pis = new PrimitiveInputStream(is);
             int currentVertexCount = 0;
             int currentFaceCount = 0;
             int requestedVertexCount = 16;
@@ -63,14 +59,13 @@ public class ObjFormat implements IMeshFormat {
                     }
                 }
             }
-            return builder.build();
         } catch (IOException e) {
             throw new MeshIOException("Exception when reading from stream", e);
         }
     }
 
     @Override
-    public void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
+    public void write(IMeshSaver saver, PrimitiveOutputStream pos) throws MeshIOException {
         // TODO
     }
 
@@ -88,7 +83,7 @@ public class ObjFormat implements IMeshFormat {
     }
 
     private static <T extends IMesh> void appendVertex(IMeshBuilder<T> builder, float[] parts) {
-        
+
     }
 
     private static <T extends IMesh> void appendTexCoord(IMeshBuilder<T> builder, float[] parts) {

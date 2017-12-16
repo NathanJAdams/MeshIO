@@ -1,14 +1,12 @@
 package com.ripplar_games.mesh_io;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import com.ripplar_games.mesh_io.mesh.IMesh;
+import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
+import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
 
 public interface IMeshFormat {
     String getFileExtension();
 
-    <T extends IMesh> T read(IMeshBuilder<T> builder, InputStream is) throws MeshIOException;
+    void read(IMeshBuilder<?> builder, PrimitiveInputStream pis) throws MeshIOException;
 
-    void write(IMeshSaver saver, OutputStream os) throws MeshIOException;
+    void write(IMeshSaver saver, PrimitiveOutputStream pos) throws MeshIOException;
 }
