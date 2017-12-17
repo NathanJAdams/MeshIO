@@ -114,7 +114,7 @@ public class ObjFormat implements IMeshFormat {
                 index = vertexDataVertexIndices.size();
                 vertexDataVertexIndices.put(vertexDataIndices, index);
             }
-            face[i] = index;
+            face[i - 1] = index;
         }
         faces.add(face);
     }
