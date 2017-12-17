@@ -47,8 +47,16 @@ public class ObjFormat implements IMeshFormat {
 
     @Override
     public void write(IMeshSaver saver, PrimitiveOutputStream pos) throws MeshIOException {
-        writeVertices(saver, pos);
-        writeFaces(saver, pos);
+        try {
+            writeVertices(saver, pos);
+            writeFaces(saver, pos);
+        } finally {
+            try {
+                pos.flush();
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Failed to properly write data");
+            }
+        }
     }
 
     private static void readAllData(PrimitiveInputStream pis, List<float[]> positionColors, List<float[]> imageCoords, List<float[]> normals, Map<VertexDataIndices, Integer> vertexDataVertexIndices, List<int[]> faces) throws MeshIOException {
