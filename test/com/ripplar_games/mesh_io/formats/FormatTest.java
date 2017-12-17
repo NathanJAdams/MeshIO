@@ -13,6 +13,7 @@ import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
 import com.ripplar_games.mesh_io.MeshIOException;
 import com.ripplar_games.mesh_io.formats.mbmsh.MbMshFormat;
+import com.ripplar_games.mesh_io.formats.obj.ObjFormat;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatAscii_1_0;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatBinaryBigEndian_1_0;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatBinaryLittleEndian_1_0;
@@ -42,7 +43,7 @@ public class FormatTest {
         formats.add(new PlyFormatBinaryBigEndian_1_0());
         formats.add(new PlyFormatBinaryLittleEndian_1_0());
         formats.add(new MbMshFormat());
-//        formats.add(new ObjFormat());
+        formats.add(new ObjFormat());
         testFormats(formats);
     }
 
@@ -99,12 +100,13 @@ public class FormatTest {
         }
         for (int i = 0; i < vertices; i++) {
             for (VertexType vertexType : format.getVertexTypes()) {
+                int randomInt = RANDOM.nextInt(3);
                 float set;
-                // no fractional parts as they aren't exactly represented by some formats
+                // finer grained fractional parts aren't exactly represented by some formats
                 if (vertexType.isSignedData()) {
-                    set = RANDOM.nextInt(3) - 1; // -1, 0, 1
+                    set = randomInt - 1; // -1, 0, 1
                 } else {
-                    set = RANDOM.nextInt(2); // 0, 1
+                    set = randomInt * 0.5f; // 0, 0.5, 1
                 }
                 mesh.setVertexDatum(i, vertexType, set);
                 float get = mesh.getVertexDatum(i, vertexType);
