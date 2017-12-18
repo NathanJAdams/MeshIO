@@ -26,6 +26,7 @@ public class EditableVertices {
                 int index = format.getVertexDatumIndex(i, vertexType);
                 float datum = vertex.getDatum(vertexType);
                 dataType.setDatum(bb, index, datum);
+
             }
         }
         return bb;
@@ -36,15 +37,14 @@ public class EditableVertices {
     }
 
     public void setVertexCount(int vertexCount) {
-        int previousVertexCount = this.vertexCount;
-        this.vertexCount = vertexCount;
-        if (previousVertexCount > vertexCount) {
+        if (this.vertexCount > vertexCount) {
             for (int i = vertexCount; i < vertexList.size(); i++)
                 vertexList.get(i).clear();
-        } else if (previousVertexCount < vertexCount) {
+        } else if (this.vertexCount < vertexCount) {
             for (int i = vertexList.size(); i < vertexCount; i++)
                 vertexList.add(new EditableVertex());
         }
+        this.vertexCount = vertexCount;
     }
 
     public float getVertexDatum(int vertexIndex, VertexType vertexType) {

@@ -3,6 +3,7 @@ package com.ripplar_games.mesh_io.vertex;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -30,6 +31,49 @@ public class LoadableVerticesTest {
         Assert.assertEquals(0.0f, fb.get(0), 0);
         Assert.assertEquals(0.5f, fb.get(1), 0);
         Assert.assertEquals(1.0f, fb.get(2), 0);
+    }
+
+    @Test
+    public void testResize() {
+        for (int vertexCount = 1; vertexCount < 5; vertexCount++) {
+            for (VertexDataType vertexDataType : VertexDataType.valuesList()) {
+                int totalByteCount = vertexCount * vertexDataType.getByteCount();
+                VertexFormat format = new VertexFormat(new VertexFormatPart(VertexType.Position_X, vertexDataType));
+                Set<VertexFormat> formats = new HashSet<VertexFormat>();
+                formats.add(format);
+                LoadableVertices vertices = new LoadableVertices(formats);
+                Map<VertexFormat, ByteBuffer> formatVertices = vertices.getFormatVertices();
+                for (ByteBuffer bb : formatVertices.values()) {
+                    Assert.assertEquals(0, bb.position());
+                    Assert.assertEquals(0, bb.limit());
+                    Assert.assertEquals(0, bb.capacity());
+                }
+                vertices.setVertexCount(vertexCount);
+                formatVertices = vertices.getFormatVertices();
+                for (ByteBuffer bb : formatVertices.values()) {
+                    Assert.assertEquals(0, bb.position());
+                    Assert.assertEquals(totalByteCount, bb.limit());
+                    Assert.assertEquals(totalByteCount, bb.capacity());
+                    for (int i = 0; i < vertexCount; i++) {
+                        float datum = vertexDataType.getDatum(bb, i * vertexDataType.getByteCount());
+                        Assert.assertEquals(0.0f, datum, 0.0f);
+                    }
+                }
+                for (int i = 0; i < vertexCount; i++) {
+                    vertices.setVertexDatum(i, VertexType.Position_X, 1.0f);
+                }
+                formatVertices = vertices.getFormatVertices();
+                for (ByteBuffer bb : formatVertices.values()) {
+                    Assert.assertEquals(0, bb.position());
+                    Assert.assertEquals(totalByteCount, bb.limit());
+                    Assert.assertEquals(totalByteCount, bb.capacity());
+                    for (int i = 0; i < vertexCount; i++) {
+                        float actual = vertexDataType.getDatum(bb, i * vertexDataType.getByteCount());
+                        Assert.assertEquals(1.0f, actual, 0.0f);
+                    }
+                }
+            }
+        }
     }
 
     @Test

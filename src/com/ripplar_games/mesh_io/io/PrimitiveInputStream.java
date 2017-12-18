@@ -104,18 +104,18 @@ public class PrimitiveInputStream extends FilterInputStream {
         return sb.toString();
     }
 
+    public int peek() throws IOException {
+        mark(1);
+        int peeked = read();
+        reset();
+        return peeked;
+    }
+
     private int[] read(int numBytes) throws IOException {
         int[] bytes = new int[numBytes];
         for (int i = 0; i < numBytes; i++)
             bytes[i] = read();
         return bytes;
-    }
-
-    private int peek() throws IOException {
-        mark(1);
-        int peeked = read();
-        reset();
-        return peeked;
     }
 
     @Override

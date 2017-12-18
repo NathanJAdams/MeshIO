@@ -13,6 +13,7 @@ import com.ripplar_games.mesh_io.IMeshBuilder;
 import com.ripplar_games.mesh_io.IMeshFormat;
 import com.ripplar_games.mesh_io.MeshIOException;
 import com.ripplar_games.mesh_io.formats.mbmsh.MbMshFormat;
+import com.ripplar_games.mesh_io.formats.obj.ObjFormat;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatAscii_1_0;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatBinaryBigEndian_1_0;
 import com.ripplar_games.mesh_io.formats.ply.PlyFormatBinaryLittleEndian_1_0;
@@ -42,7 +43,7 @@ public class FormatTest {
         formats.add(new PlyFormatBinaryBigEndian_1_0());
         formats.add(new PlyFormatBinaryLittleEndian_1_0());
         formats.add(new MbMshFormat());
-//        formats.add(new ObjFormat());
+        formats.add(new ObjFormat());
         testFormats(formats);
     }
 
@@ -78,55 +79,53 @@ public class FormatTest {
         IMeshBuilder<ImmutableMesh> meshBuilder = new ImmutableMeshBuilder(meshType, indicesDataType, formats);
         meshFormat.read(meshBuilder, pis);
         ImmutableMesh translatedMesh = meshBuilder.build();
-        checkMeshes(mesh, translatedMesh, format);
+        checkMeshes(meshFormat, mesh, translatedMesh, format);
     }
 
     private EditableMesh createRandomMesh(MeshType meshType, IndicesDataType<?> indicesDataType, VertexFormat format) {
         EditableMesh mesh = new EditableMesh();
-        int faces = 3;
-        int vertices = 3;
-        mesh.setFaceCount(faces);
-        mesh.setVertexCount(vertices);
         mesh.setMeshType(meshType);
         mesh.setIndicesDataType(indicesDataType);
         mesh.addVertexFormat(format);
-        for (int i = 0; i < faces; i++) {
-            int[] faceIndices = new int[3];
-            for (int j = 0; j < 3; j++) {
-                faceIndices[j] = RANDOM.nextInt(vertices);
-            }
-            mesh.setFaceIndices(i, faceIndices);
-        }
+        mesh.setFaceCount(2);
+        int vertices = 4;
+        mesh.setVertexCount(vertices);
+        mesh.setFaceIndices(0, new int[]{0, 1, 2});
+        mesh.setFaceIndices(1, new int[]{1, 2, 3});
         for (int i = 0; i < vertices; i++) {
             for (VertexType vertexType : format.getVertexTypes()) {
+                int randomInt = RANDOM.nextInt(3);
                 float set;
-                // no fractional parts as they aren't exactly represented by some formats
+                // finer grained fractional parts aren't exactly represented by some formats
                 if (vertexType.isSignedData()) {
-                    set = RANDOM.nextInt(3) - 1; // -1, 0, 1
+                    set = randomInt - 1; // -1, 0, 1
                 } else {
-                    set = RANDOM.nextInt(2); // 0, 1
+                    set = randomInt * 0.5f; // 0, 0.5, 1
                 }
                 mesh.setVertexDatum(i, vertexType, set);
                 float get = mesh.getVertexDatum(i, vertexType);
-                Assert.assertEquals(set, get, 0);
+                Assert.assertEquals(set, get, 0.0f);
             }
         }
         return mesh;
     }
 
-    private void checkMeshes(IMesh mesh, IMesh translatedMesh, VertexFormat format) {
+    private void checkMeshes(IMeshFormat meshFormat, IMesh mesh, IMesh translatedMesh, VertexFormat format) {
         Assert.assertTrue(mesh.isValid());
         Assert.assertTrue(translatedMesh.isValid());
+        Assert.assertEquals(mesh.getVertexCount(), translatedMesh.getVertexCount());
+        Assert.assertEquals(mesh.getFaceCount(), translatedMesh.getFaceCount());
         Assert.assertEquals(mesh.getIndices(), translatedMesh.getIndices());
         ByteBuffer expectedVertices = mesh.getVertices(format);
         ByteBuffer actualVertices = translatedMesh.getVertices(format);
         Assert.assertEquals(expectedVertices.position(), actualVertices.position());
         Assert.assertEquals(expectedVertices.limit(), actualVertices.limit());
         Assert.assertEquals(expectedVertices.capacity(), actualVertices.capacity());
+        Assert.assertEquals(format.getByteCount() * translatedMesh.getVertexCount(), expectedVertices.capacity());
         for (int i = 0; i < expectedVertices.capacity(); i++) {
             byte expected = expectedVertices.get(i);
             byte actual = actualVertices.get(i);
-            Assert.assertEquals("Byte position: " + i, expected, actual);
+            Assert.assertEquals("Mesh format: " + meshFormat.getFileExtension() + ", Vertex index: " + i + ", Byte position: " + i, expected, actual);
         }
     }
 }
