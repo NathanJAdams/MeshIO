@@ -76,6 +76,6 @@ The format read() and write() methods are similar to the above methods but use a
         e.printStackTrace();
     }
 
-Currently the only supported formats are PLY and MBMSH, [support for further formats will follow](TODO.md).
+Currently the only supported formats are PLY, OBJ and MBMSH, [support for further formats will follow](TODO.md).
 Additional formats can be created and used by either implementing the [IMeshFormat](src/com/ripplargames/mesh_io/IMeshFormat.java) interface or extending the [MeshFormatBase](src/com/ripplargames/mesh_io/MeshFormatBase.java) abstract class.
 The new format will then need to be registered via the MeshIO.registerMeshFormat() method.
