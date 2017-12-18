@@ -8,13 +8,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import com.ripplar_games.mesh_io.IMeshBuilder;
-import com.ripplar_games.mesh_io.IMeshFormat;
 import com.ripplar_games.mesh_io.IMeshSaver;
+import com.ripplar_games.mesh_io.MeshFormatBase;
 import com.ripplar_games.mesh_io.MeshIOException;
 import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
 import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
@@ -22,8 +20,7 @@ import com.ripplar_games.mesh_io.mesh.IMesh;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 
-public class ObjFormat implements IMeshFormat {
-    private static final Logger LOGGER = Logger.getLogger(ObjFormat.class.getName());
+public class ObjFormat extends MeshFormatBase {
     private static final Pattern SPACE_PATTERN = Pattern.compile(" ");
     private static final Pattern SLASH_PATTERN = Pattern.compile("/");
 
@@ -33,7 +30,7 @@ public class ObjFormat implements IMeshFormat {
     }
 
     @Override
-    public void read(IMeshBuilder<?> builder, PrimitiveInputStream pis) throws MeshIOException {
+    protected void read(IMeshBuilder<?> builder, PrimitiveInputStream pis) throws IOException, MeshIOException {
         List<float[]> positionColors = new ArrayList<float[]>();
         List<float[]> imageCoords = new ArrayList<float[]>();
         List<float[]> normals = new ArrayList<float[]>();
@@ -46,20 +43,12 @@ public class ObjFormat implements IMeshFormat {
     }
 
     @Override
-    public void write(IMeshSaver saver, PrimitiveOutputStream pos) throws MeshIOException {
-        try {
-            writeVertices(saver, pos);
-            writeFaces(saver, pos);
-        } finally {
-            try {
-                pos.flush();
-            } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Failed to properly write data");
-            }
-        }
+    protected void write(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException, MeshIOException {
+        writeVertices(saver, pos);
+        writeFaces(saver, pos);
     }
 
-    private static void readAllData(PrimitiveInputStream pis, List<float[]> positionColors, List<float[]> imageCoords, List<float[]> normals, Map<VertexDataIndices, Integer> vertexDataVertexIndices, List<int[]> faces) throws MeshIOException {
+    private static void readAllData(PrimitiveInputStream pis, List<float[]> positionColors, List<float[]> imageCoords, List<float[]> normals, Map<VertexDataIndices, Integer> vertexDataVertexIndices, List<int[]> faces) throws IOException, MeshIOException {
         String line;
         do {
             try {
@@ -68,25 +57,19 @@ public class ObjFormat implements IMeshFormat {
                 // end of file
                 return;
             }
-            try {
-                line = pis.readLine();
-                String[] parts = SPACE_PATTERN.split(line);
-                String firstPart = parts[0];
-                if ((firstPart == null) || "#".equals(firstPart)) {
-                    // empty line or comment - ignore
-                } else if ("f".equals(firstPart)) {
-                    appendFace(parts, faces, vertexDataVertexIndices, imageCoords.size(), normals.size());
-                } else if ("v".equals(firstPart)) {
-                    positionColors.add(toFloatArrayFromIndex1(parts));
-                } else if ("vn".equals(firstPart)) {
-                    normals.add(toFloatArrayFromIndex1(parts));
-                } else if ("vt".equals(firstPart)) {
-                    imageCoords.add(toFloatArrayFromIndex1(parts));
-                } else {
-                    LOGGER.log(Level.WARNING, "Unrecognised element type: " + line + ". Expected a comment, \"v\", \"vt\", \"vn\" or \"f\"");
-                }
-            } catch (IOException e) {
-                throw new MeshIOException("Exception when reading from stream", e);
+            line = pis.readLine();
+            String[] parts = SPACE_PATTERN.split(line);
+            String firstPart = parts[0];
+            if ((firstPart == null) || "#".equals(firstPart)) {
+                // empty line or comment - ignore
+            } else if ("f".equals(firstPart)) {
+                appendFace(parts, faces, vertexDataVertexIndices, imageCoords.size(), normals.size());
+            } else if ("v".equals(firstPart)) {
+                positionColors.add(toFloatArrayFromIndex1(parts));
+            } else if ("vn".equals(firstPart)) {
+                normals.add(toFloatArrayFromIndex1(parts));
+            } else if ("vt".equals(firstPart)) {
+                imageCoords.add(toFloatArrayFromIndex1(parts));
             }
         } while (line != null);
     }
@@ -181,7 +164,7 @@ public class ObjFormat implements IMeshFormat {
         }
     }
 
-    private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos) throws MeshIOException {
+    private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException {
         Set<VertexType> vertexTypes = new HashSet<VertexType>();
         for (VertexFormat format : saver.getVertexFormats()) {
             vertexTypes.addAll(format.getVertexTypes());
@@ -200,7 +183,7 @@ public class ObjFormat implements IMeshFormat {
             writeVertexDataLine(saver, pos, "vn", vertexCount, Arrays.asList(VertexType.Normal_X, VertexType.Normal_Y, VertexType.Normal_Z));
     }
 
-    private static void writeVertexDataLine(IMeshSaver saver, PrimitiveOutputStream pos, String id, int vertexCount, List<VertexType> vertexTypes) throws MeshIOException {
+    private static void writeVertexDataLine(IMeshSaver saver, PrimitiveOutputStream pos, String id, int vertexCount, List<VertexType> vertexTypes) throws IOException {
         for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
             StringBuilder sb = new StringBuilder();
             sb.append(id);
@@ -210,15 +193,11 @@ public class ObjFormat implements IMeshFormat {
                 sb.append(datum);
             }
             String line = sb.toString();
-            try {
-                pos.writeLine(line);
-            } catch (IOException e) {
-                throw new MeshIOException("Failed to write data: " + line);
-            }
+            pos.writeLine(line);
         }
     }
 
-    private static void writeFaces(IMeshSaver saver, PrimitiveOutputStream pos) throws MeshIOException {
+    private static void writeFaces(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException {
         int faceCount = saver.getFaceCount();
         for (int faceIndex = 0; faceIndex < faceCount; faceIndex++) {
             StringBuilder sb = new StringBuilder();
@@ -229,11 +208,7 @@ public class ObjFormat implements IMeshFormat {
                 sb.append(faceIndice);
             }
             String line = sb.toString();
-            try {
-                pos.writeLine(line);
-            } catch (IOException e) {
-                throw new MeshIOException("Failed to write data: " + line);
-            }
+            pos.writeLine(line);
         }
     }
 }

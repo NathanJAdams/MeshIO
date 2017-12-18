@@ -5,20 +5,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.ripplar_games.mesh_io.IMeshBuilder;
-import com.ripplar_games.mesh_io.IMeshFormat;
 import com.ripplar_games.mesh_io.IMeshSaver;
+import com.ripplar_games.mesh_io.MeshFormatBase;
 import com.ripplar_games.mesh_io.MeshIOException;
 import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
 import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 
-public abstract class PlyFormat implements IMeshFormat {
-    private static final Logger LOGGER = Logger.getLogger(PlyFormat.class.getName());
+public abstract class PlyFormat extends MeshFormatBase {
     private static final Map<String, PlyFormat> BY_ENCODING_VERSION = new HashMap<String, PlyFormat>();
     private static final String PLY = "ply";
     private static final String FORMAT = "format";
@@ -123,117 +120,103 @@ public abstract class PlyFormat implements IMeshFormat {
     }
 
     @Override
-    public void read(IMeshBuilder<?> builder, PrimitiveInputStream pis) throws MeshIOException {
-        try {
-            String line;
+    protected void read(IMeshBuilder<?> builder, PrimitiveInputStream pis) throws IOException, MeshIOException {
+        String line;
+        line = readNonCommentLine(pis);
+        if (!PLY.equals(line))
+            throw new MeshIOException("Unrecognised magic: " + line + ". \"ply\" expected");
+        line = readNonCommentLine(pis);
+        String[] formatParts = line.split(" ");
+        if (formatParts.length != 3 || !FORMAT.equals(formatParts[0]))
+            throw new MeshIOException("Unrecognised format: " + line);
+        PlyFormat plyFormat = getFrom(formatParts[1], formatParts[2]);
+        if (plyFormat == null)
+            throw new MeshIOException("Unrecognised encoding-version combination: " + line);
+        boolean isVerticesFirst = true;
+        boolean isVertexHeader = false;
+        boolean isFaceHeader = false;
+        List<VertexType> vertexTypes = new ArrayList<VertexType>();
+        List<PlyDataType> vertexDataTypes = new ArrayList<PlyDataType>();
+        int numVertices = -1;
+        int numFaces = -1;
+        PlyDataType faceIndexCountType = null;
+        PlyDataType faceIndexType = null;
+        while (true) {
             line = readNonCommentLine(pis);
-            if (!PLY.equals(line))
-                throw new MeshIOException("Unrecognised magic: " + line + ". \"ply\" expected");
-            line = readNonCommentLine(pis);
-            String[] formatParts = line.split(" ");
-            if (formatParts.length != 3 || !FORMAT.equals(formatParts[0]))
-                throw new MeshIOException("Unrecognised format: " + line);
-            PlyFormat plyFormat = getFrom(formatParts[1], formatParts[2]);
-            if (plyFormat == null)
-                throw new MeshIOException("Unrecognised encoding-version combination: " + line);
-            boolean isVerticesFirst = true;
-            boolean isVertexHeader = false;
-            boolean isFaceHeader = false;
-            List<VertexType> vertexTypes = new ArrayList<VertexType>();
-            List<PlyDataType> vertexDataTypes = new ArrayList<PlyDataType>();
-            int numVertices = -1;
-            int numFaces = -1;
-            PlyDataType faceIndexCountType = null;
-            PlyDataType faceIndexType = null;
-            while (true) {
-                line = readNonCommentLine(pis);
-                if (END_HEADER.equals(line))
-                    break;
-                String[] lineParts = line.split(" ");
-                if (lineParts.length == 3 && ELEMENT.equals(lineParts[0])) {
-                    int parsedCount = Integer.parseInt(lineParts[2]);
-                    if (VERTEX.equals(lineParts[1])) {
-                        isVertexHeader = true;
-                        isFaceHeader = false;
-                        numVertices = parsedCount;
-                    } else if (FACE.equals(lineParts[1])) {
-                        if (!isVertexHeader)
-                            isVerticesFirst = false;
-                        isVertexHeader = false;
-                        isFaceHeader = true;
-                        numFaces = parsedCount;
-                    } else {
-                        // other headers are ignored
-                        isVertexHeader = false;
-                        isFaceHeader = false;
-                    }
-                } else if (lineParts.length == 3 && PROPERTY.equals(lineParts[0])) {
-                    if (isVertexHeader) {
-                        PlyDataType dataType = PlyDataType.getDataType(lineParts[1]);
-                        VertexType vertexType = PROPERTIES_BY_NAME.get(lineParts[2]);
-                        if (dataType == null || vertexType == null)
-                            throw new MeshIOException("Unrecognised vertex property: " + lineParts[1] + " - " + lineParts[2]);
-                        vertexDataTypes.add(dataType);
-                        vertexTypes.add(vertexType);
-                    }
-                } else if (lineParts.length == 5 && isFaceHeader && PROPERTY.equals(lineParts[0]) && LIST.equals(lineParts[1])
-                        && VERTEX_INDEX.equals(lineParts[4])) {
-                    faceIndexCountType = PlyDataType.getDataType(lineParts[2]);
-                    faceIndexType = PlyDataType.getDataType(lineParts[3]);
+            if (END_HEADER.equals(line))
+                break;
+            String[] lineParts = line.split(" ");
+            if (lineParts.length == 3 && ELEMENT.equals(lineParts[0])) {
+                int parsedCount = Integer.parseInt(lineParts[2]);
+                if (VERTEX.equals(lineParts[1])) {
+                    isVertexHeader = true;
+                    isFaceHeader = false;
+                    numVertices = parsedCount;
+                } else if (FACE.equals(lineParts[1])) {
+                    if (!isVertexHeader)
+                        isVerticesFirst = false;
+                    isVertexHeader = false;
+                    isFaceHeader = true;
+                    numFaces = parsedCount;
+                } else {
+                    // other headers are ignored
+                    isVertexHeader = false;
+                    isFaceHeader = false;
                 }
+            } else if (lineParts.length == 3 && PROPERTY.equals(lineParts[0])) {
+                if (isVertexHeader) {
+                    PlyDataType dataType = PlyDataType.getDataType(lineParts[1]);
+                    VertexType vertexType = PROPERTIES_BY_NAME.get(lineParts[2]);
+                    if (dataType == null || vertexType == null)
+                        throw new MeshIOException("Unrecognised vertex property: " + lineParts[1] + " - " + lineParts[2]);
+                    vertexDataTypes.add(dataType);
+                    vertexTypes.add(vertexType);
+                }
+            } else if (lineParts.length == 5 && isFaceHeader && PROPERTY.equals(lineParts[0]) && LIST.equals(lineParts[1])
+                    && VERTEX_INDEX.equals(lineParts[4])) {
+                faceIndexCountType = PlyDataType.getDataType(lineParts[2]);
+                faceIndexType = PlyDataType.getDataType(lineParts[3]);
             }
-            if (numVertices == -1)
-                throw new MeshIOException("Failed to read vertex data");
-            if (numFaces == -1 || faceIndexCountType == null || faceIndexType == null)
-                throw new MeshIOException("Failed to read face indices");
-            builder.setVertexCount(numVertices);
-            builder.setFaceCount(numFaces);
-            if (isVerticesFirst) {
-                readVertices(plyFormat, pis, builder, vertexTypes, vertexDataTypes, numVertices);
-                readFaces(plyFormat, pis, builder, faceIndexCountType, faceIndexType, numFaces);
-            } else {
-                readFaces(plyFormat, pis, builder, faceIndexCountType, faceIndexType, numFaces);
-                readVertices(plyFormat, pis, builder, vertexTypes, vertexDataTypes, numVertices);
-            }
-        } catch (IOException e) {
-            throw new MeshIOException("Exception when reading from stream", e);
+        }
+        if (numVertices == -1)
+            throw new MeshIOException("Failed to read vertex data");
+        if (numFaces == -1 || faceIndexCountType == null || faceIndexType == null)
+            throw new MeshIOException("Failed to read face indices");
+        builder.setVertexCount(numVertices);
+        builder.setFaceCount(numFaces);
+        if (isVerticesFirst) {
+            readVertices(plyFormat, pis, builder, vertexTypes, vertexDataTypes, numVertices);
+            readFaces(plyFormat, pis, builder, faceIndexCountType, faceIndexType, numFaces);
+        } else {
+            readFaces(plyFormat, pis, builder, faceIndexCountType, faceIndexType, numFaces);
+            readVertices(plyFormat, pis, builder, vertexTypes, vertexDataTypes, numVertices);
         }
     }
 
     @Override
-    public void write(IMeshSaver saver, PrimitiveOutputStream pos) throws MeshIOException {
-        try {
-            pos.writeLine(PLY);
-            pos.writeLine(FORMAT + ' ' + encoding + ' ' + version);
-            pos.writeLine("element vertex " + saver.getVertexCount());
-            List<VertexType> vertexTypes = getVertexTypes(saver);
-            for (VertexType vertexType : vertexTypes)
-                pos.writeLine("property float " + PROPERTY_NAMES.get(vertexType));
-            pos.writeLine("element face " + saver.getFaceCount());
-            pos.writeLine("property list uchar int vertex_index");
-            pos.writeLine(END_HEADER);
-            int vertexTypeCount = vertexTypes.size();
-            float[] vertexData = new float[vertexTypeCount];
-            for (int vertexIndex = 0; vertexIndex < saver.getVertexCount(); vertexIndex++) {
-                for (int vertexTypeIndex = 0; vertexTypeIndex < vertexTypes.size(); vertexTypeIndex++) {
-                    VertexType vertexType = vertexTypes.get(vertexTypeIndex);
-                    float datum = saver.getVertexDatum(vertexIndex, vertexType);
-                    vertexData[vertexTypeIndex] = datum;
-                }
-                writeVertexData(pos, vertexData, PlyDataType.Float);
+    protected void write(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException, MeshIOException {
+        pos.writeLine(PLY);
+        pos.writeLine(FORMAT + ' ' + encoding + ' ' + version);
+        pos.writeLine("element vertex " + saver.getVertexCount());
+        List<VertexType> vertexTypes = getVertexTypes(saver);
+        for (VertexType vertexType : vertexTypes)
+            pos.writeLine("property float " + PROPERTY_NAMES.get(vertexType));
+        pos.writeLine("element face " + saver.getFaceCount());
+        pos.writeLine("property list uchar int vertex_index");
+        pos.writeLine(END_HEADER);
+        int vertexTypeCount = vertexTypes.size();
+        float[] vertexData = new float[vertexTypeCount];
+        for (int vertexIndex = 0; vertexIndex < saver.getVertexCount(); vertexIndex++) {
+            for (int vertexTypeIndex = 0; vertexTypeIndex < vertexTypes.size(); vertexTypeIndex++) {
+                VertexType vertexType = vertexTypes.get(vertexTypeIndex);
+                float datum = saver.getVertexDatum(vertexIndex, vertexType);
+                vertexData[vertexTypeIndex] = datum;
             }
-            for (int i = 0; i < saver.getFaceCount(); i++) {
-                int[] faceIndices = saver.getFaceIndices(i);
-                writeFaceIndices(pos, faceIndices, PlyDataType.Uchar, PlyDataType.Int);
-            }
-        } catch (IOException ioe) {
-            throw new MeshIOException("Exception when writing to stream", ioe);
-        } finally {
-            try {
-                pos.flush();
-            } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Failed to properly write data");
-            }
+            writeVertexData(pos, vertexData, PlyDataType.Float);
+        }
+        for (int i = 0; i < saver.getFaceCount(); i++) {
+            int[] faceIndices = saver.getFaceIndices(i);
+            writeFaceIndices(pos, faceIndices, PlyDataType.Uchar, PlyDataType.Int);
         }
     }
 

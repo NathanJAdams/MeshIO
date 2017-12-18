@@ -3,21 +3,18 @@ package com.ripplar_games.mesh_io.formats.mbmsh;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.ripplar_games.mesh_io.DatumEnDecoder;
 import com.ripplar_games.mesh_io.IMeshBuilder;
-import com.ripplar_games.mesh_io.IMeshFormat;
 import com.ripplar_games.mesh_io.IMeshSaver;
+import com.ripplar_games.mesh_io.MeshFormatBase;
 import com.ripplar_games.mesh_io.MeshIOException;
 import com.ripplar_games.mesh_io.io.PrimitiveInputStream;
 import com.ripplar_games.mesh_io.io.PrimitiveOutputStream;
 import com.ripplar_games.mesh_io.vertex.VertexFormat;
 import com.ripplar_games.mesh_io.vertex.VertexType;
 
-public class MbMshFormat implements IMeshFormat {
-    private static final Logger LOGGER = Logger.getLogger(MbMshFormat.class.getName());
+public class MbMshFormat extends MeshFormatBase {
     private static final boolean IS_BIG_ENDIAN = true;
     private static final byte[] MAGIC = {'M', 'B', 'M', 'S', 'H'};
     private static final short MAX_VERSION = 1;
@@ -26,6 +23,29 @@ public class MbMshFormat implements IMeshFormat {
     private static final int IS_IMAGE_COORDS_MASK = 1 << 13;
     private static final int IS_COLORS_MASK = 1 << 12;
     private static final int IS_COLOR_ALPHA_MASK = 1 << 11;
+
+    @Override
+    public String getFileExtension() {
+        return "mbmsh";
+    }
+
+    @Override
+    protected void read(IMeshBuilder<?> builder, PrimitiveInputStream pis) throws IOException, MeshIOException {
+        readMagic(pis);
+        short version = pis.readShort(IS_BIG_ENDIAN);
+        short metadata = pis.readShort(IS_BIG_ENDIAN);
+        readVertices(builder, pis, version, metadata);
+        readFaces(builder, pis, version, metadata);
+    }
+
+    @Override
+    protected void write(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException, MeshIOException {
+        Set<VertexFormat> formats = saver.getVertexFormats();
+        short metadata = createMetadata(formats);
+        writeHeader(pos, metadata);
+        writeVertices(saver, pos, metadata);
+        writeFaces(saver, pos);
+    }
 
     private static void readMagic(PrimitiveInputStream pis) throws IOException, MeshIOException {
         byte[] magicBytes = new byte[MAGIC.length];
@@ -119,9 +139,8 @@ public class MbMshFormat implements IMeshFormat {
 
     private static boolean containsVertexType(Set<VertexFormat> formats, VertexType vertexType) {
         for (VertexFormat format : formats) {
-            if (format.containsVertexType(vertexType)) {
+            if (format.containsVertexType(vertexType))
                 return true;
-            }
         }
         return false;
     }
@@ -132,8 +151,7 @@ public class MbMshFormat implements IMeshFormat {
         pos.writeShort(metadata, IS_BIG_ENDIAN);
     }
 
-    private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos, short metadata)
-            throws IOException, MeshIOException {
+    private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos, short metadata) throws IOException, MeshIOException {
         int vertexCount = saver.getVertexCount();
         pos.writeInt(vertexCount, IS_BIG_ENDIAN);
         boolean is3D = (metadata & IS_3D_MASK) != 0;
@@ -207,42 +225,5 @@ public class MbMshFormat implements IMeshFormat {
             return 3;
         else
             return 4;
-    }
-
-    @Override
-    public String getFileExtension() {
-        return "mbmsh";
-    }
-
-    @Override
-    public void read(IMeshBuilder<?> builder, PrimitiveInputStream pis) throws MeshIOException {
-        try {
-            readMagic(pis);
-            short version = pis.readShort(IS_BIG_ENDIAN);
-            short metadata = pis.readShort(IS_BIG_ENDIAN);
-            readVertices(builder, pis, version, metadata);
-            readFaces(builder, pis, version, metadata);
-        } catch (IOException ioe) {
-            throw new MeshIOException("Exception when reading from stream", ioe);
-        }
-    }
-
-    @Override
-    public void write(IMeshSaver saver, PrimitiveOutputStream pos) throws MeshIOException {
-        try {
-            Set<VertexFormat> formats = saver.getVertexFormats();
-            short metadata = createMetadata(formats);
-            writeHeader(pos, metadata);
-            writeVertices(saver, pos, metadata);
-            writeFaces(saver, pos);
-        } catch (IOException ioe) {
-            throw new MeshIOException("Exception when writing to stream", ioe);
-        } finally {
-            try {
-                pos.flush();
-            } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Failed to properly write data");
-            }
-        }
     }
 }
