@@ -60,8 +60,16 @@ public class ObjFormat implements IMeshFormat {
     }
 
     private static void readAllData(PrimitiveInputStream pis, List<float[]> positionColors, List<float[]> imageCoords, List<float[]> normals, Map<VertexDataIndices, Integer> vertexDataVertexIndices, List<int[]> faces) throws MeshIOException {
-        try {
-            for (String line = pis.readLine(); line != null; line = pis.readLine()) {
+        String line;
+        do {
+            try {
+                pis.peek();
+            } catch (IOException e) {
+                // end of file
+                return;
+            }
+            try {
+                line = pis.readLine();
                 String[] parts = SPACE_PATTERN.split(line);
                 String firstPart = parts[0];
                 if ((firstPart == null) || "#".equals(firstPart)) {
@@ -77,10 +85,10 @@ public class ObjFormat implements IMeshFormat {
                 } else {
                     LOGGER.log(Level.WARNING, "Unrecognised element type: " + line + ". Expected a comment, \"v\", \"vt\", \"vn\" or \"f\"");
                 }
+            } catch (IOException e) {
+                throw new MeshIOException("Exception when reading from stream", e);
             }
-        } catch (IOException e) {
-            throw new MeshIOException("Exception when reading from stream", e);
-        }
+        } while (line != null);
     }
 
     private static float[] toFloatArrayFromIndex1(String[] parts) throws MeshIOException {
@@ -183,8 +191,8 @@ public class ObjFormat implements IMeshFormat {
         boolean isNormals = vertexTypes.contains(VertexType.Normal_X) && vertexTypes.contains(VertexType.Normal_Y) && vertexTypes.contains(VertexType.Normal_Z);
         int vertexCount = saver.getVertexCount();
         List<VertexType> positionColorsList = isColors
-                ? Arrays.asList(VertexType.Position_X, VertexType.Position_Y, VertexType.Position_Z)
-                : Arrays.asList(VertexType.Position_X, VertexType.Position_Y, VertexType.Position_Z, VertexType.Color_R, VertexType.Color_G, VertexType.Color_B);
+                ? Arrays.asList(VertexType.Position_X, VertexType.Position_Y, VertexType.Position_Z, VertexType.Color_R, VertexType.Color_G, VertexType.Color_B)
+                : Arrays.asList(VertexType.Position_X, VertexType.Position_Y, VertexType.Position_Z);
         writeVertexDataLine(saver, pos, "v", vertexCount, positionColorsList);
         if (isImageCoords)
             writeVertexDataLine(saver, pos, "vt", vertexCount, Arrays.asList(VertexType.ImageCoord_X, VertexType.ImageCoord_Y));
