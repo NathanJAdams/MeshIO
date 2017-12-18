@@ -38,7 +38,6 @@ public abstract class PlyFormat extends MeshFormatBase {
     private static final String PROPERTY_COLOR_R_NAME = "red";
     private static final String PROPERTY_COLOR_G_NAME = "green";
     private static final String PROPERTY_COLOR_B_NAME = "blue";
-    private static final String PROPERTY_COLOR_A_NAME = "alpha";
     private static final String PROPERTY_TEXTURE_COORDINATE_U_NAME = "u";
     private static final String PROPERTY_TEXTURE_COORDINATE_V_NAME = "v";
 
@@ -52,7 +51,6 @@ public abstract class PlyFormat extends MeshFormatBase {
         addPropertyNameMapping(VertexType.Color_R, PROPERTY_COLOR_R_NAME);
         addPropertyNameMapping(VertexType.Color_G, PROPERTY_COLOR_G_NAME);
         addPropertyNameMapping(VertexType.Color_B, PROPERTY_COLOR_B_NAME);
-        addPropertyNameMapping(VertexType.Color_A, PROPERTY_COLOR_A_NAME);
         addPropertyNameMapping(VertexType.ImageCoord_X, PROPERTY_TEXTURE_COORDINATE_U_NAME);
         addPropertyNameMapping(VertexType.ImageCoord_Y, PROPERTY_TEXTURE_COORDINATE_V_NAME);
     }

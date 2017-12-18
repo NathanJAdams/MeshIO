@@ -44,8 +44,12 @@ public class ObjFormat extends MeshFormatBase {
 
     @Override
     protected void write(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException, MeshIOException {
-        writeVertices(saver, pos);
-        writeFaces(saver, pos);
+        Set<VertexType> vertexTypes = getAllVertexTypes(saver);
+        boolean isColors = vertexTypes.contains(VertexType.Color_R) && vertexTypes.contains(VertexType.Color_G) && vertexTypes.contains(VertexType.Color_B);
+        boolean isImageCoords = vertexTypes.contains(VertexType.ImageCoord_X) && vertexTypes.contains(VertexType.ImageCoord_Y);
+        boolean isNormals = vertexTypes.contains(VertexType.Normal_X) && vertexTypes.contains(VertexType.Normal_Y) && vertexTypes.contains(VertexType.Normal_Z);
+        writeVertices(saver, pos, isColors, isImageCoords, isNormals);
+        writeFaces(saver, pos, isImageCoords, isNormals);
     }
 
     private static void readAllData(PrimitiveInputStream pis, List<float[]> positionColors, List<float[]> imageCoords, List<float[]> normals, Map<VertexDataIndices, Integer> vertexDataVertexIndices, List<int[]> faces) throws IOException, MeshIOException {
@@ -99,7 +103,7 @@ public class ObjFormat extends MeshFormatBase {
                 imageCoordIndex += currentImageCoordsCount;
             if (normalIndex < 0)
                 normalIndex += currentNormalCount;
-            VertexDataIndices vertexDataIndices = new VertexDataIndices(positionIndex, imageCoordIndex, normalIndex);
+            VertexDataIndices vertexDataIndices = new VertexDataIndices(positionIndex - 1, imageCoordIndex - 1, normalIndex - 1);
             Integer index = vertexDataVertexIndices.get(vertexDataIndices);
             if (index == null) {
                 index = vertexDataVertexIndices.size();
@@ -132,9 +136,9 @@ public class ObjFormat extends MeshFormatBase {
             int positionIndex = vertexDataIndices.positionIndex();
             int imageCoordIndex = vertexDataIndices.imageCoordIndex();
             int normalIndex = vertexDataIndices.normalIndex();
-            float[] positionColorData = (positionIndex == 0) ? null : positionColors.get(positionIndex);
-            float[] imageCoordData = (imageCoordIndex == 0) ? null : imageCoords.get(imageCoordIndex);
-            float[] normalData = (normalIndex == 0) ? null : normals.get(normalIndex);
+            float[] positionColorData = arrayOrNull(positionIndex, positionColors);
+            float[] imageCoordData = arrayOrNull(imageCoordIndex, imageCoords);
+            float[] normalData = arrayOrNull(normalIndex, normals);
             if ((positionColorData != null) && (positionColorData.length >= 3)) {
                 builder.setVertexDatum(vertexIndex, VertexType.Position_X, positionColorData[0]);
                 builder.setVertexDatum(vertexIndex, VertexType.Position_Y, positionColorData[1]);
@@ -157,6 +161,12 @@ public class ObjFormat extends MeshFormatBase {
         }
     }
 
+    private static float[] arrayOrNull(int index, List<float[]> list) {
+        return (index < 0)
+                ? null
+                : list.get(index);
+    }
+
     private static void buildFaceData(IMeshBuilder<?> builder, List<int[]> faces) {
         for (int faceIndex = 0; faceIndex < faces.size(); faceIndex++) {
             int[] face = faces.get(faceIndex);
@@ -164,14 +174,15 @@ public class ObjFormat extends MeshFormatBase {
         }
     }
 
-    private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException {
+    private static Set<VertexType> getAllVertexTypes(IMeshSaver saver) {
         Set<VertexType> vertexTypes = new HashSet<VertexType>();
         for (VertexFormat format : saver.getVertexFormats()) {
             vertexTypes.addAll(format.getVertexTypes());
         }
-        boolean isColors = vertexTypes.contains(VertexType.Color_R) && vertexTypes.contains(VertexType.Color_G) && vertexTypes.contains(VertexType.Color_B);
-        boolean isImageCoords = vertexTypes.contains(VertexType.ImageCoord_X) && vertexTypes.contains(VertexType.ImageCoord_Y);
-        boolean isNormals = vertexTypes.contains(VertexType.Normal_X) && vertexTypes.contains(VertexType.Normal_Y) && vertexTypes.contains(VertexType.Normal_Z);
+        return vertexTypes;
+    }
+
+    private static void writeVertices(IMeshSaver saver, PrimitiveOutputStream pos, boolean isColors, boolean isImageCoords, boolean isNormals) throws IOException {
         int vertexCount = saver.getVertexCount();
         List<VertexType> positionColorsList = isColors
                 ? Arrays.asList(VertexType.Position_X, VertexType.Position_Y, VertexType.Position_Z, VertexType.Color_R, VertexType.Color_G, VertexType.Color_B)
@@ -197,15 +208,22 @@ public class ObjFormat extends MeshFormatBase {
         }
     }
 
-    private static void writeFaces(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException {
+    private static void writeFaces(IMeshSaver saver, PrimitiveOutputStream pos, boolean isImageCoords, boolean isNormals) throws IOException {
         int faceCount = saver.getFaceCount();
         for (int faceIndex = 0; faceIndex < faceCount; faceIndex++) {
             StringBuilder sb = new StringBuilder();
             sb.append("f");
             int[] face = saver.getFaceIndices(faceIndex);
             for (int faceIndice : face) {
+                int faceIndice1Index = faceIndice + 1;
                 sb.append(' ');
-                sb.append(faceIndice);
+                sb.append(faceIndice1Index);
+                sb.append('/');
+                if (isImageCoords)
+                    sb.append(faceIndice1Index);
+                sb.append('/');
+                if (isNormals)
+                    sb.append(faceIndice1Index);
             }
             String line = sb.toString();
             pos.writeLine(line);

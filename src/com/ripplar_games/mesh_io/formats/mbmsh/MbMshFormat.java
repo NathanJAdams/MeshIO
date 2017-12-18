@@ -22,7 +22,6 @@ public class MbMshFormat extends MeshFormatBase {
     private static final int IS_NORMALS_MASK = 1 << 14;
     private static final int IS_IMAGE_COORDS_MASK = 1 << 13;
     private static final int IS_COLORS_MASK = 1 << 12;
-    private static final int IS_COLOR_ALPHA_MASK = 1 << 11;
 
     @Override
     public String getFileExtension() {
@@ -70,7 +69,6 @@ public class MbMshFormat extends MeshFormatBase {
         boolean isNormals = (metadata & IS_NORMALS_MASK) != 0;
         boolean isImageCoords = (metadata & IS_IMAGE_COORDS_MASK) != 0;
         boolean isColors = (metadata & IS_COLORS_MASK) != 0;
-        boolean isColorAlpha = (metadata & IS_COLOR_ALPHA_MASK) != 0;
         for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
             readSignedShorts(builder, vertexIndex, pis, VertexType.Position_X, VertexType.Position_Y);
             if (is3D)
@@ -85,8 +83,6 @@ public class MbMshFormat extends MeshFormatBase {
             }
             if (isColors) {
                 readUnsignedBytes(builder, vertexIndex, pis, VertexType.Color_R, VertexType.Color_G, VertexType.Color_B);
-                if (isColorAlpha)
-                    readUnsignedBytes(builder, vertexIndex, pis, VertexType.Color_A);
             }
         }
     }
@@ -131,8 +127,6 @@ public class MbMshFormat extends MeshFormatBase {
             metaData |= IS_IMAGE_COORDS_MASK;
         if (containsVertexType(formats, VertexType.Color_R) && containsVertexType(formats, VertexType.Color_G) && containsVertexType(formats, VertexType.Color_B)) {
             metaData |= IS_COLORS_MASK;
-            if (containsVertexType(formats, VertexType.Color_A))
-                metaData |= IS_COLOR_ALPHA_MASK;
         }
         return metaData;
     }
@@ -158,7 +152,6 @@ public class MbMshFormat extends MeshFormatBase {
         boolean isNormals = (metadata & IS_NORMALS_MASK) != 0;
         boolean isImages = (metadata & IS_IMAGE_COORDS_MASK) != 0;
         boolean isColors = (metadata & IS_COLORS_MASK) != 0;
-        boolean isAlpha = (metadata & IS_COLOR_ALPHA_MASK) != 0;
         for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
             writeVertexData(saver, vertexIndex, pos, VertexType.Position_X, VertexType.Position_Y);
             if (is3D) {
@@ -173,8 +166,6 @@ public class MbMshFormat extends MeshFormatBase {
                 writeVertexData(saver, vertexIndex, pos, VertexType.ImageCoord_X, VertexType.ImageCoord_Y);
             if (isColors) {
                 writeVertexData(saver, vertexIndex, pos, VertexType.Color_R, VertexType.Color_G, VertexType.Color_B);
-                if (isAlpha)
-                    writeVertexData(saver, vertexIndex, pos, VertexType.Color_A);
             }
         }
     }
@@ -194,7 +185,6 @@ public class MbMshFormat extends MeshFormatBase {
                 case Color_R:
                 case Color_G:
                 case Color_B:
-                case Color_A:
                 case ImageCoord_X:
                 case ImageCoord_Y:
                     pos.writeByte(DatumEnDecoder.encodeAsByte(datum, false));

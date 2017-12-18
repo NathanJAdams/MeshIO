@@ -26,6 +26,7 @@ public class EditableVertices {
                 int index = format.getVertexDatumIndex(i, vertexType);
                 float datum = vertex.getDatum(vertexType);
                 dataType.setDatum(bb, index, datum);
+
             }
         }
         return bb;
