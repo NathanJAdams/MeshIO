@@ -9,7 +9,7 @@
     </parent>
 
     <groupId>com.ripplargames</groupId>
-    <artifactId>mesh_io</artifactId>
+    <artifactId>meshio</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0</version>
 
