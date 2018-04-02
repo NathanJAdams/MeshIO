@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ripplargames.meshio.mesh.BufferUtil;
+import com.ripplargames.meshio.util.BufferUtil;
 
 public class EditableVertices {
     private final List<EditableVertex> vertexList = new ArrayList<EditableVertex>();

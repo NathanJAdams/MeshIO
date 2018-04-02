@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.ripplargames.meshio.mesh.BufferUtil;
+import com.ripplargames.meshio.util.BufferUtil;
 
 public class LoadableVertices {
     private final Map<VertexFormat, ByteBuffer> formatVertices = new HashMap<VertexFormat, ByteBuffer>();

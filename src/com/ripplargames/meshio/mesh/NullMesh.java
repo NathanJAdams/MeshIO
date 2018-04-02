@@ -4,8 +4,10 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Set;
 
+import com.ripplargames.meshio.IMesh;
 import com.ripplargames.meshio.IMeshBuilder;
 import com.ripplargames.meshio.IMeshSaver;
+import com.ripplargames.meshio.util.BufferUtil;
 import com.ripplargames.meshio.vertex.VertexFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 

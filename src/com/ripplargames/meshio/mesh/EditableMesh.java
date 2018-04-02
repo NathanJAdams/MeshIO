@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.ripplargames.meshio.IMesh;
 import com.ripplargames.meshio.IMeshBuilder;
 import com.ripplargames.meshio.IMeshSaver;
 import com.ripplargames.meshio.index.EditableIndices;

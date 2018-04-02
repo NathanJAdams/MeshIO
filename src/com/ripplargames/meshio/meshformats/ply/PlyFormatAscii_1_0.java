@@ -1,4 +1,4 @@
-package com.ripplargames.meshio.formats.ply;
+package com.ripplargames.meshio.meshformats.ply;
 
 public class PlyFormatAscii_1_0 extends PlyFormatAscii {
     public PlyFormatAscii_1_0() {

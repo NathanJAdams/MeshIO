@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Set;
 
+import com.ripplargames.meshio.IMesh;
 import com.ripplargames.meshio.vertex.VertexFormat;
 
 public class ImmutableMesh implements IMesh {

@@ -1,4 +1,4 @@
-package com.ripplargames.meshio.io;
+package com.ripplargames.meshio.util;
 
 import java.io.BufferedInputStream;
 import java.io.FilterInputStream;

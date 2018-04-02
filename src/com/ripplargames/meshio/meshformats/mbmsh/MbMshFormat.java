@@ -1,16 +1,16 @@
-package com.ripplargames.meshio.formats.mbmsh;
+package com.ripplargames.meshio.meshformats.mbmsh;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 
-import com.ripplargames.meshio.DatumEnDecoder;
+import com.ripplargames.meshio.util.DatumEnDecoder;
 import com.ripplargames.meshio.IMeshBuilder;
 import com.ripplargames.meshio.IMeshSaver;
 import com.ripplargames.meshio.MeshFormatBase;
 import com.ripplargames.meshio.MeshIOException;
-import com.ripplargames.meshio.io.PrimitiveInputStream;
-import com.ripplargames.meshio.io.PrimitiveOutputStream;
+import com.ripplargames.meshio.util.PrimitiveInputStream;
+import com.ripplargames.meshio.util.PrimitiveOutputStream;
 import com.ripplargames.meshio.vertex.VertexFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 

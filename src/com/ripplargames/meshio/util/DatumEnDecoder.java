@@ -1,4 +1,4 @@
-package com.ripplargames.meshio;
+package com.ripplargames.meshio.util;
 
 public class DatumEnDecoder {
     private static final long BYTE_RANGE = 2 * (long) Byte.MAX_VALUE;

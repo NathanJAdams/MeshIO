@@ -1,9 +1,9 @@
-package com.ripplargames.meshio.formats.ply;
+package com.ripplargames.meshio.meshformats.ply;
 
 import java.io.IOException;
 
-import com.ripplargames.meshio.io.PrimitiveInputStream;
-import com.ripplargames.meshio.io.PrimitiveOutputStream;
+import com.ripplargames.meshio.util.PrimitiveInputStream;
+import com.ripplargames.meshio.util.PrimitiveOutputStream;
 
 public class PlyFormatAscii extends PlyFormat {
     public PlyFormatAscii(String version) {

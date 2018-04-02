@@ -1,4 +1,4 @@
-package com.ripplargames.meshio.formats.obj;
+package com.ripplargames.meshio.meshformats.obj;
 
 public class VertexDataIndices {
     private final int positionIndex;

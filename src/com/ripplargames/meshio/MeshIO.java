@@ -12,13 +12,12 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.ripplargames.meshio.formats.mbmsh.MbMshFormat;
-import com.ripplargames.meshio.formats.obj.ObjFormat;
-import com.ripplargames.meshio.formats.ply.PlyFormatAscii_1_0;
+import com.ripplargames.meshio.meshformats.mbmsh.MbMshFormat;
+import com.ripplargames.meshio.meshformats.obj.ObjFormat;
+import com.ripplargames.meshio.meshformats.ply.PlyFormatAscii_1_0;
 import com.ripplargames.meshio.index.IndicesDataType;
-import com.ripplargames.meshio.io.PrimitiveInputStream;
-import com.ripplargames.meshio.io.PrimitiveOutputStream;
-import com.ripplargames.meshio.mesh.IMesh;
+import com.ripplargames.meshio.util.PrimitiveInputStream;
+import com.ripplargames.meshio.util.PrimitiveOutputStream;
 import com.ripplargames.meshio.mesh.ImmutableMeshBuilder;
 import com.ripplargames.meshio.mesh.MeshType;
 import com.ripplargames.meshio.vertex.VertexFormat;

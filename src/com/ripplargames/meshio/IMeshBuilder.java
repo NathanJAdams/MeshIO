@@ -1,6 +1,5 @@
 package com.ripplargames.meshio;
 
-import com.ripplargames.meshio.mesh.IMesh;
 import com.ripplargames.meshio.vertex.VertexType;
 
 public interface IMeshBuilder<T extends IMesh> extends IMeshInfo {

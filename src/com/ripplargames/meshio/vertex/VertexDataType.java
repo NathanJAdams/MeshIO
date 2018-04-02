@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.ripplargames.meshio.DatumEnDecoder;
+import com.ripplargames.meshio.util.DatumEnDecoder;
 
 public enum VertexDataType {
     Float(4) {

@@ -1,4 +1,4 @@
-package com.ripplargames.meshio.mesh;
+package com.ripplargames.meshio;
 
 import java.nio.ByteBuffer;
 

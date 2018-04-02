@@ -1,4 +1,4 @@
-package com.ripplargames.meshio.formats.ply;
+package com.ripplargames.meshio.meshformats.ply;
 
 public class PlyFormatBinaryBigEndian_1_0 extends PlyFormatBinary {
     public PlyFormatBinaryBigEndian_1_0() {

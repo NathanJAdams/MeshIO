@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.ripplargames.meshio.mesh.BufferUtil;
+import com.ripplargames.meshio.util.BufferUtil;
 
 public class IndicesDataTypes {
     public static final IndicesDataType<byte[]> Byte = new IndicesDataType<byte[]>() {

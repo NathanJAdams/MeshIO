@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.ripplargames.meshio.io.PrimitiveInputStream;
-import com.ripplargames.meshio.io.PrimitiveOutputStream;
+import com.ripplargames.meshio.util.PrimitiveInputStream;
+import com.ripplargames.meshio.util.PrimitiveOutputStream;
 
 public abstract class MeshFormatBase implements IMeshFormat {
     @Override

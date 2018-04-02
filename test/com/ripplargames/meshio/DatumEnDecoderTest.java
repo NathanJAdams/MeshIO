@@ -1,5 +1,6 @@
 package com.ripplargames.meshio;
 
+import com.ripplargames.meshio.util.DatumEnDecoder;
 import org.junit.Assert;
 import org.junit.Test;
 
