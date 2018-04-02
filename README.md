@@ -11,16 +11,16 @@
 
 <h3>Usage</h3>
 
-To use this as a dependency in a Maven project, add the following into your pom file:
+View this project on [mvnrepository.com](https://mvnrepository.com/artifact/com.ripplargames/meshio)
+or [maven.org](https://search.maven.org/#artifactdetails%7Ccom.ripplargames%7Cmeshio%7C1.0.0%7Cjar)
 
-    <dependencies>
-      <dependency>
-        <groupId>com.ripplargames</groupId>
-        <artifactId>meshio</artifactId>
-        <version>1.0.0</version>
-      </dependency>
-      ...
-    </dependencies>
+To use as a dependency in a Maven project, add the following into your pom file dependencies:
+
+    <dependency>
+      <groupId>com.ripplargames</groupId>
+      <artifactId>meshio</artifactId>
+      <version>1.0.0</version>
+    </dependency>
 
 For other build tools, view it on [mvnrepository.com](https://mvnrepository.com/artifact/com.ripplargames/meshio/1.0.0) or [maven.org](https://search.maven.org/#artifactdetails%7Ccom.ripplargames%7Cmeshio%7C1.0.0%7Cjar).
 
