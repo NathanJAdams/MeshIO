@@ -8,14 +8,14 @@ import java.util.Map;
 
 import com.ripplargames.meshio.IMeshBuilder;
 import com.ripplargames.meshio.IMeshSaver;
-import com.ripplargames.meshio.MeshFormatBase;
+import com.ripplargames.meshio.meshformats.AMeshFormat;
 import com.ripplargames.meshio.MeshIOException;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 import com.ripplargames.meshio.vertex.VertexFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 
-public abstract class PlyFormat extends MeshFormatBase {
+public abstract class PlyFormat extends AMeshFormat {
     private static final Map<String, PlyFormat> BY_ENCODING_VERSION = new HashMap<String, PlyFormat>();
     private static final String PLY = "ply";
     private static final String FORMAT = "format";

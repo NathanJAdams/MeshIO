@@ -1,4 +1,4 @@
-package com.ripplargames.meshio;
+package com.ripplargames.meshio.meshformats;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -6,10 +6,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.ripplargames.meshio.IMeshBuilder;
+import com.ripplargames.meshio.IMeshFormat;
+import com.ripplargames.meshio.IMeshSaver;
+import com.ripplargames.meshio.MeshIOException;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 
-public abstract class MeshFormatBase implements IMeshFormat {
+public abstract class AMeshFormat implements IMeshFormat {
     @Override
     public final void read(IMeshBuilder<?> builder, InputStream is) throws MeshIOException {
         BufferedInputStream bis = new BufferedInputStream(is);

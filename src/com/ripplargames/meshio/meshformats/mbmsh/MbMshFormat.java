@@ -7,14 +7,14 @@ import java.util.Set;
 import com.ripplargames.meshio.util.DatumEnDecoder;
 import com.ripplargames.meshio.IMeshBuilder;
 import com.ripplargames.meshio.IMeshSaver;
-import com.ripplargames.meshio.MeshFormatBase;
+import com.ripplargames.meshio.meshformats.AMeshFormat;
 import com.ripplargames.meshio.MeshIOException;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 import com.ripplargames.meshio.vertex.VertexFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 
-public class MbMshFormat extends MeshFormatBase {
+public class MbMshFormat extends AMeshFormat {
     private static final boolean IS_BIG_ENDIAN = true;
     private static final byte[] MAGIC = {'M', 'B', 'M', 'S', 'H'};
     private static final short MAX_VERSION = 1;

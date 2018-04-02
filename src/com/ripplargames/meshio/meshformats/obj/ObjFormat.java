@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 import com.ripplargames.meshio.IMeshBuilder;
 import com.ripplargames.meshio.IMeshSaver;
-import com.ripplargames.meshio.MeshFormatBase;
+import com.ripplargames.meshio.meshformats.AMeshFormat;
 import com.ripplargames.meshio.MeshIOException;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
@@ -20,7 +20,7 @@ import com.ripplargames.meshio.IMesh;
 import com.ripplargames.meshio.vertex.VertexFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 
-public class ObjFormat extends MeshFormatBase {
+public class ObjFormat extends AMeshFormat {
     private static final Pattern SPACE_PATTERN = Pattern.compile(" ");
     private static final Pattern SLASH_PATTERN = Pattern.compile("/");
 
