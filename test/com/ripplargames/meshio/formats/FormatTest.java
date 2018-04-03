@@ -27,8 +27,8 @@ import com.ripplargames.meshio.mesh.ImmutableMesh;
 import com.ripplargames.meshio.mesh.ImmutableMeshBuilder;
 import com.ripplargames.meshio.mesh.MeshType;
 import com.ripplargames.meshio.vertex.VertexDataType;
-import com.ripplargames.meshio.vertex.VertexFormat;
-import com.ripplargames.meshio.vertex.VertexFormatPart;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormatPart;
 import com.ripplargames.meshio.vertex.VertexType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,13 +49,13 @@ public class FormatTest {
 
     private void testFormats(List<IMeshFormat> formats) throws MeshIOException {
         for (int i = 0; i < 100; i++) {
-            List<VertexFormatPart> formatParts = new ArrayList<VertexFormatPart>();
+            List<BufferFormatPart> formatParts = new ArrayList<BufferFormatPart>();
             VertexDataType[] vertexDataTypes = VertexDataType.values();
             for (VertexType vertexType : VertexType.valuesList()) {
                 VertexDataType vertexDataType = vertexDataTypes[RANDOM.nextInt(vertexDataTypes.length)];
-                formatParts.add(new VertexFormatPart(vertexType, vertexDataType));
+                formatParts.add(new BufferFormatPart(vertexType, vertexDataType));
             }
-            VertexFormat format = new VertexFormat(formatParts);
+            BufferFormat format = new BufferFormat(formatParts);
             for (MeshType meshType : MeshType.values()) {
                 for (IndicesDataType<?> indicesDataType : IndicesDataTypes.valuesList()) {
                     EditableMesh mesh = createRandomMesh(meshType, indicesDataType, format);
@@ -67,14 +67,14 @@ public class FormatTest {
         }
     }
 
-    private void testFormatWithMesh(IMeshFormat meshFormat, EditableMesh mesh, MeshType meshType, IndicesDataType<?> indicesDataType, VertexFormat format) throws MeshIOException {
+    private void testFormatWithMesh(IMeshFormat meshFormat, EditableMesh mesh, MeshType meshType, IndicesDataType<?> indicesDataType, BufferFormat format) throws MeshIOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrimitiveOutputStream pos = new PrimitiveOutputStream(baos);
         meshFormat.write(mesh, pos);
         byte[] buffer = baos.toByteArray();
         ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
         PrimitiveInputStream pis = new PrimitiveInputStream(bais);
-        Set<VertexFormat> formats = new HashSet<VertexFormat>();
+        Set<BufferFormat> formats = new HashSet<BufferFormat>();
         formats.add(format);
         IMeshBuilder<ImmutableMesh> meshBuilder = new ImmutableMeshBuilder(meshType, indicesDataType, formats);
         meshFormat.read(meshBuilder, pis);
@@ -82,7 +82,7 @@ public class FormatTest {
         checkMeshes(meshFormat, mesh, translatedMesh, format);
     }
 
-    private EditableMesh createRandomMesh(MeshType meshType, IndicesDataType<?> indicesDataType, VertexFormat format) {
+    private EditableMesh createRandomMesh(MeshType meshType, IndicesDataType<?> indicesDataType, BufferFormat format) {
         EditableMesh mesh = new EditableMesh();
         mesh.setMeshType(meshType);
         mesh.setIndicesDataType(indicesDataType);
@@ -110,7 +110,7 @@ public class FormatTest {
         return mesh;
     }
 
-    private void checkMeshes(IMeshFormat meshFormat, IMesh mesh, IMesh translatedMesh, VertexFormat format) {
+    private void checkMeshes(IMeshFormat meshFormat, IMesh mesh, IMesh translatedMesh, BufferFormat format) {
         Assert.assertTrue(mesh.isValid());
         Assert.assertTrue(translatedMesh.isValid());
         Assert.assertEquals(mesh.getVertexCount(), translatedMesh.getVertexCount());

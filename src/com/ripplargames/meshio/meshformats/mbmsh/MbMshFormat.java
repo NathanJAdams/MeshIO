@@ -11,7 +11,7 @@ import com.ripplargames.meshio.meshformats.AMeshFormat;
 import com.ripplargames.meshio.MeshIOException;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
-import com.ripplargames.meshio.vertex.VertexFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 
 public class MbMshFormat extends AMeshFormat {
@@ -39,7 +39,7 @@ public class MbMshFormat extends AMeshFormat {
 
     @Override
     protected void write(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException, MeshIOException {
-        Set<VertexFormat> formats = saver.getVertexFormats();
+        Set<BufferFormat> formats = saver.getVertexFormats();
         short metadata = createMetadata(formats);
         writeHeader(pos, metadata);
         writeVertices(saver, pos, metadata);
@@ -113,7 +113,7 @@ public class MbMshFormat extends AMeshFormat {
         }
     }
 
-    private static short createMetadata(Set<VertexFormat> formats) throws MeshIOException {
+    private static short createMetadata(Set<BufferFormat> formats) throws MeshIOException {
         if (!containsVertexType(formats, VertexType.Position_X) || !containsVertexType(formats, VertexType.Position_Y))
             throw new MeshIOException("No position data found");
         short metaData = 0;
@@ -131,8 +131,8 @@ public class MbMshFormat extends AMeshFormat {
         return metaData;
     }
 
-    private static boolean containsVertexType(Set<VertexFormat> formats, VertexType vertexType) {
-        for (VertexFormat format : formats) {
+    private static boolean containsVertexType(Set<BufferFormat> formats, VertexType vertexType) {
+        for (BufferFormat format : formats) {
             if (format.containsVertexType(vertexType))
                 return true;
         }

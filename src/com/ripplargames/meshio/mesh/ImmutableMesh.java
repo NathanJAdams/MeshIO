@@ -5,16 +5,16 @@ import java.util.Map;
 import java.util.Set;
 
 import com.ripplargames.meshio.IMesh;
-import com.ripplargames.meshio.vertex.VertexFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 
 public class ImmutableMesh implements IMesh {
     private final int vertexCount;
     private final int faceCount;
-    private final Map<VertexFormat, ByteBuffer> formatVertices;
+    private final Map<BufferFormat, ByteBuffer> formatVertices;
     private final ByteBuffer indices;
     private final boolean isValid;
 
-    public ImmutableMesh(int vertexCount, int faceCount, Map<VertexFormat, ByteBuffer> formatVertices, ByteBuffer indices) {
+    public ImmutableMesh(int vertexCount, int faceCount, Map<BufferFormat, ByteBuffer> formatVertices, ByteBuffer indices) {
         this.vertexCount = vertexCount;
         this.faceCount = faceCount;
         this.formatVertices = formatVertices;
@@ -28,7 +28,7 @@ public class ImmutableMesh implements IMesh {
     }
 
     @Override
-    public ByteBuffer getVertices(VertexFormat format) {
+    public ByteBuffer getVertices(BufferFormat format) {
         return formatVertices.get(format);
     }
 
@@ -38,7 +38,7 @@ public class ImmutableMesh implements IMesh {
     }
 
     @Override
-    public Set<VertexFormat> getVertexFormats() {
+    public Set<BufferFormat> getVertexFormats() {
         return formatVertices.keySet();
     }
 

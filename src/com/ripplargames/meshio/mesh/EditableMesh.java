@@ -13,13 +13,13 @@ import com.ripplargames.meshio.index.EditableIndices;
 import com.ripplargames.meshio.index.IndicesDataType;
 import com.ripplargames.meshio.index.IndicesDataTypes;
 import com.ripplargames.meshio.vertex.EditableVertices;
-import com.ripplargames.meshio.vertex.VertexFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 
 public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSaver {
     private final Map<MeshType, Map<IndicesDataType<?>, EditableIndices<?>>> indices = new HashMap<MeshType, Map<IndicesDataType<?>, EditableIndices<?>>>();
     private final EditableVertices vertices = new EditableVertices();
-    private final Set<VertexFormat> formats = new HashSet<VertexFormat>();
+    private final Set<BufferFormat> formats = new HashSet<BufferFormat>();
     private MeshType meshType = MeshType.Mesh;
     private IndicesDataType<?> indicesDataType = IndicesDataTypes.Short;
 
@@ -52,16 +52,16 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
             this.meshType = meshType;
     }
 
-    public void addVertexFormat(VertexFormat format) {
+    public void addVertexFormat(BufferFormat format) {
         formats.add(format);
     }
 
-    public void removeVertexFormat(VertexFormat format) {
+    public void removeVertexFormat(BufferFormat format) {
         formats.remove(format);
     }
 
     @Override
-    public Set<VertexFormat> getVertexFormats() {
+    public Set<BufferFormat> getVertexFormats() {
         return formats;
     }
 
@@ -93,7 +93,7 @@ public class EditableMesh implements IMesh, IMeshBuilder<EditableMesh>, IMeshSav
     }
 
     @Override
-    public ByteBuffer getVertices(VertexFormat format) {
+    public ByteBuffer getVertices(BufferFormat format) {
         return vertices.getVerticesBuffer(format);
     }
 

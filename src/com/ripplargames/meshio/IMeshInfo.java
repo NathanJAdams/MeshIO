@@ -2,10 +2,10 @@ package com.ripplargames.meshio;
 
 import java.util.Set;
 
-import com.ripplargames.meshio.vertex.VertexFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 
 public interface IMeshInfo {
-    Set<VertexFormat> getVertexFormats();
+    Set<BufferFormat> getVertexFormats();
 
     int getVertexCount();
 

@@ -20,7 +20,7 @@ import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 import com.ripplargames.meshio.mesh.ImmutableMeshBuilder;
 import com.ripplargames.meshio.mesh.MeshType;
-import com.ripplargames.meshio.vertex.VertexFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 
 public class MeshIO {
     private static final Logger LOGGER = Logger.getLogger(MeshIO.class.getName());
@@ -37,7 +37,7 @@ public class MeshIO {
         extensionFormats.put(meshFormat.getFileExtension(), meshFormat);
     }
 
-    public IMesh readAs(String filePath, MeshType meshType, IndicesDataType<?> indicesDataType, Set<VertexFormat> formats) throws MeshIOException {
+    public IMesh readAs(String filePath, MeshType meshType, IndicesDataType<?> indicesDataType, Set<BufferFormat> formats) throws MeshIOException {
         ImmutableMeshBuilder builder = new ImmutableMeshBuilder(meshType, indicesDataType, formats);
         return read(filePath, builder);
     }

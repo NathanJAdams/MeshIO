@@ -17,7 +17,7 @@ import com.ripplargames.meshio.MeshIOException;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 import com.ripplargames.meshio.IMesh;
-import com.ripplargames.meshio.vertex.VertexFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 
 public class ObjFormat extends AMeshFormat {
@@ -176,7 +176,7 @@ public class ObjFormat extends AMeshFormat {
 
     private static Set<VertexType> getAllVertexTypes(IMeshSaver saver) {
         Set<VertexType> vertexTypes = new HashSet<VertexType>();
-        for (VertexFormat format : saver.getVertexFormats()) {
+        for (BufferFormat format : saver.getVertexFormats()) {
             vertexTypes.addAll(format.getVertexTypes());
         }
         return vertexTypes;

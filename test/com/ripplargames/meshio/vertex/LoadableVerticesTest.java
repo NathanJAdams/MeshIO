@@ -8,6 +8,9 @@ import java.util.Random;
 import java.util.Set;
 
 import com.ripplargames.meshio.TestUtil;
+import com.ripplargames.meshio.bufferformats.AlignedBufferFormatPart;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormatPart;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,8 +19,8 @@ public class LoadableVerticesTest {
 
     @Test
     public void testFloatPositionX() {
-        VertexFormat format = new VertexFormat(new VertexFormatPart(VertexType.Position_X, VertexDataType.Float));
-        Set<VertexFormat> formats = new HashSet<VertexFormat>();
+        BufferFormat format = new BufferFormat(new BufferFormatPart(VertexType.Position_X, VertexDataType.Float));
+        Set<BufferFormat> formats = new HashSet<BufferFormat>();
         formats.add(format);
         LoadableVertices vertices = new LoadableVertices(formats);
         vertices.setVertexCount(1);
@@ -38,11 +41,11 @@ public class LoadableVerticesTest {
         for (int vertexCount = 1; vertexCount < 5; vertexCount++) {
             for (VertexDataType vertexDataType : VertexDataType.valuesList()) {
                 int totalByteCount = vertexCount * vertexDataType.getByteCount();
-                VertexFormat format = new VertexFormat(new VertexFormatPart(VertexType.Position_X, vertexDataType));
-                Set<VertexFormat> formats = new HashSet<VertexFormat>();
+                BufferFormat format = new BufferFormat(new BufferFormatPart(VertexType.Position_X, vertexDataType));
+                Set<BufferFormat> formats = new HashSet<BufferFormat>();
                 formats.add(format);
                 LoadableVertices vertices = new LoadableVertices(formats);
-                Map<VertexFormat, ByteBuffer> formatVertices = vertices.getFormatVertices();
+                Map<BufferFormat, ByteBuffer> formatVertices = vertices.getFormatVertices();
                 for (ByteBuffer bb : formatVertices.values()) {
                     Assert.assertEquals(0, bb.position());
                     Assert.assertEquals(0, bb.limit());
@@ -79,15 +82,15 @@ public class LoadableVerticesTest {
     @Test
     public void testVertices() {
         for (int i = 0; i < 1000; i++) {
-            VertexFormat format = TestUtil.randomVertexFormat();
-            Set<VertexFormat> formats = new HashSet<VertexFormat>();
+            BufferFormat format = TestUtil.randomVertexFormat();
+            Set<BufferFormat> formats = new HashSet<BufferFormat>();
             formats.add(format);
             LoadableVertices vertices = new LoadableVertices(formats);
             testVertices(vertices, format);
         }
     }
 
-    private void testVertices(LoadableVertices vertices, VertexFormat format) {
+    private void testVertices(LoadableVertices vertices, BufferFormat format) {
         int vertexCount = 2 + RANDOM.nextInt(2);
         vertices.setVertexCount(vertexCount);
         Assert.assertEquals(vertexCount, vertices.getVertexCount());
@@ -107,7 +110,7 @@ public class LoadableVerticesTest {
         float expected = startDatum;
         for (int i = 0; i < vertexCount; i++) {
             for (VertexType vertexType : VertexType.valuesList()) {
-                AlignedVertexFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
+                AlignedBufferFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
                 if (alignedFormatPart != null) {
                     int index = format.getVertexDatumIndex(i, vertexType);
                     float actual = alignedFormatPart.getDataType().getDatum(bb, index);

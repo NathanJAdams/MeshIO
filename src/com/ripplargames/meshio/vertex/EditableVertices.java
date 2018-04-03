@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ripplargames.meshio.bufferformats.AlignedBufferFormatPart;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 import com.ripplargames.meshio.util.BufferUtil;
 
 public class EditableVertices {
@@ -15,13 +17,13 @@ public class EditableVertices {
         this.vertexCount = 0;
     }
 
-    public ByteBuffer getVerticesBuffer(VertexFormat format) {
+    public ByteBuffer getVerticesBuffer(BufferFormat format) {
         int byteCount = vertexCount * format.getByteCount();
         ByteBuffer bb = BufferUtil.createByteBuffer(byteCount);
         for (int i = 0; i < vertexCount; i++) {
             EditableVertex vertex = vertexList.get(i);
             for (VertexType vertexType : format.getVertexTypes()) {
-                AlignedVertexFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
+                AlignedBufferFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
                 VertexDataType dataType = alignedFormatPart.getDataType();
                 int index = format.getVertexDatumIndex(i, vertexType);
                 float datum = vertex.getDatum(vertexType);

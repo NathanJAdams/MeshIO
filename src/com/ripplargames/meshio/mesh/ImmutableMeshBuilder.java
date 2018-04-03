@@ -6,20 +6,20 @@ import com.ripplargames.meshio.IMeshBuilder;
 import com.ripplargames.meshio.index.EditableIndices;
 import com.ripplargames.meshio.index.IndicesDataType;
 import com.ripplargames.meshio.vertex.LoadableVertices;
-import com.ripplargames.meshio.vertex.VertexFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 
 public class ImmutableMeshBuilder implements IMeshBuilder<ImmutableMesh> {
     private final EditableIndices<?> indices;
     private final LoadableVertices vertices;
 
-    public <T> ImmutableMeshBuilder(MeshType meshType, IndicesDataType<T> indicesDataType, Set<VertexFormat> formats) {
+    public <T> ImmutableMeshBuilder(MeshType meshType, IndicesDataType<T> indicesDataType, Set<BufferFormat> formats) {
         this.indices = new EditableIndices<T>(indicesDataType, meshType);
         this.vertices = new LoadableVertices(formats);
     }
 
     @Override
-    public Set<VertexFormat> getVertexFormats() {
+    public Set<BufferFormat> getVertexFormats() {
         return vertices.getFormatVertices().keySet();
     }
 

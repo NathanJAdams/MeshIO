@@ -12,7 +12,7 @@ import com.ripplargames.meshio.meshformats.AMeshFormat;
 import com.ripplargames.meshio.MeshIOException;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
-import com.ripplargames.meshio.vertex.VertexFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 
 public abstract class PlyFormat extends AMeshFormat {
@@ -220,7 +220,7 @@ public abstract class PlyFormat extends AMeshFormat {
 
     private List<VertexType> getVertexTypes(IMeshSaver saver) {
         List<VertexType> vertexTypes = new ArrayList<VertexType>();
-        for (VertexFormat format : saver.getVertexFormats()) {
+        for (BufferFormat format : saver.getVertexFormats()) {
             vertexTypes.addAll(format.getVertexTypes());
         }
         return vertexTypes;

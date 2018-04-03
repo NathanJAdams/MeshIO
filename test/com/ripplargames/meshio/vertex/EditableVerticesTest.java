@@ -5,6 +5,9 @@ import java.nio.FloatBuffer;
 import java.util.Random;
 
 import com.ripplargames.meshio.TestUtil;
+import com.ripplargames.meshio.bufferformats.AlignedBufferFormatPart;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormatPart;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,7 +17,7 @@ public class EditableVerticesTest {
     @Test
     public void testFloatPositionX() {
         EditableVertices vertices = new EditableVertices();
-        VertexFormat format = new VertexFormat(new VertexFormatPart(VertexType.Position_X, VertexDataType.Float));
+        BufferFormat format = new BufferFormat(new BufferFormatPart(VertexType.Position_X, VertexDataType.Float));
         vertices.setVertexCount(1);
         vertices.setVertexCount(2);
         vertices.setVertexDatum(0, VertexType.Position_X, 1);
@@ -29,12 +32,12 @@ public class EditableVerticesTest {
     public void testVertices() {
         for (int i = 0; i < 100; i++) {
             EditableVertices vertices = new EditableVertices();
-            VertexFormat format = TestUtil.randomVertexFormat();
+            BufferFormat format = TestUtil.randomVertexFormat();
             testVertices(vertices, format);
         }
     }
 
-    private void testVertices(EditableVertices vertices, VertexFormat format) {
+    private void testVertices(EditableVertices vertices, BufferFormat format) {
         int vertexCount = 2 + RANDOM.nextInt(2);
         vertices.setVertexCount(vertexCount);
         Assert.assertEquals(vertexCount, vertices.getVertexCount());
@@ -54,7 +57,7 @@ public class EditableVerticesTest {
         float expected = startDatum;
         for (int i = 0; i < vertexCount; i++) {
             for (VertexType vertexType : VertexType.valuesList()) {
-                AlignedVertexFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
+                AlignedBufferFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
                 if (alignedFormatPart != null) {
                     int index = format.getVertexDatumIndex(i, vertexType);
                     float actual = alignedFormatPart.getDataType().getDatum(bb, index);

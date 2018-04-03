@@ -1,10 +1,13 @@
-package com.ripplargames.meshio.vertex;
+package com.ripplargames.meshio.bufferformats;
 
-public class VertexFormatPart {
+import com.ripplargames.meshio.vertex.VertexDataType;
+import com.ripplargames.meshio.vertex.VertexType;
+
+public class BufferFormatPart {
     private final VertexType vertexType;
     private final VertexDataType dataType;
 
-    public VertexFormatPart(VertexType vertexType, VertexDataType dataType) {
+    public BufferFormatPart(VertexType vertexType, VertexDataType dataType) {
         this.vertexType = vertexType;
         this.dataType = dataType;
     }

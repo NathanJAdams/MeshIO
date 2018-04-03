@@ -8,7 +8,7 @@ import com.ripplargames.meshio.IMesh;
 import com.ripplargames.meshio.IMeshBuilder;
 import com.ripplargames.meshio.IMeshSaver;
 import com.ripplargames.meshio.util.BufferUtil;
-import com.ripplargames.meshio.vertex.VertexFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 
 public class NullMesh implements IMesh, IMeshBuilder<NullMesh>, IMeshSaver {
@@ -18,7 +18,7 @@ public class NullMesh implements IMesh, IMeshBuilder<NullMesh>, IMeshSaver {
     private static final ByteBuffer VERTICES_BUFFER = BufferUtil.with(VERTICES);
 
     @Override
-    public Set<VertexFormat> getVertexFormats() {
+    public Set<BufferFormat> getVertexFormats() {
         return Collections.emptySet();
     }
 
@@ -38,7 +38,7 @@ public class NullMesh implements IMesh, IMeshBuilder<NullMesh>, IMeshSaver {
     }
 
     @Override
-    public ByteBuffer getVertices(VertexFormat format) {
+    public ByteBuffer getVertices(BufferFormat format) {
         return VERTICES_BUFFER;
     }
 

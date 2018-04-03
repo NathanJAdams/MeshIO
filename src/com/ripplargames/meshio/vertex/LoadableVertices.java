@@ -5,28 +5,30 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.ripplargames.meshio.bufferformats.AlignedBufferFormatPart;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 import com.ripplargames.meshio.util.BufferUtil;
 
 public class LoadableVertices {
-    private final Map<VertexFormat, ByteBuffer> formatVertices = new HashMap<VertexFormat, ByteBuffer>();
+    private final Map<BufferFormat, ByteBuffer> formatVertices = new HashMap<BufferFormat, ByteBuffer>();
     private int vertexCount;
 
-    public LoadableVertices(Set<VertexFormat> formats) {
-        for (VertexFormat format : formats) {
+    public LoadableVertices(Set<BufferFormat> formats) {
+        for (BufferFormat format : formats) {
             formatVertices.put(format, BufferUtil.createByteBuffer(0));
         }
     }
 
     public void clear() {
         this.vertexCount = 0;
-        for (Map.Entry<VertexFormat, ByteBuffer> entry : formatVertices.entrySet()) {
+        for (Map.Entry<BufferFormat, ByteBuffer> entry : formatVertices.entrySet()) {
             ByteBuffer bb = entry.getValue();
             if ((bb.position() > 0) || (bb.capacity() > 0))
                 entry.setValue(BufferUtil.createByteBuffer(0));
         }
     }
 
-    public Map<VertexFormat, ByteBuffer> getFormatVertices() {
+    public Map<BufferFormat, ByteBuffer> getFormatVertices() {
         return formatVertices;
     }
 
@@ -36,8 +38,8 @@ public class LoadableVertices {
 
     public void setVertexCount(int vertexCount) {
         if (this.vertexCount != vertexCount) {
-            for (Map.Entry<VertexFormat, ByteBuffer> entry : formatVertices.entrySet()) {
-                VertexFormat format = entry.getKey();
+            for (Map.Entry<BufferFormat, ByteBuffer> entry : formatVertices.entrySet()) {
+                BufferFormat format = entry.getKey();
                 ByteBuffer buffer = entry.getValue();
                 ByteBuffer resizedBuffer = resizeBuffer(format, buffer, this.vertexCount, vertexCount);
                 entry.setValue(resizedBuffer);
@@ -46,7 +48,7 @@ public class LoadableVertices {
         }
     }
 
-    private ByteBuffer resizeBuffer(VertexFormat format, ByteBuffer buffer, int previousVertexCount, int newVertexCount) {
+    private ByteBuffer resizeBuffer(BufferFormat format, ByteBuffer buffer, int previousVertexCount, int newVertexCount) {
         int formatByteCount = format.getByteCount();
         int newTotalByteCount = formatByteCount * newVertexCount;
         if (buffer.capacity() >= newTotalByteCount) {
@@ -58,7 +60,7 @@ public class LoadableVertices {
             buffer = newBuffer;
             for (int i = previousVertexCount; i < newVertexCount; i++) {
                 for (VertexType vertexType : format.getVertexTypes()) {
-                    AlignedVertexFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
+                    AlignedBufferFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
                     setAlignedDatum(format, buffer, alignedFormatPart, i, vertexType.defaultValue());
                 }
             }
@@ -67,16 +69,16 @@ public class LoadableVertices {
     }
 
     public void setVertexDatum(int vertexIndex, VertexType vertexType, float vertexDatum) {
-        for (Map.Entry<VertexFormat, ByteBuffer> entry : formatVertices.entrySet()) {
-            VertexFormat format = entry.getKey();
+        for (Map.Entry<BufferFormat, ByteBuffer> entry : formatVertices.entrySet()) {
+            BufferFormat format = entry.getKey();
             ByteBuffer buffer = entry.getValue();
-            AlignedVertexFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
+            AlignedBufferFormatPart alignedFormatPart = format.getAlignedFormatPart(vertexType);
             if (alignedFormatPart != null)
                 setAlignedDatum(format, buffer, alignedFormatPart, vertexIndex, vertexDatum);
         }
     }
 
-    private void setAlignedDatum(VertexFormat format, ByteBuffer buffer, AlignedVertexFormatPart alignedFormatPart, int vertexIndex, float datum) {
+    private void setAlignedDatum(BufferFormat format, ByteBuffer buffer, AlignedBufferFormatPart alignedFormatPart, int vertexIndex, float datum) {
         int offset = alignedFormatPart.getOffset();
         VertexDataType dataType = alignedFormatPart.getDataType();
         int index = (vertexIndex * format.getByteCount()) + offset;
