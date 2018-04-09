@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.ripplargames.meshio.IMesh;
+import com.ripplargames.meshio.MeshRawData;
 import com.ripplargames.meshio.bufferformats.BufferFormat;
 
 public class ImmutableMesh implements IMesh {
@@ -38,7 +39,7 @@ public class ImmutableMesh implements IMesh {
     }
 
     @Override
-    public Set<BufferFormat> getVertexFormats() {
+    public Set<BufferFormat> getBufferFormats() {
         return formatVertices.keySet();
     }
 
@@ -50,5 +51,29 @@ public class ImmutableMesh implements IMesh {
     @Override
     public int getFaceCount() {
         return faceCount;
+    }
+
+    @Override
+    public MeshRawData toRawData() {
+        MeshRawData meshRawData = new MeshRawData();
+        // TODO
+//        EditableIndices<?> editableIndices = MeshType.Mesh.getIndices(indices);
+//        int faceCount = editableIndices.getFaceCount();
+//        for (int faceIndex = 0; faceIndex < faceCount; faceIndex++) {
+//            int[] faceIndices = editableIndices.getFaceIndices(faceIndex);
+//            meshRawData.setFace(faceIndex, faceIndices[0], faceIndices[1], faceIndices[2]);
+//        }
+//        int vertexCount = vertices.getVertexCount();
+//        Set<VertexType> vertexTypes = new HashSet<VertexType>();
+//        for (BufferFormat format : formats) {
+//            vertexTypes.addAll(format.getVertexTypes());
+//        }
+//        for (VertexType vertexType : vertexTypes) {
+//            for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
+//                float datum = vertices.getVertexDatum(vertexIndex, vertexType);
+//                meshRawData.setVertexTypeDatum(vertexType, vertexIndex, datum);
+//            }
+//        }
+        return meshRawData;
     }
 }

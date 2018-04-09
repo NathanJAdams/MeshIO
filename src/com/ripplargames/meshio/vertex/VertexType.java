@@ -14,6 +14,7 @@ public enum VertexType {
     Color_R(false, 1),
     Color_G(false, 1),
     Color_B(false, 1),
+    Color_A(false, 1),
     ImageCoord_X(false, 0),
     ImageCoord_Y(false, 0);
     private static final List<VertexType> VALUES = Collections.unmodifiableList(Arrays.asList(values()));

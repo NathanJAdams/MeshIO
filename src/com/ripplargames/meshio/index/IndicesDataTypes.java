@@ -41,6 +41,15 @@ public class IndicesDataTypes {
         }
 
         @Override
+        public ByteBuffer indicesToByteBuffer(int[] indices) {
+            byte[] array = new byte[indices.length];
+            for (int i = 0; i < indices.length; i++) {
+                array[i] = (byte) indices[i];
+            }
+            return BufferUtil.with(array);
+        }
+
+        @Override
         public int bytesPerDatum() {
             return 1;
         }
@@ -82,6 +91,15 @@ public class IndicesDataTypes {
         }
 
         @Override
+        public ByteBuffer indicesToByteBuffer(int[] indices) {
+            short[] array = new short[indices.length];
+            for (int i = 0; i < indices.length; i++) {
+                array[i] = (short) indices[i];
+            }
+            return BufferUtil.with(array);
+        }
+
+        @Override
         public int bytesPerDatum() {
             return 2;
         }
@@ -119,6 +137,12 @@ public class IndicesDataTypes {
 
         @Override
         public ByteBuffer toByteBuffer(int[] array) {
+            return BufferUtil.with(array);
+        }
+
+        @Override
+        public ByteBuffer indicesToByteBuffer(int[] indices) {
+            int[] array = Arrays.copyOf(indices, indices.length);
             return BufferUtil.with(array);
         }
 

@@ -15,5 +15,7 @@ public interface IndicesDataType<T> {
 
     ByteBuffer toByteBuffer(T array);
 
+    ByteBuffer indicesToByteBuffer(int[] indices);
+
     int bytesPerDatum();
 }

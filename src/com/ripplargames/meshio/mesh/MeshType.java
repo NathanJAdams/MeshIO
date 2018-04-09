@@ -49,4 +49,19 @@ public enum MeshType {
             indicesDataType.setValue(array, offset + offsetIndex, vertexIndex);
         }
     }
+
+    public int[] getIndices(int[] meshIndices) {
+        int faceCount = meshIndices.length / 3;
+        int length = faceCount * offsets.length;
+        int[] indices = new int[length];
+        for (int faceIndex = 0; faceIndex < faceCount; faceIndex++) {
+            int indicesBaseIndex = faceIndex * offsets.length;
+            int meshBaseIndex = faceIndex * 3;
+            for (int offsetIndex = 0; offsetIndex < offsets.length; offsetIndex++) {
+                int offset = offsets[offsetIndex];
+                indices[indicesBaseIndex + offsetIndex] = meshIndices[meshBaseIndex + offset];
+            }
+        }
+        return indices;
+    }
 }

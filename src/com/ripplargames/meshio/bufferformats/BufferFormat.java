@@ -1,5 +1,6 @@
 package com.ripplargames.meshio.bufferformats;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -7,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.ripplargames.meshio.MeshRawData;
+import com.ripplargames.meshio.util.BufferUtil;
 import com.ripplargames.meshio.vertex.VertexDataType;
 import com.ripplargames.meshio.vertex.VertexType;
 
@@ -26,8 +29,7 @@ public class BufferFormat {
     private static Map<VertexType, AlignedBufferFormatPart> createAlignedFormatParts(List<BufferFormatPart> formatEntries) {
         Map<VertexType, AlignedBufferFormatPart> alignedFormatParts = new EnumMap<VertexType, AlignedBufferFormatPart>(VertexType.class);
         int offset = 0;
-        for (int i = 0; i < formatEntries.size(); i++) {
-            BufferFormatPart entry = formatEntries.get(i);
+        for (BufferFormatPart entry : formatEntries) {
             VertexType vertexType = entry.getVertexType();
             VertexDataType dataType = entry.getDataType();
             AlignedBufferFormatPart alignedFormatPart = new AlignedBufferFormatPart(offset, dataType);
@@ -43,6 +45,26 @@ public class BufferFormat {
             byteCount += formatPart.getDataType().getByteCount();
         }
         return byteCount;
+    }
+
+    public ByteBuffer createBuffer(MeshRawData meshRawData) {
+        int vertexCount = meshRawData.getVertexCount();
+        int totalByteCount = byteCount * vertexCount;
+        ByteBuffer buffer = BufferUtil.createByteBuffer(totalByteCount);
+        for (Map.Entry<VertexType, AlignedBufferFormatPart> entry : alignedFormatParts.entrySet()) {
+            VertexType vertexType = entry.getKey();
+            if (meshRawData.hasVertexTypeData(vertexType)) {
+                float[] vertexTypeData = meshRawData.getVertexTypeData(vertexType);
+                AlignedBufferFormatPart alignedBufferFormatPart = entry.getValue();
+                for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
+                    float datum = vertexTypeData[vertexIndex];
+                    int offset = alignedBufferFormatPart.getOffset();
+                    int index = vertexIndex * byteCount + offset;
+                    buffer.putFloat(index, datum);
+                }
+            }
+        }
+        return buffer;
     }
 
     public boolean isEmpty() {

@@ -6,19 +6,19 @@ import java.util.Set;
 
 import com.ripplargames.meshio.IMesh;
 import com.ripplargames.meshio.IMeshBuilder;
-import com.ripplargames.meshio.IMeshSaver;
-import com.ripplargames.meshio.util.BufferUtil;
+import com.ripplargames.meshio.MeshRawData;
 import com.ripplargames.meshio.bufferformats.BufferFormat;
-import com.ripplargames.meshio.vertex.VertexType;
+import com.ripplargames.meshio.util.BufferUtil;
 
-public class NullMesh implements IMesh, IMeshBuilder<NullMesh>, IMeshSaver {
+public class NullMesh implements IMesh, IMeshBuilder<NullMesh> {
     private static final int[] INDICES = new int[0];
     private static final float[] VERTICES = new float[0];
     private static final ByteBuffer INDICES_BUFFER = BufferUtil.with(INDICES);
     private static final ByteBuffer VERTICES_BUFFER = BufferUtil.with(VERTICES);
+    private static final MeshRawData RAW_DATA = new MeshRawData();
 
     @Override
-    public Set<BufferFormat> getVertexFormats() {
+    public Set<BufferFormat> getBufferFormats() {
         return Collections.emptySet();
     }
 
@@ -48,37 +48,12 @@ public class NullMesh implements IMesh, IMeshBuilder<NullMesh>, IMeshSaver {
     }
 
     @Override
-    public void clear() {
+    public MeshRawData toRawData() {
+        return RAW_DATA;
     }
 
     @Override
-    public void setVertexCount(int vertexCount) {
-    }
-
-    @Override
-    public void setFaceCount(int faceCount) {
-    }
-
-    @Override
-    public void setVertexDatum(int vertexIndex, VertexType vertexType, float vertexDatum) {
-    }
-
-    @Override
-    public void setFaceIndices(int faceIndex, int[] faceIndices) {
-    }
-
-    @Override
-    public NullMesh build() {
+    public NullMesh build(MeshRawData meshRawData) {
         return this;
-    }
-
-    @Override
-    public float getVertexDatum(int vertexIndex, VertexType vertexType) {
-        return 0;
-    }
-
-    @Override
-    public int[] getFaceIndices(int faceIndex) {
-        return INDICES;
     }
 }

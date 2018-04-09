@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 
 import com.ripplargames.meshio.TestUtil;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
 import com.ripplargames.meshio.index.IndicesDataType;
 import com.ripplargames.meshio.index.IndicesDataTypes;
-import com.ripplargames.meshio.bufferformats.BufferFormat;
 import com.ripplargames.meshio.vertex.VertexType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -69,7 +69,7 @@ public class EditableMeshTest {
 
     private void testVertexFormat(EditableMesh mesh) {
         BufferFormat format = TestUtil.randomVertexFormat();
-        mesh.addVertexFormat(format);
+        mesh.addBufferFormat(format);
         ByteBuffer vertices = mesh.getVertices(format);
         int expectedByteCount = mesh.getVertexCount() * format.getByteCount();
         int actualByteCount = vertices.limit() - vertices.position();

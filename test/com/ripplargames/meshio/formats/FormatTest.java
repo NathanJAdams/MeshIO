@@ -9,26 +9,27 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import com.ripplargames.meshio.IMesh;
 import com.ripplargames.meshio.IMeshBuilder;
 import com.ripplargames.meshio.IMeshFormat;
 import com.ripplargames.meshio.MeshIOException;
+import com.ripplargames.meshio.MeshRawData;
+import com.ripplargames.meshio.bufferformats.BufferFormat;
+import com.ripplargames.meshio.bufferformats.BufferFormatPart;
+import com.ripplargames.meshio.index.IndicesDataType;
+import com.ripplargames.meshio.index.IndicesDataTypes;
+import com.ripplargames.meshio.mesh.EditableMesh;
+import com.ripplargames.meshio.mesh.ImmutableMesh;
+import com.ripplargames.meshio.mesh.ImmutableMeshBuilder;
+import com.ripplargames.meshio.mesh.MeshType;
 import com.ripplargames.meshio.meshformats.mbmsh.MbMshFormat;
 import com.ripplargames.meshio.meshformats.obj.ObjFormat;
 import com.ripplargames.meshio.meshformats.ply.PlyFormatAscii_1_0;
 import com.ripplargames.meshio.meshformats.ply.PlyFormatBinaryBigEndian_1_0;
 import com.ripplargames.meshio.meshformats.ply.PlyFormatBinaryLittleEndian_1_0;
-import com.ripplargames.meshio.index.IndicesDataType;
-import com.ripplargames.meshio.index.IndicesDataTypes;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
-import com.ripplargames.meshio.mesh.EditableMesh;
-import com.ripplargames.meshio.IMesh;
-import com.ripplargames.meshio.mesh.ImmutableMesh;
-import com.ripplargames.meshio.mesh.ImmutableMeshBuilder;
-import com.ripplargames.meshio.mesh.MeshType;
 import com.ripplargames.meshio.vertex.VertexDataType;
-import com.ripplargames.meshio.bufferformats.BufferFormat;
-import com.ripplargames.meshio.bufferformats.BufferFormatPart;
 import com.ripplargames.meshio.vertex.VertexType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -67,18 +68,19 @@ public class FormatTest {
         }
     }
 
-    private void testFormatWithMesh(IMeshFormat meshFormat, EditableMesh mesh, MeshType meshType, IndicesDataType<?> indicesDataType, BufferFormat format) throws MeshIOException {
+    private <T> void testFormatWithMesh(IMeshFormat meshFormat, EditableMesh mesh, MeshType meshType, IndicesDataType<T> indicesDataType, BufferFormat format) throws MeshIOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrimitiveOutputStream pos = new PrimitiveOutputStream(baos);
-        meshFormat.write(mesh, pos);
+        MeshRawData meshRawDataWritten = mesh.toRawData();
+        meshFormat.write(meshRawDataWritten, pos);
         byte[] buffer = baos.toByteArray();
         ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
         PrimitiveInputStream pis = new PrimitiveInputStream(bais);
         Set<BufferFormat> formats = new HashSet<BufferFormat>();
         formats.add(format);
-        IMeshBuilder<ImmutableMesh> meshBuilder = new ImmutableMeshBuilder(meshType, indicesDataType, formats);
-        meshFormat.read(meshBuilder, pis);
-        ImmutableMesh translatedMesh = meshBuilder.build();
+        IMeshBuilder<ImmutableMesh> meshBuilder = new ImmutableMeshBuilder<T>(meshType, indicesDataType, formats);
+        MeshRawData meshRawDataRead = meshFormat.read(pis);
+        ImmutableMesh translatedMesh = meshBuilder.build(meshRawDataRead);
         checkMeshes(meshFormat, mesh, translatedMesh, format);
     }
 
@@ -86,7 +88,7 @@ public class FormatTest {
         EditableMesh mesh = new EditableMesh();
         mesh.setMeshType(meshType);
         mesh.setIndicesDataType(indicesDataType);
-        mesh.addVertexFormat(format);
+        mesh.addBufferFormat(format);
         mesh.setFaceCount(2);
         int vertices = 4;
         mesh.setVertexCount(vertices);
