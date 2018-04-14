@@ -1,7 +1,4 @@
-package com.ripplargames.meshio.bufferformats;
-
-import com.ripplargames.meshio.vertex.VertexDataType;
-import com.ripplargames.meshio.vertex.VertexType;
+package com.ripplargames.meshio.vertices;
 
 public class BufferFormatPart {
     private final VertexType vertexType;

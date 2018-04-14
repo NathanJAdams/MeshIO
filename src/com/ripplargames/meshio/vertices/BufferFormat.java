@@ -1,4 +1,4 @@
-package com.ripplargames.meshio.bufferformats;
+package com.ripplargames.meshio.vertices;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -6,9 +6,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.ripplargames.meshio.vertex.VertexDataType;
-import com.ripplargames.meshio.vertex.VertexType;
 
 public class BufferFormat {
     private final Map<VertexType, AlignedBufferFormatPart> alignedFormatParts;
@@ -26,13 +23,12 @@ public class BufferFormat {
     private static Map<VertexType, AlignedBufferFormatPart> createAlignedFormatParts(List<BufferFormatPart> formatEntries) {
         Map<VertexType, AlignedBufferFormatPart> alignedFormatParts = new EnumMap<VertexType, AlignedBufferFormatPart>(VertexType.class);
         int offset = 0;
-        for (int i = 0; i < formatEntries.size(); i++) {
-            BufferFormatPart entry = formatEntries.get(i);
+        for (BufferFormatPart entry : formatEntries) {
             VertexType vertexType = entry.getVertexType();
             VertexDataType dataType = entry.getDataType();
             AlignedBufferFormatPart alignedFormatPart = new AlignedBufferFormatPart(offset, dataType);
             alignedFormatParts.put(vertexType, alignedFormatPart);
-            offset += dataType.getByteCount();
+            offset += dataType.byteCount();
         }
         return Collections.unmodifiableMap(alignedFormatParts);
     }
@@ -40,51 +36,20 @@ public class BufferFormat {
     private static int calculateByteCount(List<BufferFormatPart> formatParts) {
         int byteCount = 0;
         for (BufferFormatPart formatPart : formatParts) {
-            byteCount += formatPart.getDataType().getByteCount();
+            byteCount += formatPart.getDataType().byteCount();
         }
         return byteCount;
     }
 
-    public boolean isEmpty() {
-        return (byteCount == 0);
+    public Iterable<Map.Entry<VertexType, AlignedBufferFormatPart>> alignedParts() {
+        return alignedFormatParts.entrySet();
     }
 
-    public int getVertexTypeCount() {
-        return alignedFormatParts.size();
-    }
-
-    public Set<VertexType> getVertexTypes() {
+    public Set<VertexType> vertexTypes() {
         return alignedFormatParts.keySet();
     }
 
-    public boolean containsVertexType(VertexType vertexType) {
-        return alignedFormatParts.containsKey(vertexType);
-    }
-
-    public int getVertexDatumIndex(int vertexIndex, VertexType vertexType) {
-        AlignedBufferFormatPart alignedFormatPart = alignedFormatParts.get(vertexType);
-        int offset = alignedFormatPart.getOffset();
-        return vertexIndex * byteCount + offset;
-    }
-
-    public AlignedBufferFormatPart getAlignedFormatPart(VertexType vertexType) {
-        return alignedFormatParts.get(vertexType);
-    }
-
-    public int getByteCount() {
+    public int byteCount() {
         return byteCount;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        BufferFormat other = (BufferFormat) obj;
-        return alignedFormatParts.equals(other.alignedFormatParts);
-    }
-
-    @Override
-    public int hashCode() {
-        return alignedFormatParts.hashCode();
     }
 }

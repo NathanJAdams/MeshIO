@@ -1,9 +1,4 @@
-package com.ripplargames.meshio.bufferformats;
-
-import java.nio.ByteBuffer;
-
-import com.ripplargames.meshio.util.BufferUtil;
-import com.ripplargames.meshio.vertex.VertexDataType;
+package com.ripplargames.meshio.vertices;
 
 public class AlignedBufferFormatPart {
     private final int offset;
@@ -20,11 +15,11 @@ public class AlignedBufferFormatPart {
         this.dataType = dataType;
     }
 
-    public int getOffset() {
+    public int offset() {
         return offset;
     }
 
-    public VertexDataType getDataType() {
+    public VertexDataType dataType() {
         return dataType;
     }
 
@@ -40,17 +35,5 @@ public class AlignedBufferFormatPart {
     @Override
     public int hashCode() {
         return 31 * offset + dataType.hashCode();
-    }
-
-    public static void main(String[] args) {
-        ByteBuffer bb1 = BufferUtil.createByteBuffer(200000);
-        ByteBuffer bb2 = BufferUtil.createByteBuffer(200000);
-        long pre = System.nanoTime();
-        for(int i=0;i<200000;i++){
-            bb1.put(i,bb2.get(i));
-        }
-        long post = System.nanoTime();
-        System.out.println((post-pre)*1E-6);
-        System.out.println(bb1.get(123456));
     }
 }

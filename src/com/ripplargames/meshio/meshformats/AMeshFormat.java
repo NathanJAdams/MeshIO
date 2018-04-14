@@ -6,31 +6,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.ripplargames.meshio.IMeshBuilder;
 import com.ripplargames.meshio.IMeshFormat;
-import com.ripplargames.meshio.IMeshSaver;
+import com.ripplargames.meshio.Mesh;
 import com.ripplargames.meshio.MeshIOException;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 
 public abstract class AMeshFormat implements IMeshFormat {
     @Override
-    public final void read(IMeshBuilder<?> builder, InputStream is) throws MeshIOException {
+    public final Mesh read(InputStream is) throws MeshIOException {
         BufferedInputStream bis = new BufferedInputStream(is);
         PrimitiveInputStream pis = new PrimitiveInputStream(bis);
         try {
-            read(builder, pis);
+            return read(pis);
         } catch (IOException e) {
             throw new MeshIOException("Failed to read mesh", e);
         }
     }
 
     @Override
-    public final void write(IMeshSaver saver, OutputStream os) throws MeshIOException {
+    public final void write(Mesh mesh, OutputStream os) throws MeshIOException {
         BufferedOutputStream bos = new BufferedOutputStream(os);
         PrimitiveOutputStream pos = new PrimitiveOutputStream(bos);
         try {
-            write(saver, pos);
+            write(mesh, pos);
         } catch (IOException e) {
             throw new MeshIOException("Failed to write mesh", e);
         }
@@ -41,7 +40,7 @@ public abstract class AMeshFormat implements IMeshFormat {
         }
     }
 
-    protected abstract void read(IMeshBuilder<?> builder, PrimitiveInputStream pis) throws IOException, MeshIOException;
+    protected abstract Mesh read(PrimitiveInputStream pis) throws IOException, MeshIOException;
 
-    protected abstract void write(IMeshSaver saver, PrimitiveOutputStream pos) throws IOException, MeshIOException;
+    protected abstract void write(Mesh mesh, PrimitiveOutputStream pos) throws IOException, MeshIOException;
 }

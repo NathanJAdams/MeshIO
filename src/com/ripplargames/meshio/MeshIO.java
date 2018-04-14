@@ -1,30 +1,24 @@
 package com.ripplargames.meshio;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.ripplargames.meshio.meshformats.mbmsh.MbMshFormat;
 import com.ripplargames.meshio.meshformats.obj.ObjFormat;
 import com.ripplargames.meshio.meshformats.ply.PlyFormatAscii_1_0;
-import com.ripplargames.meshio.index.IndicesDataType;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
-import com.ripplargames.meshio.mesh.ImmutableMeshBuilder;
-import com.ripplargames.meshio.mesh.MeshType;
-import com.ripplargames.meshio.bufferformats.BufferFormat;
 
 public class MeshIO {
-    private static final Logger LOGGER = Logger.getLogger(MeshIO.class.getName());
-
     private final Map<String, IMeshFormat> extensionFormats = new HashMap<String, IMeshFormat>();
 
     public MeshIO() {
@@ -37,23 +31,12 @@ public class MeshIO {
         extensionFormats.put(meshFormat.getFileExtension(), meshFormat);
     }
 
-    public IMesh readAs(String filePath, MeshType meshType, IndicesDataType<?> indicesDataType, Set<BufferFormat> formats) throws MeshIOException {
-        ImmutableMeshBuilder builder = new ImmutableMeshBuilder(meshType, indicesDataType, formats);
-        return read(filePath, builder);
-    }
-
-    public <T extends IMesh> T read(String filePath, IMeshBuilder<T> builder) throws MeshIOException {
-        requireNotNull(filePath, "file path");
-        requireNotNull(builder, "mesh builder");
+    public Mesh read(String filePath) throws MeshIOException {
         IMeshFormat format = getFormatFromFilePath(filePath);
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(filePath);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-            PrimitiveInputStream pis = new PrimitiveInputStream(bis);
-            builder.clear();
-            format.read(builder, pis);
-            return builder.build();
+            return read(fis, format);
         } catch (FileNotFoundException e) {
             throwBecause("Cannot read from file at path: " + filePath, e);
             return null;
@@ -62,26 +45,32 @@ public class MeshIO {
         }
     }
 
-    public void write(IMeshSaver saver, String filePath) throws MeshIOException {
-        requireNotNull(saver, "mesh saver");
-        requireNotNull(filePath, "file path");
+    public Mesh read(InputStream inputStream, IMeshFormat format) throws MeshIOException {
+        BufferedInputStream bis = new BufferedInputStream(inputStream);
+        PrimitiveInputStream pis = new PrimitiveInputStream(bis);
+        return format.read(pis);
+    }
+
+    public void write(Mesh mesh, String filePath) throws MeshIOException {
         IMeshFormat format = getFormatFromFilePath(filePath);
         FileOutputStream fos = null;
-        PrimitiveOutputStream pos = null;
         try {
             fos = new FileOutputStream(filePath);
-            pos = new PrimitiveOutputStream(fos);
-            format.write(saver, pos);
+            write(mesh, fos, format);
         } catch (FileNotFoundException e) {
             throwBecause("Cannot write to file at path: " + filePath, e);
         } finally {
-            closeQuietly(pos);
             closeQuietly(fos);
         }
     }
 
+    public void write(Mesh mesh, OutputStream outputStream, IMeshFormat format) throws MeshIOException {
+        BufferedOutputStream bos = new BufferedOutputStream(outputStream);
+        PrimitiveOutputStream pos = new PrimitiveOutputStream(bos);
+        format.write(mesh, pos);
+    }
+
     public IMeshFormat getFormatFromFilePath(String filePath) throws MeshIOException {
-        requireNotNull(filePath, "file path");
         int lastDotIndex = filePath.lastIndexOf('.');
         if (lastDotIndex == -1)
             throwBecause("Cannot find mesh extension in path: " + filePath);
@@ -94,11 +83,6 @@ public class MeshIO {
         if (format == null)
             throwBecause("Cannot find mesh format from extension: " + extension);
         return format;
-    }
-
-    private void requireNotNull(Object object, String name) throws MeshIOException {
-        if (object == null)
-            throwBecause("A " + name + " is required", new NullPointerException());
     }
 
     private void throwBecause(String reason) throws MeshIOException {
@@ -114,7 +98,6 @@ public class MeshIO {
             try {
                 closeable.close();
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Failed to close file stream");
             }
         }
     }

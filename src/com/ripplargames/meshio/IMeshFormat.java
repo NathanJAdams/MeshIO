@@ -6,7 +6,7 @@ import java.io.OutputStream;
 public interface IMeshFormat {
     String getFileExtension();
 
-    void read(IMeshBuilder<?> builder, InputStream is) throws MeshIOException;
+    Mesh read(InputStream is) throws MeshIOException;
 
-    void write(IMeshSaver saver, OutputStream os) throws MeshIOException;
+    void write(Mesh mesh, OutputStream os) throws MeshIOException;
 }
