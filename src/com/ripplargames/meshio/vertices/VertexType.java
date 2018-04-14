@@ -1,4 +1,4 @@
-package com.ripplargames.meshio.vertex;
+package com.ripplargames.meshio.vertices;
 
 import java.util.Arrays;
 import java.util.Collections;

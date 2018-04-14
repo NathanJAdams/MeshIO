@@ -2,6 +2,7 @@ package com.ripplargames.meshio.meshformats.ply;
 
 import java.io.IOException;
 
+import com.ripplargames.meshio.Face;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 
@@ -41,9 +42,10 @@ public class PlyFormatBinary extends PlyFormat {
     }
 
     @Override
-    public void writeFaceIndices(PrimitiveOutputStream pos, int[] faceIndices, PlyDataType countType, PlyDataType indicesType) throws IOException {
-        countType.writeInteger(pos, isBigEndian, faceIndices.length);
-        for (int i : faceIndices)
-            indicesType.writeInteger(pos, isBigEndian, i);
+    public void writeFaceIndices(PrimitiveOutputStream pos, Face face, PlyDataType countType, PlyDataType indicesType) throws IOException {
+        countType.writeInteger(pos, isBigEndian, 3);
+        indicesType.writeInteger(pos, isBigEndian, face.getV0());
+        indicesType.writeInteger(pos, isBigEndian, face.getV1());
+        indicesType.writeInteger(pos, isBigEndian, face.getV2());
     }
 }

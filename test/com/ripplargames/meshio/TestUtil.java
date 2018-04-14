@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.ripplargames.meshio.vertex.VertexDataType;
-import com.ripplargames.meshio.bufferformats.BufferFormat;
-import com.ripplargames.meshio.bufferformats.BufferFormatPart;
-import com.ripplargames.meshio.vertex.VertexType;
+import com.ripplargames.meshio.vertices.VertexDataType;
+import com.ripplargames.meshio.vertices.BufferFormat;
+import com.ripplargames.meshio.vertices.BufferFormatPart;
+import com.ripplargames.meshio.vertices.VertexType;
 
 public class TestUtil {
     private static final Random RANDOM = new Random();

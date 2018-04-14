@@ -2,6 +2,7 @@ package com.ripplargames.meshio.meshformats.ply;
 
 import java.io.IOException;
 
+import com.ripplargames.meshio.Face;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 
@@ -51,17 +52,15 @@ public class PlyFormatAscii extends PlyFormat {
     }
 
     @Override
-    public void writeFaceIndices(PrimitiveOutputStream pos, int[] faceIndices, PlyDataType countType, PlyDataType indicesType) throws IOException {
+    public void writeFaceIndices(PrimitiveOutputStream pos, Face face, PlyDataType countType, PlyDataType indicesType) throws IOException {
         StringBuilder sb = new StringBuilder();
-        sb.append(faceIndices.length);
-        if (faceIndices.length > 0) {
-            sb.append(' ');
-            for (int i : faceIndices) {
-                sb.append(i);
-                sb.append(' ');
-            }
-            sb.setLength(sb.length() - 1);
-        }
+        sb.append(3);
+        sb.append(' ');
+        sb.append(face.getV0());
+        sb.append(' ');
+        sb.append(face.getV1());
+        sb.append(' ');
+        sb.append(face.getV2());
         pos.writeLine(sb.toString());
     }
 }

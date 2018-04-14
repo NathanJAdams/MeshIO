@@ -1,4 +1,4 @@
-package com.ripplargames.meshio.vertex;
+package com.ripplargames.meshio.vertices;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -108,7 +108,7 @@ public enum VertexDataType {
         this.byteCount = byteCount;
     }
 
-    public int getByteCount() {
+    public int byteCount() {
         return byteCount;
     }
 

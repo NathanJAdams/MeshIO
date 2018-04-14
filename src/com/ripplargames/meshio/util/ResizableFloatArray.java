@@ -38,8 +38,8 @@ public class ResizableFloatArray {
     public void setAt(int index, float datum) {
         ensureCapacity(index);
         backing[index] = datum;
-        if (length == index) {
-            length++;
+        if (length <= index) {
+            length = index + 1;
         }
     }
 

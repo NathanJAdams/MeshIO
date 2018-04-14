@@ -7,14 +7,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.ripplargames.meshio.IMeshFormat;
+import com.ripplargames.meshio.Mesh;
 import com.ripplargames.meshio.MeshIOException;
-import com.ripplargames.meshio.MeshRawData;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 
 public abstract class AMeshFormat implements IMeshFormat {
     @Override
-    public final MeshRawData read(InputStream is) throws MeshIOException {
+    public final Mesh read(InputStream is) throws MeshIOException {
         BufferedInputStream bis = new BufferedInputStream(is);
         PrimitiveInputStream pis = new PrimitiveInputStream(bis);
         try {
@@ -25,11 +25,11 @@ public abstract class AMeshFormat implements IMeshFormat {
     }
 
     @Override
-    public final void write(MeshRawData meshRawData, OutputStream os) throws MeshIOException {
+    public final void write(Mesh mesh, OutputStream os) throws MeshIOException {
         BufferedOutputStream bos = new BufferedOutputStream(os);
         PrimitiveOutputStream pos = new PrimitiveOutputStream(bos);
         try {
-            write(meshRawData, pos);
+            write(mesh, pos);
         } catch (IOException e) {
             throw new MeshIOException("Failed to write mesh", e);
         }
@@ -40,7 +40,7 @@ public abstract class AMeshFormat implements IMeshFormat {
         }
     }
 
-    protected abstract MeshRawData read(PrimitiveInputStream pis) throws IOException, MeshIOException;
+    protected abstract Mesh read(PrimitiveInputStream pis) throws IOException, MeshIOException;
 
-    protected abstract void write(MeshRawData meshRawData, PrimitiveOutputStream pos) throws IOException, MeshIOException;
+    protected abstract void write(Mesh mesh, PrimitiveOutputStream pos) throws IOException, MeshIOException;
 }
