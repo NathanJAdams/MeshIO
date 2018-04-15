@@ -7,7 +7,7 @@ import com.ripplargames.meshio.Face;
 import com.ripplargames.meshio.Mesh;
 import com.ripplargames.meshio.MeshIOException;
 import com.ripplargames.meshio.meshformats.AMeshFormat;
-import com.ripplargames.meshio.util.DatumEnDecoder;
+import com.ripplargames.meshio.util.EnDecoder;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 import com.ripplargames.meshio.util.ResizableFloatArray;
@@ -70,41 +70,51 @@ public class MbMshFormat extends AMeshFormat {
         boolean isImageCoords = (metadata & IS_IMAGE_COORDS_MASK) != 0;
         boolean isColors = (metadata & IS_COLORS_MASK) != 0;
         boolean isAlpha = (metadata & IS_ALPHA_MASK) != 0;
-        readSignedShorts(mesh, vertexCount, pis, VertexType.Position_X);
-        readSignedShorts(mesh, vertexCount, pis, VertexType.Position_Y);
+        readShorts(mesh, vertexCount, pis, VertexType.Position_X);
+        readShorts(mesh, vertexCount, pis, VertexType.Position_Y);
         if (is3D)
-            readSignedShorts(mesh, vertexCount, pis, VertexType.Position_Z);
+            readShorts(mesh, vertexCount, pis, VertexType.Position_Z);
         if (isNormals) {
-            readSignedShorts(mesh, vertexCount, pis, VertexType.Normal_X);
-            readSignedShorts(mesh, vertexCount, pis, VertexType.Normal_Y);
+            readShorts(mesh, vertexCount, pis, VertexType.Normal_X);
+            readShorts(mesh, vertexCount, pis, VertexType.Normal_Y);
             if (is3D)
-                readSignedShorts(mesh, vertexCount, pis, VertexType.Normal_Z);
+                readShorts(mesh, vertexCount, pis, VertexType.Normal_Z);
         }
         if (isImageCoords) {
-            readUnsignedBytes(mesh, vertexCount, pis, VertexType.ImageCoord_X);
-            readUnsignedBytes(mesh, vertexCount, pis, VertexType.ImageCoord_Y);
+            readBytes(mesh, vertexCount, pis, VertexType.ImageCoord_X);
+            readBytes(mesh, vertexCount, pis, VertexType.ImageCoord_Y);
         }
         if (isColors) {
-            readUnsignedBytes(mesh, vertexCount, pis, VertexType.Color_R);
-            readUnsignedBytes(mesh, vertexCount, pis, VertexType.Color_G);
-            readUnsignedBytes(mesh, vertexCount, pis, VertexType.Color_B);
+            readBytes(mesh, vertexCount, pis, VertexType.Color_R);
+            readBytes(mesh, vertexCount, pis, VertexType.Color_G);
+            readBytes(mesh, vertexCount, pis, VertexType.Color_B);
             if (isAlpha)
-                readUnsignedBytes(mesh, vertexCount, pis, VertexType.Color_A);
+                readBytes(mesh, vertexCount, pis, VertexType.Color_A);
         }
     }
 
-    private static void readSignedShorts(Mesh mesh, int vertexCount, PrimitiveInputStream pis, VertexType type) throws IOException {
+    private static void readShorts(Mesh mesh, int vertexCount, PrimitiveInputStream pis, VertexType vertexType) throws IOException {
+        EnDecoder endecoder = readEnDecoder(pis, vertexType);
         for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
-            float value = (float) DatumEnDecoder.decodeShort(pis.readShort(IS_BIG_ENDIAN), true);
-            mesh.setVertexTypeDatum(type, vertexIndex, value);
+            short encoded = pis.readShort(IS_BIG_ENDIAN);
+            float datum = (float) endecoder.decodeShort(encoded);
+            mesh.setVertexTypeDatum(vertexType, vertexIndex, datum);
         }
     }
 
-    private static void readUnsignedBytes(Mesh mesh, int vertexCount, PrimitiveInputStream pis, VertexType type) throws IOException {
+    private static void readBytes(Mesh mesh, int vertexCount, PrimitiveInputStream pis, VertexType vertexType) throws IOException {
+        EnDecoder endecoder = readEnDecoder(pis, vertexType);
         for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++) {
-            float value = (float) DatumEnDecoder.decodeByte(pis.readByte(), false);
-            mesh.setVertexTypeDatum(type, vertexIndex, value);
+            byte encoded = pis.readByte();
+            float datum = (float) endecoder.decodeByte(encoded);
+            mesh.setVertexTypeDatum(vertexType, vertexIndex, datum);
         }
+    }
+
+    private static EnDecoder readEnDecoder(PrimitiveInputStream pis, VertexType vertexType) throws IOException {
+        float min = pis.readFloat(IS_BIG_ENDIAN);
+        float max = pis.readFloat(IS_BIG_ENDIAN);
+        return new EnDecoder(min, max);
     }
 
     private static void readFaces(Mesh mesh, PrimitiveInputStream pis, short version, int metadata) throws IOException {
@@ -176,17 +186,23 @@ public class MbMshFormat extends AMeshFormat {
         }
     }
 
-    private static void writeVertexData(Mesh mesh, PrimitiveOutputStream pos, VertexType type) throws IOException, MeshIOException {
-        ResizableFloatArray data = mesh.vertexTypeData(type);
-        switch (type) {
+    private static void writeVertexData(Mesh mesh, PrimitiveOutputStream pos, VertexType vertexType) throws IOException, MeshIOException {
+        EnDecoder endecoder = createEnDecoder(mesh, vertexType);
+        pos.writeFloat((float) endecoder.min());
+        pos.writeFloat((float) endecoder.max());
+        ResizableFloatArray data = mesh.vertexTypeData(vertexType);
+        switch (vertexType) {
             case Position_X:
             case Position_Y:
             case Position_Z:
             case Normal_X:
             case Normal_Y:
             case Normal_Z:
-                for (int i = 0; i < data.length(); i++)
-                    pos.writeShort(DatumEnDecoder.encodeAsShort(data.getAt(i), true), IS_BIG_ENDIAN);
+                for (int i = 0; i < data.length(); i++) {
+                    float datum = data.getAt(i);
+                    short encoded = endecoder.encodeAsShort(datum);
+                    pos.writeShort(encoded, IS_BIG_ENDIAN);
+                }
                 break;
             case Color_R:
             case Color_G:
@@ -194,12 +210,31 @@ public class MbMshFormat extends AMeshFormat {
             case Color_A:
             case ImageCoord_X:
             case ImageCoord_Y:
-                for (int i = 0; i < data.length(); i++)
-                    pos.writeByte(DatumEnDecoder.encodeAsByte(data.getAt(i), false));
+                for (int i = 0; i < data.length(); i++) {
+                    float datum = data.getAt(i);
+                    byte encoded = endecoder.encodeAsByte(datum);
+                    pos.writeByte(encoded);
+                }
                 break;
             default:
-                throw new MeshIOException("Unknown vertex type: " + type.name());
+                throw new MeshIOException("Unknown vertex type: " + vertexType.name());
         }
+    }
+
+    private static EnDecoder createEnDecoder(Mesh mesh, VertexType vertexType) {
+        ResizableFloatArray data = mesh.vertexTypeData(vertexType);
+        float min = Float.MAX_VALUE;
+        float max = Float.MIN_VALUE;
+        for (int i = 0; i < data.length(); i++) {
+            float datum = data.getAt(i);
+            if (datum < min) {
+                min = datum;
+            }
+            if (datum > max) {
+                max = datum;
+            }
+        }
+        return new EnDecoder(min, max);
     }
 
     private static void writeFaces(Mesh mesh, PrimitiveOutputStream pos) throws IOException {

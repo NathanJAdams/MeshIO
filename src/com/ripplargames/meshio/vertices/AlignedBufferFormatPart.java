@@ -8,10 +8,10 @@ public class AlignedBufferFormatPart {
         if (offset < 0) {
             throw new IllegalArgumentException("Offset must be zero or greater");
         }
-        this.offset = offset;
         if (dataType == null) {
             throw new NullPointerException("Data Type must not be null");
         }
+        this.offset = offset;
         this.dataType = dataType;
     }
 
@@ -21,19 +21,5 @@ public class AlignedBufferFormatPart {
 
     public VertexDataType dataType() {
         return dataType;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        AlignedBufferFormatPart other = (AlignedBufferFormatPart) obj;
-        return (offset == other.offset)
-                && (dataType == other.dataType);
-    }
-
-    @Override
-    public int hashCode() {
-        return 31 * offset + dataType.hashCode();
     }
 }

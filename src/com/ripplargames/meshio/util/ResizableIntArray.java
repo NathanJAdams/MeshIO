@@ -48,14 +48,14 @@ public class ResizableIntArray {
     public void setAt(int index, int datum) {
         ensureCapacity(index);
         backing[index] = datum;
-        if (length == index) {
-            length++;
+        if (length <= index) {
+            length = index + 1;
         }
     }
 
     private void ensureCapacity(int index) {
         if (backing.length <= index) {
-            int newLength = (int) (backing.length * resizeFactor);
+            int newLength = Math.max((int) (backing.length * resizeFactor), index + 1);
             backing = Arrays.copyOf(backing, newLength);
         }
     }

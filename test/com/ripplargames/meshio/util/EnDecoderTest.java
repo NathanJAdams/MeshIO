@@ -1,11 +1,43 @@
-package com.ripplargames.meshio;
+package com.ripplargames.meshio.util;
 
-import com.ripplargames.meshio.util.DatumEnDecoder;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DatumEnDecoderTest {
+public class EnDecoderTest {
     private static final double DELTA = 0;
+
+    @Test
+    public void testZeroRange() {
+        EnDecoder endecoder = new EnDecoder(1, 1);
+        Assert.assertEquals(0, endecoder.encodeAsByte(12), DELTA);
+        Assert.assertEquals(1, endecoder.decodeByte((byte) 45), DELTA);
+        Assert.assertEquals(0, endecoder.encodeAsShort(123), DELTA);
+        Assert.assertEquals(1, endecoder.decodeShort((short) 456), DELTA);
+        Assert.assertEquals(0, endecoder.encodeAsInt(123), DELTA);
+        Assert.assertEquals(1, endecoder.decodeInt(456), DELTA);
+    }
+
+    @Test
+    public void testRanges() {
+        testLargeRange(-100, 100);
+        testLargeRange(-100, 0);
+        testLargeRange(0, 100);
+        testLargeRange(100, 200);
+    }
+
+    private void testLargeRange(float min, float max) {
+        EnDecoder endecoder = new EnDecoder(min, max);
+        float half = (min + max) / 2;
+        Assert.assertEquals(-Byte.MAX_VALUE, endecoder.encodeAsByte(min), DELTA);
+        Assert.assertEquals(0, endecoder.encodeAsByte(half), DELTA);
+        Assert.assertEquals(Byte.MAX_VALUE, endecoder.encodeAsByte(max), DELTA);
+        Assert.assertEquals(-Short.MAX_VALUE, endecoder.encodeAsShort(min), DELTA);
+        Assert.assertEquals(0, endecoder.encodeAsShort(half), DELTA);
+        Assert.assertEquals(Short.MAX_VALUE, endecoder.encodeAsShort(max), DELTA);
+        Assert.assertEquals(-Integer.MAX_VALUE, endecoder.encodeAsInt(min), DELTA);
+        Assert.assertEquals(0, endecoder.encodeAsInt(half), DELTA);
+        Assert.assertEquals(Integer.MAX_VALUE, endecoder.encodeAsInt(max), DELTA);
+    }
 
     @Test
     public void testEncodeAsByte() {
@@ -18,7 +50,9 @@ public class DatumEnDecoderTest {
     }
 
     private void testEncodedAsByte(byte expected, float original, boolean isSigned) {
-        byte encoded = DatumEnDecoder.encodeAsByte(original, isSigned);
+        float min = isSigned ? -1 : 0;
+        EnDecoder endecoder = new EnDecoder(min, 1);
+        byte encoded = endecoder.encodeAsByte(original);
         Assert.assertEquals(expected, encoded);
     }
 
@@ -33,7 +67,9 @@ public class DatumEnDecoderTest {
     }
 
     private void testEncodedAsShort(short expected, float original, boolean isSigned) {
-        short encoded = DatumEnDecoder.encodeAsShort(original, isSigned);
+        float min = isSigned ? -1 : 0;
+        EnDecoder endecoder = new EnDecoder(min, 1);
+        short encoded = endecoder.encodeAsShort(original);
         Assert.assertEquals(expected, encoded);
     }
 
@@ -48,7 +84,9 @@ public class DatumEnDecoderTest {
     }
 
     private void testEncodedAsInt(int expected, float original, boolean isSigned) {
-        int encoded = DatumEnDecoder.encodeAsInt(original, isSigned);
+        float min = isSigned ? -1 : 0;
+        EnDecoder endecoder = new EnDecoder(min, 1);
+        int encoded = endecoder.encodeAsInt(original);
         Assert.assertEquals(expected, encoded);
     }
 
@@ -63,7 +101,9 @@ public class DatumEnDecoderTest {
     }
 
     private void testDecodeByte(double expected, byte encoded, boolean isSigned) {
-        double decoded = DatumEnDecoder.decodeByte(encoded, isSigned);
+        float min = isSigned ? -1 : 0;
+        EnDecoder endecoder = new EnDecoder(min, 1);
+        double decoded = endecoder.decodeByte(encoded);
         Assert.assertEquals(expected, decoded, DELTA);
     }
 
@@ -78,7 +118,9 @@ public class DatumEnDecoderTest {
     }
 
     private void testDecodeShort(double expected, short encoded, boolean isSigned) {
-        double decoded = DatumEnDecoder.decodeShort(encoded, isSigned);
+        float min = isSigned ? -1 : 0;
+        EnDecoder endecoder = new EnDecoder(min, 1);
+        double decoded = endecoder.decodeShort(encoded);
         Assert.assertEquals(expected, decoded, DELTA);
     }
 
@@ -93,7 +135,9 @@ public class DatumEnDecoderTest {
     }
 
     private void testDecodeInt(double expected, int encoded, boolean isSigned) {
-        double decoded = DatumEnDecoder.decodeInt(encoded, isSigned);
+        float min = isSigned ? -1 : 0;
+        EnDecoder endecoder = new EnDecoder(min, 1);
+        double decoded = endecoder.decodeInt(encoded);
         Assert.assertEquals(expected, decoded, DELTA);
     }
 }

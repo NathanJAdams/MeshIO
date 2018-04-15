@@ -45,7 +45,7 @@ public class ResizableFloatArray {
 
     private void ensureCapacity(int index) {
         if (backing.length <= index) {
-            int newLength = (int) (backing.length * resizeFactor);
+            int newLength = Math.max((int) (backing.length * resizeFactor), index + 1);
             backing = Arrays.copyOf(backing, newLength);
         }
     }
