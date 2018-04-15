@@ -11,6 +11,10 @@ import com.ripplargames.meshio.IMeshFormat;
 import com.ripplargames.meshio.Mesh;
 import com.ripplargames.meshio.MeshIOException;
 import com.ripplargames.meshio.meshformats.mbmsh.MbMshFormat;
+import com.ripplargames.meshio.meshformats.obj.ObjFormat;
+import com.ripplargames.meshio.meshformats.ply.PlyFormatAscii_1_0;
+import com.ripplargames.meshio.meshformats.ply.PlyFormatBinaryBigEndian_1_0;
+import com.ripplargames.meshio.meshformats.ply.PlyFormatBinaryLittleEndian_1_0;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 import com.ripplargames.meshio.vertices.VertexType;
@@ -21,11 +25,11 @@ public class FormatTest {
     @Test
     public void testFormats() throws MeshIOException {
         List<IMeshFormat> formats = new ArrayList<IMeshFormat>();
-//        meshformats.add(new PlyFormatAscii_1_0());
-//        meshformats.add(new PlyFormatBinaryBigEndian_1_0());
-//        meshformats.add(new PlyFormatBinaryLittleEndian_1_0());
+        formats.add(new PlyFormatAscii_1_0());
+        formats.add(new PlyFormatBinaryBigEndian_1_0());
+        formats.add(new PlyFormatBinaryLittleEndian_1_0());
         formats.add(new MbMshFormat());
-//        meshformats.add(new ObjFormat());
+        formats.add(new ObjFormat());
         testFormats(formats);
     }
 
