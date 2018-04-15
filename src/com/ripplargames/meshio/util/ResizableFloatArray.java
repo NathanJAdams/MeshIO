@@ -37,11 +37,7 @@ public class ResizableFloatArray {
 
     public void setAt(int index, float datum) {
         ensureCapacity(index);
-        try {
-            backing[index] = datum;
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Backing length: " + backing.length + ", index: " + index);
-        }
+        backing[index] = datum;
         if (length <= index) {
             length = index + 1;
         }
