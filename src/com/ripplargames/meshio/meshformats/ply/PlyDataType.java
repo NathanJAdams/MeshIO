@@ -69,11 +69,11 @@ public enum PlyDataType {
     private final int byteCount;
     private final long bitMask;
 
-    private PlyDataType(String representation) {
+    PlyDataType(String representation) {
         this(representation, 0, 0);
     }
 
-    private PlyDataType(String representation, int byteCount, long bitMask) {
+    PlyDataType(String representation, int byteCount, long bitMask) {
         this.representation = representation;
         this.byteCount = byteCount;
         this.bitMask = bitMask;

@@ -21,15 +21,6 @@ import com.ripplargames.meshio.util.PrimitiveOutputStream;
 public class MeshIO {
     private final Map<String, IMeshFormat> extensionFormats = new HashMap<String, IMeshFormat>();
 
-    public static void main(String[] args) throws MeshIOException{
-        String filenameIn  = "C:/Users/Nathan/IdeaProjects/evolvio4JavaQuete/res/models/dragon.obj";
-        MeshIO meshIO = new MeshIO();
-        Mesh mesh = meshIO.read(filenameIn);
-        String filenameOut  = "C:/Users/Nathan/IdeaProjects/evolvio4JavaQuete/res/models/dragon.mbmsh";
-        meshIO.write(mesh,filenameOut);
-    }
-
-
     public MeshIO() {
         registerMeshFormat(new PlyFormatAscii_1_0());
         registerMeshFormat(new ObjFormat());

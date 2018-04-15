@@ -43,15 +43,8 @@ public class FormatTest {
         mesh.appendFace(new Face(0, 1, 2));
         mesh.appendFace(new Face(1, 2, 3));
         for (int i = 0; i < vertices; i++) {
-            for (VertexType vertexType : VertexType.valuesList()) {
-                int randomInt = random.nextInt(3);
-                float set;
-                // finer grained fractional parts aren't exactly represented by some meshformats
-                if (vertexType.isSignedData()) {
-                    set = randomInt - 1; // -1, 0, 1
-                } else {
-                    set = randomInt * 0.5f; // 0, 0.5, 1
-                }
+            for (VertexType vertexType : VertexType.values()) {
+                float set = random.nextInt(3) - 1; // -1, 0, 1
                 mesh.setVertexTypeDatum(vertexType, i, set);
                 float get = mesh.vertexTypeDatum(vertexType, i);
                 Assert.assertEquals(set, get, 0.0f);

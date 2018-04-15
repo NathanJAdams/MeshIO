@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.ripplargames.meshio.vertices.VertexDataType;
 import com.ripplargames.meshio.vertices.BufferFormat;
 import com.ripplargames.meshio.vertices.BufferFormatPart;
+import com.ripplargames.meshio.vertices.VertexDataType;
 import com.ripplargames.meshio.vertices.VertexType;
 
 public class TestUtil {
@@ -22,13 +22,13 @@ public class TestUtil {
     }
 
     public static BufferFormatPart randomFormatPart() {
-        VertexType vertexType = randomValue(VertexType.valuesList());
-        VertexDataType vertexDataType = randomValue(VertexDataType.valuesList());
+        VertexType vertexType = randomValue(VertexType.values());
+        VertexDataType vertexDataType = randomValue(VertexDataType.values());
         return new BufferFormatPart(vertexType, vertexDataType);
     }
 
-    public static <T> T randomValue(List<T> list) {
-        int index = (int) (Math.random() * list.size());
-        return list.get(index);
+    public static <T> T randomValue(T[] array) {
+        int index = (int) (Math.random() * array.length);
+        return array[index];
     }
 }
