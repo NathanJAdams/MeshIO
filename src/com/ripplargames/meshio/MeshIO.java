@@ -73,7 +73,7 @@ public class MeshIO {
     public IMeshFormat getFormatFromFilePath(String filePath) throws MeshIOException {
         int lastDotIndex = filePath.lastIndexOf('.');
         if (lastDotIndex == -1)
-            throwBecause("Cannot find util extension in path: " + filePath);
+            throwBecause("Cannot find mesh extension in path: " + filePath);
         String extension = filePath.substring(lastDotIndex + 1);
         return getFormatFromExtension(extension);
     }
@@ -81,7 +81,7 @@ public class MeshIO {
     public IMeshFormat getFormatFromExtension(String extension) throws MeshIOException {
         IMeshFormat format = extensionFormats.get(extension);
         if (format == null)
-            throwBecause("Cannot find util format from extension: " + extension);
+            throwBecause("Cannot find mesh format from extension: " + extension);
         return format;
     }
 
