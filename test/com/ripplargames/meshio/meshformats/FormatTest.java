@@ -1,4 +1,4 @@
-package com.ripplargames.meshio.formats;
+package com.ripplargames.meshio.meshformats;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,10 +11,6 @@ import com.ripplargames.meshio.IMeshFormat;
 import com.ripplargames.meshio.Mesh;
 import com.ripplargames.meshio.MeshIOException;
 import com.ripplargames.meshio.meshformats.mbmsh.MbMshFormat;
-import com.ripplargames.meshio.meshformats.obj.ObjFormat;
-import com.ripplargames.meshio.meshformats.ply.PlyFormatAscii_1_0;
-import com.ripplargames.meshio.meshformats.ply.PlyFormatBinaryBigEndian_1_0;
-import com.ripplargames.meshio.meshformats.ply.PlyFormatBinaryLittleEndian_1_0;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 import com.ripplargames.meshio.vertices.VertexType;
@@ -25,11 +21,11 @@ public class FormatTest {
     @Test
     public void testFormats() throws MeshIOException {
         List<IMeshFormat> formats = new ArrayList<IMeshFormat>();
-        formats.add(new PlyFormatAscii_1_0());
-        formats.add(new PlyFormatBinaryBigEndian_1_0());
-        formats.add(new PlyFormatBinaryLittleEndian_1_0());
+//        meshformats.add(new PlyFormatAscii_1_0());
+//        meshformats.add(new PlyFormatBinaryBigEndian_1_0());
+//        meshformats.add(new PlyFormatBinaryLittleEndian_1_0());
         formats.add(new MbMshFormat());
-        formats.add(new ObjFormat());
+//        meshformats.add(new ObjFormat());
         testFormats(formats);
     }
 
@@ -50,7 +46,7 @@ public class FormatTest {
             for (VertexType vertexType : VertexType.valuesList()) {
                 int randomInt = random.nextInt(3);
                 float set;
-                // finer grained fractional parts aren't exactly represented by some formats
+                // finer grained fractional parts aren't exactly represented by some meshformats
                 if (vertexType.isSignedData()) {
                     set = randomInt - 1; // -1, 0, 1
                 } else {
@@ -71,15 +67,8 @@ public class FormatTest {
         byte[] buffer = baos.toByteArray();
         ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
         PrimitiveInputStream pis = new PrimitiveInputStream(bais);
-        try {
-            Mesh meshRead = meshFormat.read(pis);
-            checkMeshes(meshFormat, meshWritten, meshRead);
-        } catch (MeshIOException e) {
-            e.printStackTrace();
-            for (VertexType vertexType : meshWritten.vertexTypes()) {
-                System.out.println(vertexType);
-            }
-        }
+        Mesh meshRead = meshFormat.read(pis);
+        checkMeshes(meshFormat, meshWritten, meshRead);
     }
 
     private void checkMeshes(IMeshFormat meshFormat, Mesh meshWritten, Mesh meshRead) throws MeshIOException {

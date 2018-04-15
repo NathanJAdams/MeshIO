@@ -20,7 +20,7 @@ public abstract class AMeshFormat implements IMeshFormat {
         try {
             return read(pis);
         } catch (IOException e) {
-            throw new MeshIOException("Failed to read mesh", e);
+            throw new MeshIOException("Failed to read util", e);
         }
     }
 
@@ -31,7 +31,7 @@ public abstract class AMeshFormat implements IMeshFormat {
         try {
             write(mesh, pos);
         } catch (IOException e) {
-            throw new MeshIOException("Failed to write mesh", e);
+            throw new MeshIOException("Failed to write util", e);
         }
         try {
             pos.flush();

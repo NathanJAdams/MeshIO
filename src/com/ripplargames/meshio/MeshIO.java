@@ -21,6 +21,15 @@ import com.ripplargames.meshio.util.PrimitiveOutputStream;
 public class MeshIO {
     private final Map<String, IMeshFormat> extensionFormats = new HashMap<String, IMeshFormat>();
 
+    public static void main(String[] args) throws MeshIOException{
+        String filenameIn  = "C:/Users/Nathan/IdeaProjects/evolvio4JavaQuete/res/models/dragon.obj";
+        MeshIO meshIO = new MeshIO();
+        Mesh mesh = meshIO.read(filenameIn);
+        String filenameOut  = "C:/Users/Nathan/IdeaProjects/evolvio4JavaQuete/res/models/dragon.mbmsh";
+        meshIO.write(mesh,filenameOut);
+    }
+
+
     public MeshIO() {
         registerMeshFormat(new PlyFormatAscii_1_0());
         registerMeshFormat(new ObjFormat());
@@ -73,7 +82,7 @@ public class MeshIO {
     public IMeshFormat getFormatFromFilePath(String filePath) throws MeshIOException {
         int lastDotIndex = filePath.lastIndexOf('.');
         if (lastDotIndex == -1)
-            throwBecause("Cannot find mesh extension in path: " + filePath);
+            throwBecause("Cannot find util extension in path: " + filePath);
         String extension = filePath.substring(lastDotIndex + 1);
         return getFormatFromExtension(extension);
     }
@@ -81,7 +90,7 @@ public class MeshIO {
     public IMeshFormat getFormatFromExtension(String extension) throws MeshIOException {
         IMeshFormat format = extensionFormats.get(extension);
         if (format == null)
-            throwBecause("Cannot find mesh format from extension: " + extension);
+            throwBecause("Cannot find util format from extension: " + extension);
         return format;
     }
 

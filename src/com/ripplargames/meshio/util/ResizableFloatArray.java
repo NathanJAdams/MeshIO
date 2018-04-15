@@ -37,7 +37,11 @@ public class ResizableFloatArray {
 
     public void setAt(int index, float datum) {
         ensureCapacity(index);
-        backing[index] = datum;
+        try {
+            backing[index] = datum;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Backing length: " + backing.length + ", index: " + index);
+        }
         if (length <= index) {
             length = index + 1;
         }
@@ -45,7 +49,7 @@ public class ResizableFloatArray {
 
     private void ensureCapacity(int index) {
         if (backing.length <= index) {
-            int newLength = (int) (backing.length * resizeFactor);
+            int newLength = Math.max((int) (backing.length * resizeFactor), index + 1);
             backing = Arrays.copyOf(backing, newLength);
         }
     }

@@ -1,8 +1,7 @@
-package com.ripplargames.meshio.mesh;
+package com.ripplargames.meshio.util;
 
 import java.nio.ByteBuffer;
 
-import com.ripplargames.meshio.util.BufferUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
