@@ -70,7 +70,6 @@ public class Mesh {
         return buffer;
     }
 
-
     public void appendFace(Face face) {
         faces.add(face);
         maxVertexCount = Math.max(maxVertexCount, face.getV0());

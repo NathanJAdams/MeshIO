@@ -71,23 +71,21 @@ public abstract class PlyFormat extends AMeshFormat {
         PROPERTY_NAMES.put(type, name);
     }
 
-    private static void readVertices(PlyFormat plyFormat, PrimitiveInputStream pis, Mesh mesh, List<VertexType> readVertexFormat,
-                                     List<PlyDataType> vertexDataTypes, int numVertices) throws IOException {
-        float[] readVertexData = new float[readVertexFormat.size()];
+    private void readVertices(PrimitiveInputStream pis, Mesh mesh, List<PlyVertexDataType> plyVertexDataTypes, int numVertices) throws IOException {
         for (int vertexIndex = 0; vertexIndex < numVertices; vertexIndex++) {
-            plyFormat.fillVertexData(pis, readVertexData, vertexDataTypes.get(vertexIndex));
-            for (int vertexFormatIndex = 0; vertexFormatIndex < readVertexFormat.size(); vertexFormatIndex++) {
-                VertexType readType = readVertexFormat.get(vertexFormatIndex);
-                float vertexDatum = readVertexData[vertexFormatIndex];
-                mesh.setVertexTypeDatum(readType, vertexIndex, vertexDatum);
+            float[] vertexData = readVertexData(pis, plyVertexDataTypes);
+            for (int plyVertexDataTypeIndex = 0; plyVertexDataTypeIndex < plyVertexDataTypes.size(); plyVertexDataTypeIndex++) {
+                VertexType vertexType = plyVertexDataTypes.get(plyVertexDataTypeIndex).vertexType();
+                float vertexDatum = vertexData[plyVertexDataTypeIndex];
+                mesh.setVertexTypeDatum(vertexType, vertexIndex, vertexDatum);
             }
         }
     }
 
-    private static void readFaces(PlyFormat plyFormat, PrimitiveInputStream pis, Mesh mesh, PlyDataType countType, PlyDataType indexType,
-                                  int numFaces) throws IOException {
+    private void readFaces(PrimitiveInputStream pis, Mesh mesh, PlyDataType countType, PlyDataType indexType,
+                           int numFaces) throws IOException {
         for (int faceIndex = 0; faceIndex < numFaces; faceIndex++) {
-            int[] faceIndices = plyFormat.readFaceIndices(pis, countType, indexType);
+            int[] faceIndices = readFaceIndices(pis, countType, indexType);
             mesh.appendFace(new Face(faceIndices[0], faceIndices[1], faceIndices[2]));
         }
     }
@@ -131,14 +129,13 @@ public abstract class PlyFormat extends AMeshFormat {
         String[] formatParts = line.split(" ");
         if (formatParts.length != 3 || !FORMAT.equals(formatParts[0]))
             throw new MeshIOException("Unrecognised format: " + line);
-        PlyFormat plyFormat = getFrom(formatParts[1], formatParts[2]);
-        if (plyFormat == null)
+        PlyFormat actualPlyFormat = getFrom(formatParts[1], formatParts[2]);
+        if (actualPlyFormat == null)
             throw new MeshIOException("Unrecognised encoding-version combination: " + line);
         boolean isVerticesFirst = true;
         boolean isVertexHeader = false;
         boolean isFaceHeader = false;
-        List<VertexType> vertexTypes = new ArrayList<VertexType>();
-        List<PlyDataType> vertexDataTypes = new ArrayList<PlyDataType>();
+        List<PlyVertexDataType> plyVertexDataTypes = new ArrayList<PlyVertexDataType>();
         int numVertices = -1;
         int numFaces = -1;
         PlyDataType faceIndexCountType = null;
@@ -171,8 +168,7 @@ public abstract class PlyFormat extends AMeshFormat {
                     VertexType vertexType = PROPERTIES_BY_NAME.get(lineParts.get(2));
                     if (dataType == null || vertexType == null)
                         throw new MeshIOException("Unrecognised vertex property: " + lineParts.get(1) + " - " + lineParts.get(2));
-                    vertexDataTypes.add(dataType);
-                    vertexTypes.add(vertexType);
+                    plyVertexDataTypes.add(new PlyVertexDataType(vertexType, dataType));
                 }
             } else if (lineParts.size() == 5 && isFaceHeader && PROPERTY.equals(lineParts.get(0)) && LIST.equals(lineParts.get(1))
                     && VERTEX_INDEX.equals(lineParts.get(4))) {
@@ -186,11 +182,11 @@ public abstract class PlyFormat extends AMeshFormat {
             throw new MeshIOException("Failed to read face indices");
         Mesh mesh = new Mesh();
         if (isVerticesFirst) {
-            readVertices(plyFormat, pis, mesh, vertexTypes, vertexDataTypes, numVertices);
-            readFaces(plyFormat, pis, mesh, faceIndexCountType, faceIndexType, numFaces);
+            actualPlyFormat.readVertices(pis, mesh, plyVertexDataTypes, numVertices);
+            actualPlyFormat.readFaces(pis, mesh, faceIndexCountType, faceIndexType, numFaces);
         } else {
-            readFaces(plyFormat, pis, mesh, faceIndexCountType, faceIndexType, numFaces);
-            readVertices(plyFormat, pis, mesh, vertexTypes, vertexDataTypes, numVertices);
+            actualPlyFormat.readFaces(pis, mesh, faceIndexCountType, faceIndexType, numFaces);
+            actualPlyFormat.readVertices(pis, mesh, plyVertexDataTypes, numVertices);
         }
         return mesh;
     }
@@ -202,7 +198,12 @@ public abstract class PlyFormat extends AMeshFormat {
         int vertexCount = mesh.vertexCount();
         int faceCount = mesh.faceCount();
         pos.writeLine("element vertex " + vertexCount);
-        List<VertexType> vertexTypes = new ArrayList<VertexType>(mesh.vertexTypes());
+        List<VertexType> vertexTypes = new ArrayList<VertexType>();
+        for (VertexType vertexType : VertexType.values()) {
+            if (mesh.hasVertexTypeData(vertexType)) {
+                vertexTypes.add(vertexType);
+            }
+        }
         for (VertexType vertexType : vertexTypes)
             pos.writeLine("property float " + PROPERTY_NAMES.get(vertexType));
         pos.writeLine("element face " + faceCount);
@@ -216,16 +217,16 @@ public abstract class PlyFormat extends AMeshFormat {
                 float datum = mesh.vertexTypeDatum(vertexType, vertexIndex);
                 vertexData[vertexTypeIndex] = datum;
             }
-            writeVertexData(pos, vertexData, PlyDataType.Float);
+            writeVertexData(pos, PlyDataType.Float, vertexData);
         }
         for (Face face : mesh.faces()) {
             writeFaceIndices(pos, face, PlyDataType.Uchar, PlyDataType.Int);
         }
     }
 
-    public abstract void fillVertexData(PrimitiveInputStream pis, float[] vertexData, PlyDataType vertexType) throws IOException;
+    public abstract float[] readVertexData(PrimitiveInputStream pis, List<PlyVertexDataType> plyVertexDataTypes) throws IOException;
 
-    public abstract void writeVertexData(PrimitiveOutputStream pos, float[] vertexData, PlyDataType vertexType) throws IOException;
+    public abstract void writeVertexData(PrimitiveOutputStream pos, PlyDataType vertexType, float[] vertexData) throws IOException;
 
     public abstract int[] readFaceIndices(PrimitiveInputStream pis, PlyDataType countType, PlyDataType indicesType) throws IOException;
 

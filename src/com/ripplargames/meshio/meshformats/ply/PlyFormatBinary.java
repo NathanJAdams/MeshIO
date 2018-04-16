@@ -1,6 +1,7 @@
 package com.ripplargames.meshio.meshformats.ply;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.ripplargames.meshio.Face;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
@@ -21,13 +22,15 @@ public class PlyFormatBinary extends PlyFormat {
     }
 
     @Override
-    public void fillVertexData(PrimitiveInputStream pis, float[] vertexData, PlyDataType vertexType) throws IOException {
+    public float[] readVertexData(PrimitiveInputStream pis, List<PlyVertexDataType> plyVertexDataTypes) throws IOException {
+        float[] vertexData = new float[plyVertexDataTypes.size()];
         for (int i = 0; i < vertexData.length; i++)
-            vertexData[i] = (float) vertexType.readReal(pis, isBigEndian);
+            vertexData[i] = (float) plyVertexDataTypes.get(i).plyDataType().readReal(pis, isBigEndian);
+        return vertexData;
     }
 
     @Override
-    public void writeVertexData(PrimitiveOutputStream pos, float[] vertexData, PlyDataType vertexType) throws IOException {
+    public void writeVertexData(PrimitiveOutputStream pos, PlyDataType vertexType, float[] vertexData) throws IOException {
         for (float f : vertexData)
             vertexType.writeReal(pos, isBigEndian, f);
     }
