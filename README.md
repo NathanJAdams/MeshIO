@@ -17,7 +17,7 @@ To use as a dependency in a Maven project, add the following into your pom file 
     <dependency>
       <groupId>com.ripplargames</groupId>
       <artifactId>meshio</artifactId>
-      <version>2.1.1</version>
+      <version>2.1.2</version>
     </dependency>
 
 For other build tools, view it on [mvnrepository.com](https://mvnrepository.com/artifact/com.ripplargames/meshio/1.0.0)
