@@ -8,15 +8,15 @@ import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 
 public enum PlyDataType {
-    Uchar("uchar", 1, Byte.MAX_VALUE),
-    Char("char", 1, 0xFF),
-    Ushort("ushort", 2, java.lang.Short.MAX_VALUE),
-    Short("short", 2, 0xFFFF),
-    Uint("uint", 4, Integer.MAX_VALUE),
-    Int("int", 4, 0xFFFFFFFF),
-    Ulong("ulong", 8, java.lang.Long.MAX_VALUE),
-    Long("long", 8, 0xFFFFFFFFFFFFFFFFL),
-    Float("float") {
+    Uchar(1, Byte.MAX_VALUE, "uchar", "uint8"),
+    Char(1, 0xFF, "char", "int8"),
+    Ushort(2, java.lang.Short.MAX_VALUE, "ushort", "uint16"),
+    Short(2, 0xFFFF, "short", "int16"),
+    Uint(4, Integer.MAX_VALUE, "uint", "uint32"),
+    Int(4, 0xFFFFFFFF, "int", "int32"),
+    Ulong(8, java.lang.Long.MAX_VALUE, "ulong", "uint64"),
+    Long(8, 0xFFFFFFFFFFFFFFFFL, "long", "int64"),
+    Float("float", "float32") {
         @Override
         public long readInteger(PrimitiveInputStream pis, boolean isBigEndian) throws IOException {
             return (long) readReal(pis, isBigEndian);
@@ -37,7 +37,7 @@ public enum PlyDataType {
             pos.writeFloat((float) real, isBigEndian);
         }
     },
-    Double("double") {
+    Double("double", "float64") {
         @Override
         public long readInteger(PrimitiveInputStream pis, boolean isBigEndian) throws IOException {
             return (long) readReal(pis, isBigEndian);
@@ -62,29 +62,26 @@ public enum PlyDataType {
 
     static {
         for (PlyDataType dataType : values())
-            BY_REPRESENTATION.put(dataType.representation, dataType);
+            for (String representation : dataType.representations)
+                BY_REPRESENTATION.put(representation, dataType);
     }
 
-    private final String representation;
+    private final String[] representations;
     private final int byteCount;
     private final long bitMask;
 
-    PlyDataType(String representation) {
-        this(representation, 0, 0);
+    PlyDataType(String... representations) {
+        this(0, 0, representations);
     }
 
-    PlyDataType(String representation, int byteCount, long bitMask) {
-        this.representation = representation;
+    PlyDataType(int byteCount, long bitMask, String... representations) {
+        this.representations = representations;
         this.byteCount = byteCount;
         this.bitMask = bitMask;
     }
 
     public static PlyDataType getDataType(String representation) {
         return BY_REPRESENTATION.get(representation);
-    }
-
-    public String getRepresentation() {
-        return representation;
     }
 
     public long readInteger(PrimitiveInputStream pis, boolean isBigEndian) throws IOException {

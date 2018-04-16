@@ -26,6 +26,7 @@ public abstract class PlyFormat extends AMeshFormat {
     private static final String PROPERTY = "property";
     private static final String LIST = "list";
     private static final String VERTEX_INDEX = "vertex_index";
+    private static final String VERTEX_INDICES = "vertex_indices";
     private static final String END_HEADER = "end_header";
     private static final Map<VertexType, String> PROPERTY_NAMES = new HashMap<VertexType, String>();
     private static final Map<String, VertexType> PROPERTIES_BY_NAME = new HashMap<String, VertexType>();
@@ -171,7 +172,7 @@ public abstract class PlyFormat extends AMeshFormat {
                     plyVertexDataTypes.add(new PlyVertexDataType(vertexType, dataType));
                 }
             } else if (lineParts.size() == 5 && isFaceHeader && PROPERTY.equals(lineParts.get(0)) && LIST.equals(lineParts.get(1))
-                    && VERTEX_INDEX.equals(lineParts.get(4))) {
+                    && (VERTEX_INDEX.equals(lineParts.get(4)) || VERTEX_INDICES.equals(lineParts.get(4)))) {
                 faceIndexCountType = PlyDataType.getDataType(lineParts.get(2));
                 faceIndexType = PlyDataType.getDataType(lineParts.get(3));
             }
