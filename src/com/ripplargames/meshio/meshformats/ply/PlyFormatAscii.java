@@ -1,6 +1,7 @@
 package com.ripplargames.meshio.meshformats.ply;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.ripplargames.meshio.Face;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
@@ -12,7 +13,8 @@ public class PlyFormatAscii extends PlyFormat {
     }
 
     @Override
-    public void fillVertexData(PrimitiveInputStream pis, float[] vertexData, PlyDataType vertexType) throws IOException {
+    public float[] readVertexData(PrimitiveInputStream pis, List<PlyVertexDataType> plyVertexDataTypes) throws IOException {
+        float[] vertexData = new float[plyVertexDataTypes.size()];
         String line = pis.readLine();
         String[] parts = line.split(" ");
         int minSize = Math.min(parts.length, vertexData.length);
@@ -22,10 +24,11 @@ public class PlyFormatAscii extends PlyFormat {
         } catch (NumberFormatException e) {
             throw new IOException("Failed to read number");
         }
+        return vertexData;
     }
 
     @Override
-    public void writeVertexData(PrimitiveOutputStream pos, float[] vertexData, PlyDataType vertexType) throws IOException {
+    public void writeVertexData(PrimitiveOutputStream pos, PlyDataType vertexType, float[] vertexData) throws IOException {
         StringBuilder sb = new StringBuilder();
         for (float f : vertexData) {
             sb.append(f);

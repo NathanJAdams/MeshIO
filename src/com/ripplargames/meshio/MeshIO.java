@@ -15,6 +15,8 @@ import java.util.Map;
 import com.ripplargames.meshio.meshformats.mbmsh.MbMshFormat;
 import com.ripplargames.meshio.meshformats.obj.ObjFormat;
 import com.ripplargames.meshio.meshformats.ply.PlyFormatAscii_1_0;
+import com.ripplargames.meshio.meshformats.ply.PlyFormatBinaryBigEndian_1_0;
+import com.ripplargames.meshio.meshformats.ply.PlyFormatBinaryLittleEndian_1_0;
 import com.ripplargames.meshio.util.PrimitiveInputStream;
 import com.ripplargames.meshio.util.PrimitiveOutputStream;
 
@@ -22,6 +24,8 @@ public class MeshIO {
     private final Map<String, IMeshFormat> extensionFormats = new HashMap<String, IMeshFormat>();
 
     public MeshIO() {
+        registerMeshFormat(new PlyFormatBinaryLittleEndian_1_0());
+        registerMeshFormat(new PlyFormatBinaryBigEndian_1_0());
         registerMeshFormat(new PlyFormatAscii_1_0());
         registerMeshFormat(new ObjFormat());
         registerMeshFormat(new MbMshFormat());

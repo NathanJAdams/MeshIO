@@ -14,8 +14,8 @@ import com.ripplargames.meshio.indices.IndicesDataType;
 import com.ripplargames.meshio.util.BufferUtil;
 import com.ripplargames.meshio.util.ImmutableIntArray;
 import com.ripplargames.meshio.util.ResizableFloatArray;
-import com.ripplargames.meshio.vertices.AlignedBufferFormatPart;
-import com.ripplargames.meshio.vertices.BufferFormat;
+import com.ripplargames.meshio.vertices.AlignedVertexFormatPart;
+import com.ripplargames.meshio.vertices.VertexFormat;
 import com.ripplargames.meshio.vertices.VertexDataType;
 import com.ripplargames.meshio.vertices.VertexType;
 
@@ -46,21 +46,21 @@ public class Mesh {
         return indicesDataType.flatten(elements, meshType.elementLength());
     }
 
-    public ByteBuffer vertices(BufferFormat bufferFormat) throws MeshIOException {
-        for (VertexType vertexType : bufferFormat.vertexTypes()) {
+    public ByteBuffer vertices(VertexFormat vertexFormat) throws MeshIOException {
+        for (VertexType vertexType : vertexFormat.vertexTypes()) {
             if (!hasVertexTypeData(vertexType)) {
                 throw new MeshIOException("No data found for vertex type: " + vertexType.name());
             }
         }
-        int byteCount = bufferFormat.byteCount();
+        int byteCount = vertexFormat.byteCount();
         int totalByteCount = byteCount * maxVertexCount;
         ByteBuffer buffer = BufferUtil.createByteBuffer(totalByteCount);
-        for (Map.Entry<VertexType, AlignedBufferFormatPart> entry : bufferFormat.alignedParts()) {
+        for (Map.Entry<VertexType, AlignedVertexFormatPart> entry : vertexFormat.alignedParts()) {
             VertexType vertexType = entry.getKey();
-            AlignedBufferFormatPart alignedBufferFormatPart = entry.getValue();
+            AlignedVertexFormatPart alignedVertexFormatPart = entry.getValue();
             ResizableFloatArray vertexTypeData = vertexTypeData(vertexType);
-            int offset = alignedBufferFormatPart.offset();
-            VertexDataType dataType = alignedBufferFormatPart.dataType();
+            int offset = alignedVertexFormatPart.offset();
+            VertexDataType dataType = alignedVertexFormatPart.dataType();
             for (int vertexIndex = 0; vertexIndex < maxVertexCount; vertexIndex++) {
                 float datum = vertexTypeData.getAt(vertexIndex);
                 int index = vertexIndex * byteCount + offset;
@@ -69,7 +69,6 @@ public class Mesh {
         }
         return buffer;
     }
-
 
     public void appendFace(Face face) {
         faces.add(face);

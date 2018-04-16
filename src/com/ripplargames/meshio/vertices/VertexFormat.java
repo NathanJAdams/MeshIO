@@ -7,41 +7,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class BufferFormat {
-    private final Map<VertexType, AlignedBufferFormatPart> alignedFormatParts;
+public class VertexFormat {
+    private final Map<VertexType, AlignedVertexFormatPart> alignedFormatParts;
     private final int byteCount;
 
-    public BufferFormat(BufferFormatPart... formatParts) {
+    public VertexFormat(VertexFormatPart... formatParts) {
         this(Arrays.asList(formatParts));
     }
 
-    public BufferFormat(List<BufferFormatPart> formatParts) {
+    public VertexFormat(List<VertexFormatPart> formatParts) {
         this.alignedFormatParts = createAlignedFormatParts(formatParts);
         this.byteCount = calculateByteCount(formatParts);
     }
 
-    private static Map<VertexType, AlignedBufferFormatPart> createAlignedFormatParts(List<BufferFormatPart> formatEntries) {
-        Map<VertexType, AlignedBufferFormatPart> alignedFormatParts = new EnumMap<VertexType, AlignedBufferFormatPart>(VertexType.class);
+    private static Map<VertexType, AlignedVertexFormatPart> createAlignedFormatParts(List<VertexFormatPart> formatEntries) {
+        Map<VertexType, AlignedVertexFormatPart> alignedFormatParts = new EnumMap<VertexType, AlignedVertexFormatPart>(VertexType.class);
         int offset = 0;
-        for (BufferFormatPart entry : formatEntries) {
+        for (VertexFormatPart entry : formatEntries) {
             VertexType vertexType = entry.getVertexType();
             VertexDataType dataType = entry.getDataType();
-            AlignedBufferFormatPart alignedFormatPart = new AlignedBufferFormatPart(offset, dataType);
+            AlignedVertexFormatPart alignedFormatPart = new AlignedVertexFormatPart(offset, dataType);
             alignedFormatParts.put(vertexType, alignedFormatPart);
             offset += dataType.byteCount();
         }
         return Collections.unmodifiableMap(alignedFormatParts);
     }
 
-    private static int calculateByteCount(List<BufferFormatPart> formatParts) {
+    private static int calculateByteCount(List<VertexFormatPart> formatParts) {
         int byteCount = 0;
-        for (BufferFormatPart formatPart : formatParts) {
+        for (VertexFormatPart formatPart : formatParts) {
             byteCount += formatPart.getDataType().byteCount();
         }
         return byteCount;
     }
 
-    public Iterable<Map.Entry<VertexType, AlignedBufferFormatPart>> alignedParts() {
+    public Iterable<Map.Entry<VertexType, AlignedVertexFormatPart>> alignedParts() {
         return alignedFormatParts.entrySet();
     }
 
