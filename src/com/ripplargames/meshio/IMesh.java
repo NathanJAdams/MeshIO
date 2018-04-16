@@ -3,18 +3,18 @@ package com.ripplargames.meshio;
 import java.nio.ByteBuffer;
 import java.util.Set;
 
-import com.ripplargames.meshio.vertices.BufferFormat;
+import com.ripplargames.meshio.vertices.VertexFormat;
 
 public interface IMesh {
     boolean isValid();
 
-    Set<BufferFormat> getBufferFormats();
+    Set<VertexFormat> getBufferFormats();
 
     int getVertexCount();
 
     int getFaceCount();
 
-    ByteBuffer getVertices(BufferFormat format);
+    ByteBuffer getVertices(VertexFormat format);
 
     ByteBuffer getIndices();
 

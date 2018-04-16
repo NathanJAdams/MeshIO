@@ -1,10 +1,10 @@
 package com.ripplargames.meshio.vertices;
 
-public class AlignedBufferFormatPart {
+public class AlignedVertexFormatPart {
     private final int offset;
     private final VertexDataType dataType;
 
-    public AlignedBufferFormatPart(int offset, VertexDataType dataType) {
+    public AlignedVertexFormatPart(int offset, VertexDataType dataType) {
         if (offset < 0) {
             throw new IllegalArgumentException("Offset must be zero or greater");
         }
